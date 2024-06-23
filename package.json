@@ -1,0 +1,14 @@
+{
+    "name": "bkshop",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "concurrently \"npm run server\" \"npm run client\"",
+        "server": "npm --prefix backend start",
+        "client": "npm --prefix frontend start",
+        "install-all": "npm install && npm --prefix backend install && npm --prefix frontend install"
+    },
+    "dependencies": {
+        "concurrently": "^7.6.0",
+        "react-helmet": "^6.1.0"
+    }
+}
