@@ -1,15 +1,18 @@
 import React from "react";
 import HeaderComponent from "../HeaderComponent/HeaderComponent";
 import FooterComponent from "../FooterComponent/FooterComponent";
+import { WrapContent, WrapperDefault } from "./style";
 
 const DefaultComponent = ({children}) => {
     return(
-        <div>
+        <WrapperDefault>
             <HeaderComponent />
-            {children}
+            <WrapContent>
+                {children}
+            </WrapContent>
             <FooterComponent />
-        </div>
+        </WrapperDefault>
     )
 }
 
-export default DefaultComponent
+export default DefaultComponent;

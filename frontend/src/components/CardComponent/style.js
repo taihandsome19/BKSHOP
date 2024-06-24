@@ -3,11 +3,9 @@ import { Card } from 'antd';
 
 
 export const WrapperCard = styled(Card)`
-    width: 200px;
-    & img {
-        height: 200px;
-        width: 200px;
-    }
+    border-radius: 4px;
+    border: none;
+    padding: 10px;
 `
 
 export const WrapperName = styled.div`

@@ -11,10 +11,8 @@ export const WrapperTypeProduct = styled.div`
 `
 
 export const WrapperProducts = styled.div`
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    margin-top: 25px;
-    flex-wrap: wrap;
-    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 30px;
 `

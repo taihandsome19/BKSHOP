@@ -12,8 +12,7 @@ const CardComponent = () => {
     return(
         <WrapperCard
             hoverable
-            style={{ width: 200}}
-            cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
+            cover={<img alt="example" src="https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100/https://cdn.tgdd.vn/Products/Images/42/223602/iphone-13-pink-2-600x600.jpg" />}
         >
             <WrapperName>Điện thoại Apple Iphone 13</WrapperName>
             <WrapperInfo>
