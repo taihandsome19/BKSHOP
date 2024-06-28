@@ -1,9 +1,19 @@
 import { Row } from "antd";
 import styled from "styled-components";
 
-export const WrapperHeader = styled(Row)`
-    padding: 20px 120px;
+
+export const WrapperPage = styled(Row)`
     background-color: #0688B4;
+    display: flex;
+    font-family: Roboto, sans-serif;
+    justify-content: center;
+`
+
+export const WrapperBox = styled.div`
+    width: 1200px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
 `
 
 export const WrapperTextHeader = styled.span`
