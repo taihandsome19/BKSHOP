@@ -1,14 +1,21 @@
 import { Row } from "antd";
 import styled from "styled-components";
 
-export const WrapperFooter = styled(Row)`
-    padding: 20px 120px;
+export const WrapperPage = styled(Row)`
     background-color: #495057;
     color: #fff;
     display: flex;
-    justify-content: space-between;
+    font-family: Roboto, sans-serif;
+    justify-content: center;
     align-items: center;
-`;
+`
+
+export const WrapperBox = styled.div`
+    width: 1200px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+`
 
 export const WrapContent = styled.div`
     display: flex;
@@ -19,7 +26,8 @@ export const WrapContent = styled.div`
 
 export const RightContent = styled.div`
     display: flex;
-    margin-left: auto;
+    justify-content: flex-end;
+    gap: 20px;
 `;
 
 export const FooterItem = styled.div`

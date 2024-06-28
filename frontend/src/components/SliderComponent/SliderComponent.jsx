@@ -2,7 +2,7 @@ import React from "react";
 import Slider from "react-slick";
 import { Image } from "antd";
 
-const SliderComponent = ({arrImg}) => {
+const SliderComponent = ({ arrImg }) => {
     const settings = {
         dots: true,
         infinite: true,
@@ -12,15 +12,16 @@ const SliderComponent = ({arrImg}) => {
         autoplay: true,
         autoplaySpeed: 2500,
     };
-    return(
+    
+    return (
         <Slider {...settings}>
-            {arrImg.map((img) => {
-                return(
-                    <Image src={img} alt="silder" preview={false} width="100%" />
-                )
+            {arrImg.map((img, index) => {
+                return (
+                    <Image key={index} src={img} alt="slider" preview={false} width="100%" />
+                );
             })}
         </Slider>
-    )
+    );
 }
 
-export default SliderComponent
+export default SliderComponent;
