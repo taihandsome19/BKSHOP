@@ -19,7 +19,7 @@ const { Search } = Input;
 const HeaderComponent = () => {
     return (
         <div>
-            <WrapperHeader gutter={20}>
+            <WrapperHeader>
                 <Col span={6}>
                     <WrapperTextHeader>BKSHOP</WrapperTextHeader>
                 </Col>

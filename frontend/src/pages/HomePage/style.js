@@ -12,7 +12,7 @@ export const WrapperTypeProduct = styled.div`
 
 export const WrapperProducts = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(5, minmax(200px, 1fr));
     gap: 10px;
     margin-top: 30px;
 `

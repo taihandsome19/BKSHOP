@@ -18,7 +18,7 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 const HomePage = () => {
     const arr = ["Tủ lạnh", "Máy giặt", "Máy lạnh", "TV"]
     return(
-        <>
+        <div style={{width:'100%'}}>
             <Helmet>
                 <title>Trang chủ - BKSHOP</title>
             </Helmet>
@@ -49,7 +49,7 @@ const HomePage = () => {
                 </div>
             </div>
             
-        </>
+        </div>
     )
 }
 
