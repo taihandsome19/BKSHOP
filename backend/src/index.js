@@ -1,13 +1,13 @@
+const path = require('path')
 const express = require("express");
-const dotenv = require("dotenv");
-dotenv.config();
-
+const routes = require("./routes");
 const app = express();
-const port = process.env.PORT || 3001;
+const port = 3001;
 
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+
+routes(app);
 
 app.listen(port, () => {
     console.log('Server is running on port ' + port);
