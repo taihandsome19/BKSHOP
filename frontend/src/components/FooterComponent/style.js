@@ -20,7 +20,7 @@ export const WrapperBox = styled.div`
 export const WrapContent = styled.div`
     display: flex;
     justify-content: space-between;
-    width: 100%;
+    width: 90%%;
     font-size: 13px;
 `;
 
