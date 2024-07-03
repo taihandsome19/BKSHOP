@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { WrapperPage, WrapperBox, ButtonSort, WrapperProducts } from "./style";
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import CardComponent from '../../components/CardComponent/CardComponent';
-import NavbarTypeComponent from '../../components/NavbarTypeComponent/NavbarTypeComponent';
 
-const ProductPages = () => {
+const SearchPage = () => {
     const [activeSort, setActiveSort] = useState(null);
 
     const handleSortClick = (sortType) => {
@@ -16,12 +15,12 @@ const ProductPages = () => {
         <HelmetProvider>
             <div>
                 <Helmet>
-                    <title>Danh mục sản phẩm - BKSHOP</title>
+                    <title>Tìm kiếm - BKSHOP</title>
                 </Helmet>
-                <NavbarTypeComponent/>
                 <WrapperPage>
                     <WrapperBox>
                         <div>
+                            <div style={{ display: "flex", fontSize: "14px", color: '#707070', marginBottom: "10px", justifyContent: "center" }}>Kết quả tìm kiếm cho từ khoá</div>
                             <div style={{ fontSize: "18px", fontWeight: '700', marginBottom: "10px" }}>Sắp xếp theo</div>
                             <div style={{ display: "flex", gap: "10px" }}>
                                 <ButtonSort
@@ -55,4 +54,4 @@ const ProductPages = () => {
     );
 };
 
-export default ProductPages;
+export default SearchPage;
