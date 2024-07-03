@@ -29,9 +29,9 @@ import {
   Wrapperswipper,
   WrapperCardItem
 } from "./style"
-import avt from "../../assets/images/avt.png";
-import bg1 from "../../assets/images/banner4.jpg";
-import bg2 from "../../assets/images/banner2.jpg";
+import avt from "../../../assets/images/avt.png";
+import bg1 from "../../../assets/images/banner4.jpg";
+import bg2 from "../../../assets/images/banner2.jpg";
 import { Link } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 
@@ -48,25 +48,31 @@ const UserPage = () => {
               <HomeOutlined style={{ fontSize: "20px", color: "#0688B4" }} />
               <WrapperTextNavMain>Trang chủ</WrapperTextNavMain>
             </WrapperBoxTextMain>
-            <Link to={'/user/info'} style={{textDecoration: "none"}}>
+            <Link to={'/user/info'} style={{ textDecoration: "none" }}>
               <WrapperBoxText>
                 <UserOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
                 <WrapperTextNav>Tài khoản của bạn</WrapperTextNav>
               </WrapperBoxText>
-  
+
             </Link>
-            <WrapperBoxText>
-              <ShopOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
-              <WrapperTextNav>Lịch sử mua hàng</WrapperTextNav>
-            </WrapperBoxText>
-            <WrapperBoxText>
-              <KeyOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
-              <WrapperTextNav>Thay đổi mật khẩu</WrapperTextNav>
-            </WrapperBoxText>
-            <WrapperBoxText>
-              <QuestionCircleOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
-              <WrapperTextNav>Hỗ trợ</WrapperTextNav>
-            </WrapperBoxText>
+            <Link to={'/user/order'} style={{ textDecoration: "none" }}>
+              <WrapperBoxText>
+                <ShopOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
+                <WrapperTextNav>Lịch sử mua hàng</WrapperTextNav>
+              </WrapperBoxText>
+            </Link>
+            <Link to={'/user/change_pass'} style={{ textDecoration: "none" }}>
+              <WrapperBoxText>
+                <KeyOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
+                <WrapperTextNav>Thay đổi mật khẩu</WrapperTextNav>
+              </WrapperBoxText>
+            </Link>
+            <Link to={'/user/support'} style={{ textDecoration: "none" }}>
+              <WrapperBoxText>
+                <QuestionCircleOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
+                <WrapperTextNav>Hỗ trợ</WrapperTextNav>
+              </WrapperBoxText>
+            </Link>
             <WrapperBoxText>
               <LogoutOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
               <WrapperTextNav>Thoát tài khoản</WrapperTextNav>
@@ -105,11 +111,8 @@ const UserPage = () => {
             </CardUpdate>
 
             <CardRecommend>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px" }}>
                 <WrapperTitle>CHƯƠNG TRÌNH NỔI BẬT</WrapperTitle>
-                <Link to={'/promotionlist'}>
-                  <WrapperText style={{ paddingRight: "20px", color: "#04297A" }}>Xem tất cả</WrapperText>
-                </Link>
               </div>
               <Wrapperswipper>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", alignContent: "center" }}>

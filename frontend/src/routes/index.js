@@ -4,11 +4,19 @@ import ProductsPage from '../pages/ProductsPage/ProductsPage'
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage'
 import SigninPage from '../pages/SigninPage/SigninPage'
 import SignupPage from '../pages/SignupPage/SignupPage'
-import UserPage from '../pages/UserPage/UserPage'
-import InfoPage from '../pages/InfoPage/InfoPage'
-import PromotionlistPage from '../pages/PromotionlistPage/PromotionlistPage'
+import UserPage from '../pages/UserPanelPage/UserPage/UserPage'
+import InfoPage from '../pages/UserPanelPage/InfoPage/InfoPage'
 import ProductDetailsPage from '../pages/ProductDetails/ProductDetailsPage'
 import CartPage from '../pages/CartPage/CartPage'
+import SearchPage from '../pages/SearchPage/SearchPage'
+import AdminHomePage from '../pages/AdminPage/AdminHome/AdminHome'
+import HistoryOrderpage from '../pages/UserPanelPage/HistoryOrderpage/HistoryOrderpage'
+import ChangePassPage from '../pages/UserPanelPage/ChangePassPage/ChangePassPage'
+import SupportPage from '../pages/UserPanelPage/SupportPage/SupportPage'
+import PaymentInfo from '../pages/PaymentPage/PaymentInfoPage'
+import Payment from '../pages/PaymentPage/PaymentPage'
+import AdminUser from '../pages/AdminPage/AdminUser/AdminUser'
+import AdminProduct from '../pages/AdminPage/AdminProduct/AdminProduct'
 
 export const routes =[
     {
@@ -45,8 +53,18 @@ export const routes =[
         isShowHeader: true
     },
     {
-        'path': '/promotionlist',
-        'page': PromotionlistPage,
+        'path': '/user/order',
+        'page': HistoryOrderpage,
+        isShowHeader: true
+    },
+    {
+        'path': '/user/change_pass',
+        'page': ChangePassPage,
+        isShowHeader: true
+    },
+    {
+        'path': '/user/support',
+        'page': SupportPage,
         isShowHeader: true
     },
     {
@@ -57,6 +75,31 @@ export const routes =[
     {
         'path': '/cart',
         'page': CartPage,
+    },
+    {
+        'path': '/cart/payment_info',
+        'page': PaymentInfo,
+    },
+    {
+        'path': '/cart/payment',
+        'page': Payment,
+    },
+    {
+        'path': '/search',
+        'page': SearchPage,
+        isShowHeader: true
+    },
+    {
+        'path': '/admin',
+        'page': AdminHomePage
+    },
+    {
+        'path': '/admin/member',
+        'page': AdminUser
+    },
+    {
+        'path': '/admin/product',
+        'page': AdminProduct
     },
     {
         'path': '*',

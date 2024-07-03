@@ -16,7 +16,8 @@ import {
 } from "./style";
 import {
     ArrowLeftOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    CloseCircleOutlined
 } from '@ant-design/icons';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
@@ -56,7 +57,7 @@ const CartPage = () => {
     const [checkedAll, setCheckedAll] = useState(false);
 
     const handleQuantityChange = (id, increment) => {
-        setProducts(products.map(product => 
+        setProducts(products.map(product =>
             product.id === id ? {
                 ...product,
                 quantity: increment ? product.quantity + 1 : Math.max(product.quantity - 1, 1)
@@ -75,7 +76,7 @@ const CartPage = () => {
     };
 
     const handleProductCheck = (id) => {
-        setProducts(products.map(product => 
+        setProducts(products.map(product =>
             product.id === id ? { ...product, checked: !product.checked } : product
         ));
     };
@@ -130,18 +131,21 @@ const CartPage = () => {
                 <WrapperPage>
                     <WrapperBox>
                         <HeaderAreaCart>
-                            <IconWrapper>
-                                <ArrowLeftOutlined style={{ fontSize: "20px" }} />
-                            </IconWrapper>
+                                <IconWrapper>
+                                    <Link to="/" style={{color: '#323232', textDecoration: "none"}}>
+                                    <ArrowLeftOutlined style={{ fontSize: "20px" }} />
+                                    </Link>
+                                </IconWrapper>
                             Giỏ hàng của bạn
                         </HeaderAreaCart>
                         {products.length === 0 ? (
-                            <div style={{textAlign: 'center', padding: '100px', fontSize: '16px', color: "#6f6f6f" }}>
-                                <div style={{paddingBottom: "5px"}}>
+                            <div style={{ textAlign: 'center', padding: '100px', fontSize: '16px', color: "#6f6f6f" }}>
+                                <CloseCircleOutlined style={{ fontSize: "40px", paddingBottom: "5px" }} />
+                                <div style={{ paddingBottom: "5px" }}>
                                     Không có sản phẩm nào trong giỏ hàng của bạn
                                 </div>
                                 <Link to="/">
-                                    <div style={{color: "#6f6f6f"}}>
+                                    <div style={{ color: "#6f6f6f" }}>
                                         Quay lại trang chủ tại đây.
                                     </div>
                                 </Link>
@@ -160,9 +164,11 @@ const CartPage = () => {
                                 </div>
                             </SelectAll>
                         )};
-                        {products.map(product => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
+                        <div style={{paddingBottom: "40px"}}>
+                            {products.map(product => (
+                                <ProductCard key={product.id} product={product} />
+                            ))}
+                        </div>
 
                         <CardBuy>
                             <div style={{ padding: "10px 10px 15px" }}>
