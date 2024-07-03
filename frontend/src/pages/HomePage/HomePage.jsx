@@ -5,50 +5,59 @@ import SliderComponent from "../../components/SliderComponent/SliderComponent";
 import CardComponent from "../../components/CardComponent/CardComponent"
 import {
     WrapperTypeProduct,
-    WrapperProducts
+    WrapperProducts,
+    WrapperPage
 } from "./style"
-import b1 from "../../assets/images/banner1.jpeg";
-import b2 from "../../assets/images/banner2.jpeg";
-import b3 from "../../assets/images/banner3.jpeg";
-import b4 from "../../assets/images/banner4.png";
-import b5 from "../../assets/images/banner5.jpeg";
-import b6 from "../../assets/images/banner6.jpeg";
+import b1 from "../../assets/images/banner1.jpg";
+import b2 from "../../assets/images/banner2.jpg";
+import b3 from "../../assets/images/banner3.png";
+import b4 from "../../assets/images/banner4.jpg";
+import b5 from "../../assets/images/banner5.png";
+import b6 from "../../assets/images/banner6.jpg";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 
 const HomePage = () => {
-    const arr = ["Tủ lạnh", "Máy giặt", "Máy lạnh", "TV"]
-    return(
-        <div style={{width:'100%'}}>
-            <Helmet>
-                <title>Trang chủ - BKSHOP</title>
-            </Helmet>
-            <div style={{padding: '0 120px'}}>
+    const arr = ["APPLE", "XIAOMI", "SAMSUNG", "OPPO", "VIVO", "TECNO", "REALME"]
+    return (
+        <div style={{ backgroundColor: "#f6f6f6", minHeight: "100vh" }}>
+            <div style={{ background: '#fff'}}>
+                <WrapperPage>
+                <div style={{width: '1200px'}}>
                 <WrapperTypeProduct>
                     {arr.map((item) => {
-                        return(
-                            <TypeProduct name={item} key={item}/>
+                        return ( 
+                            <TypeProduct name={item} key={item} />
                         )
                     })}
                 </WrapperTypeProduct>
-            </div>
-            <div id="container" style={{background: '#F5F5F5', padding: '0 120px'}}>
-                <SliderComponent arrImg={[b1,b2,b3,b4,b5,b6]} />
-                <WrapperProducts>
-                    <CardComponent/>
-                    <CardComponent/>
-                    <CardComponent/>
-                    <CardComponent/>
-                    <CardComponent/>
-                    <CardComponent/>
-                    <CardComponent/>
-                    <CardComponent/>
-                    <CardComponent/>
-                </WrapperProducts>
-                <div style={{width: '100%', display: 'flex', justifyContent: 'center', marginTop: '10px', paddingBottom: '20px'}}>
-                    <ButtonComponent />
                 </div>
+                </WrapperPage>
             </div>
-            
+            <WrapperPage>
+                <div style={{width: '1200px'}}>
+                    <Helmet>
+                        <title>Trang chủ - BKSHOP</title>
+                    </Helmet>
+         
+                    <div id="container">
+                        <SliderComponent arrImg={[b1, b2, b3, b4, b5, b6]} />
+                        <WrapperProducts>
+                            <CardComponent />
+                            <CardComponent />
+                            <CardComponent />
+                            <CardComponent />
+                            <CardComponent />
+                            <CardComponent />
+                            <CardComponent />
+                            <CardComponent />
+                            <CardComponent />
+                        </WrapperProducts>
+                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: '20px', paddingBottom: '20px' }}>
+                            <ButtonComponent />
+                        </div>
+                    </div>
+                </div>
+            </WrapperPage>
         </div>
     )
 }
