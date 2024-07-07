@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
+const routes = require('./routes');
 const app = express();
 const port = 3001;
 
@@ -24,6 +25,8 @@ app.post('/upload', upload.array('imgs', 10), (req, res) => {
 });
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+routes(app);
 
 app.listen(port, () => {
     console.log('Server is running on port ' + port);
