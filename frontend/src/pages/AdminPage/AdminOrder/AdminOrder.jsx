@@ -7,7 +7,7 @@ import SlideBarComponent from '../../../components/AdminComponent/SlideBar/Slide
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
 import TableComponent from '../../../components/TableComponent/TableComponent';
 
-const AdminUser = () => {
+const AdminOrder = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [data, setData] = useState([]);
@@ -44,7 +44,7 @@ const AdminUser = () => {
   const columns = [
     {
       name: "id",
-      label: "S.No",
+      label: "Mã đơn hàng",
       options: {
         sortCompare: (order) => {
           return (a, b) => {
@@ -63,9 +63,9 @@ const AdminUser = () => {
       },
     },
     { name: 'name', label: 'Họ và tên' },
-    { name: 'sex', label: 'Giới tính' },
-    { name: 'email', label: 'Địa chỉ mail' },
-    { name: 'phone', label: 'Số điện thoại' },
+    { name: 'product', label: 'Tên sản phẩm' },
+    { name: 'count', label: 'Số lượng' },
+    { name: 'state', label: 'Trạng thái' },
     {
       name: 'action',
       label: 'Hành động',
@@ -85,15 +85,15 @@ const AdminUser = () => {
   return (
     <HelmetProvider>
       <Helmet>
-        <title>Khách hàng - BKShopMyAdmin</title>
+        <title>Đơn hàng - BKShopMyAdmin</title>
       </Helmet>
       <Container>
-        <SlideBarComponent statenow="khachhang" />
+        <SlideBarComponent statenow="donhang" />
         <RightContainer>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#FBFCFC', paddingTop: '70px' }}>
             <HeaderComponent />
             <div style={{ flex: '1', padding: '20px 30px' }}>
-              <TableComponent columns={columns} data={data} title="Danh sách khách hàng" />
+              <TableComponent columns={columns} data={data} title="Danh sách đơn hàng" />
               <Modal
                 title="Thông tin chi tiết"
                 visible={isModalVisible}
@@ -106,9 +106,9 @@ const AdminUser = () => {
               >
                 {selectedRowData && (
                   <div>
-                    <p><strong>S.No:</strong> {selectedRowData[0]}</p>
+                    <p><strong>Mã đơn hàng</strong> {selectedRowData[0]}</p>
                     <p><strong>Họ và tên:</strong> {selectedRowData[1]}</p>
-                    <p><strong>Giới tính:</strong> {selectedRowData[2]}</p>
+                    <p><strong>Tên sản phẩm</strong> {selectedRowData[2]}</p>
                     <p><strong>Địa chỉ mail:</strong> {selectedRowData[3]}</p>
                     <p><strong>Số điện thoại:</strong> {selectedRowData[4]}</p>
                   </div>
@@ -125,4 +125,4 @@ const AdminUser = () => {
   );
 };
 
-export default AdminUser;
+export default AdminOrder;

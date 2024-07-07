@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
 import {
     WrapContent,
     RightContent,
     FooterItem,
     WrapperPage,
     WrapperBox
-} from './style'
+} from './style';
 
 const FooterComponent = () => {
     return (
@@ -24,7 +24,7 @@ const FooterComponent = () => {
                 </WrapContent>
             </WrapperBox>
         </WrapperPage>
-    )
+    );
 }
 
-export default FooterComponent
+export default FooterComponent;

@@ -17,6 +17,7 @@ import PaymentInfo from '../pages/PaymentPage/PaymentInfoPage'
 import Payment from '../pages/PaymentPage/PaymentPage'
 import AdminUser from '../pages/AdminPage/AdminUser/AdminUser'
 import AdminProduct from '../pages/AdminPage/AdminProduct/AdminProduct'
+import AdminOrder from '../pages/AdminPage/AdminOrder/AdminOrder'
 
 export const routes =[
     {
@@ -100,6 +101,10 @@ export const routes =[
     {
         'path': '/admin/product',
         'page': AdminProduct
+    },
+    {
+        'path': '/admin/order',
+        'page': AdminOrder
     },
     {
         'path': '*',

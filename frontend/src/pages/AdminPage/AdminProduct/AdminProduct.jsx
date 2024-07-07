@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Modal, Button, Input, Form, Select, Upload } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined } from '@ant-design/icons';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
 import TableComponent from '../../../components/TableComponent/TableComponent';
 import { ButtonComfirm } from './style';
+import axios from 'axios';
+import TextArea from 'antd/es/input/TextArea';
 
 const { Option } = Select;
 
@@ -17,7 +19,9 @@ const AdminProduct = () => {
   const [productData, setProductData] = useState([]);
   const [brands, setBrands] = useState(['Apple', 'Samsung', 'Xiaomi']); // Example brands
   const [newBrand, setNewBrand] = useState('');
-  const [colorsAdded, setColorsAdded] = useState(false);
+  const [colors, setColors] = useState([]);
+  const [storages, setStorages] = useState([]);
+  const [fileList, setFileList] = useState([]);
   const [form] = Form.useForm();
 
   const showModal = (rowData) => {
@@ -38,25 +42,62 @@ const AdminProduct = () => {
     setIsAddModalVisible(false);
   };
 
-  const handleAddProduct = (values) => {
-    const newProduct = {
-      id: productData.length + 1,
-      name: values.name,
-      brand: values.brand,
-      colors: values.colors.map((colorObj) => ({
-        color: colorObj.color,
-        image: colorObj.image.file,
-        details: colorObj.details.map(detail => ({
-          storage: detail.storage,
-          quantity: detail.quantity
-        }))
-      }))
-    };
-    setProductData([...productData, newProduct]);
-    setIsAddModalVisible(false);
-    form.resetFields();
-    setColorsAdded(false);
+  const handleAddProduct = async (values) => {
+    const formData = new FormData();
+    fileList.forEach(file => {
+      formData.append('imgs', file.originFileObj);
+    });
+
+    try {
+      const uploadResponse = await axios.post('http://localhost:3001/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const imageUrls = uploadResponse.data.fileUrls;
+
+      const variants = values.variants || [];
+  
+      const quantities = {};
+      colors.forEach(color => {
+        quantities[color] = {};
+        storages.forEach(storage => {
+          quantities[color][storage] = 0;
+        });
+      });
+
+      Object.keys(variants).forEach(key => {
+        const variant = variants[key];
+        const { color, storage, quantity } = variant;
+        if (colors.includes(color) && storages.includes(storage)) {
+          quantities[color][storage] = quantity;
+        }
+      });
+
+      const newProduct = {
+        id: Date.now(),
+        name: values.name,
+        brand: values.brand,
+        description: values.description,
+        price: values.price,
+        colors,
+        storages,
+        images: imageUrls,
+        quantities,
+      };
+
+      const response = await axios.post('/api/admin/product/add', newProduct);
+      console.log('Response:', response.data);
+      setProductData([...productData, newProduct]);
+      setIsAddModalVisible(false);
+      form.resetFields();
+      setFileList([]);
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
+
+
 
   const handleAddBrand = () => {
     if (newBrand && !brands.includes(newBrand)) {
@@ -64,6 +105,14 @@ const AdminProduct = () => {
       form.setFieldsValue({ brand: newBrand });
       setNewBrand('');
     }
+  };
+
+  const handleColorChange = (value) => {
+    setColors(value.split(',').map(item => item.trim()));
+  };
+
+  const handleStorageChange = (value) => {
+    setStorages(value.split(',').map(item => item.trim()));
   };
 
   const columns = [
@@ -190,7 +239,22 @@ const AdminProduct = () => {
                       ))}
                     </Select>
                   </Form.Item>
-
+                  <Form.Item
+                    name="decription"
+                    label="Mô tả"
+                    rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
+                    labelAlign="left"
+                  >
+                    <TextArea minRows="3" maxRows="5" />
+                  </Form.Item>
+                  <Form.Item
+                    name="price"
+                    label="Giá tiền"
+                    rules={[{ required: true, message: 'Vui lòng nhập giá sản phẩm' }]}
+                    labelAlign="left"
+                  >
+                    <Input />
+                  </Form.Item>
                   <Form.Item
                     name="color"
                     label="Màu sắc"
@@ -200,11 +264,11 @@ const AdminProduct = () => {
                     <Input
                       placeholder="Nhập mỗi loại cách nhau dấu phẩy"
                       autoSize={{ minRows: 1, maxRows: 2 }}
+                      onBlur={(e) => handleColorChange(e.target.value)}
                     />
                   </Form.Item>
-
                   <Form.Item
-                    name="storge"
+                    name="storage"
                     label="Dung lượng"
                     rules={[{ required: true, message: 'Vui lòng thêm dung lượng' }]}
                     labelAlign="left"
@@ -212,160 +276,57 @@ const AdminProduct = () => {
                     <Input
                       placeholder="Nhập mỗi loại cách nhau dấu phẩy"
                       autoSize={{ minRows: 1, maxRows: 2 }}
+                      onBlur={(e) => handleStorageChange(e.target.value)}
                     />
                   </Form.Item>
-
-                  <Form.List name="colors">
+                  <Form.Item
+                    name="images"
+                    label="Hình ảnh"
+                    labelAlign="left"
+                  >
+                    <Upload
+                      multiple
+                      listType="picture"
+                      fileList={fileList}
+                      onChange={({ fileList }) => setFileList(fileList)}
+                      beforeUpload={() => false}  // Prevent automatic upload
+                    >
+                      <Button icon={<UploadOutlined />}>Tải lên hình ảnh</Button>
+                    </Upload>
+                  </Form.Item>
+                  <Form.List name="variants">
                     {(fields, { add, remove }) => (
                       <>
-                        {fields.map((field, index) => (
-                          <div
-                            key={field.key}
-                            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 8 }}
-                          >
-                            <Form.Item
-                              {...field}
-                              name={[field.name, 'color']}
-                              fieldKey={[field.fieldKey, 'color']}
-                              rules={[{ required: true, message: 'Vui lòng nhập màu sắc' }]}
-                              style={{ flex: 1, marginRight: 8 }}
-                              labelAlign="left"
-                            >
-                              <Input placeholder="Màu sắc" />
-                            </Form.Item>
-                            <Form.Item
-                              {...field}
-                              name={[field.name, 'image']}
-                              fieldKey={[field.fieldKey, 'image']}
-                              rules={[{ required: true, message: 'Vui lòng upload hình ảnh' }]}
-                              valuePropName="file"
-                              getValueFromEvent={(e) => {
-                                if (Array.isArray(e)) {
-                                  return e;
-                                }
-                                return e && e.fileList[0];
-                              }}
-                              style={{ flex: 1, textAlign: 'center' }}
-                              labelAlign="left"
-                            >
-                              <Upload
-                                name="image"
-                                listType="picture-card"
-                                beforeUpload={() => false}
-                                maxCount={1}
-                                onChange={(info) => {
-                                  const newFileList = info.fileList.slice(-1);
-                                  const newColors = form.getFieldValue('colors');
-                                  newColors[index].image = newFileList[0];
-                                  form.setFieldsValue({ colors: newColors });
-                                  setColorsAdded(newColors.length > 0);
-                                }}
-                                style={{ width: 100, height: 100 }}
+                        {colors.map(color => (
+                          storages.map(storage => (
+                            <div key={`${color}-${storage}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Form.Item
+                                name={[`${color}-${storage}`, 'color']}
+                                initialValue={color}
+                                style={{ flex: 1, marginRight: 8 }}
                               >
-                                {form.getFieldValue(['colors', index, 'image']) ? null : (
-                                  <div>
-                                    <PlusOutlined />
-                                    <div style={{ marginTop: 8 }}>Upload</div>
-                                  </div>
-                                )}
-                              </Upload>
-                            </Form.Item>
-                            <Button
-                              type="link"
-                              onClick={() => {
-                                remove(field.name);
-                                const newColors = form.getFieldValue('colors');
-                                setColorsAdded(newColors.length > 0);
-                              }}
-                              style={{ flex: 'none' }}
-                            >
-                              Xóa màu sắc
-                            </Button>
-                          </div>
+                                <Input value={color} disabled style={{ width: '151.8px' }} />
+                              </Form.Item>
+                              <Form.Item
+                                name={[`${color}-${storage}`, 'storage']}
+                                initialValue={storage}
+                                style={{ flex: 1, marginRight: 8 }}
+                              >
+                                <Input value={storage} disabled style={{ width: '151.8px' }} />
+                              </Form.Item>
+                              <Form.Item
+                                name={[`${color}-${storage}`, 'quantity']}
+                                rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]}
+                                style={{ flex: 1, marginRight: 8 }}
+                              >
+                                <Input placeholder="Số lượng" style={{ width: '151.8px' }} />
+                              </Form.Item>
+                            </div>
+                          ))
                         ))}
-                        <Form.Item wrapperCol={{ span: 24 }}>
-                          <Button
-                            type="dashed"
-                            onClick={() => add()}
-                            block
-                            icon={<PlusOutlined />}
-                          >
-                            Thêm màu sắc
-                          </Button>
-                        </Form.Item>
                       </>
                     )}
                   </Form.List>
-
-                  {colorsAdded && (
-                    <Form.List name="details">
-                      {(fields, { add, remove }) => (
-                        <>
-                          {fields.map((field) => (
-                            <div
-                              key={field.key}
-                              style={{ display: 'flex', marginBottom: 8, alignItems: 'center', justifyContent: 'center' }}
-                            >
-                              <Form.Item
-                                {...field}
-                                name={[field.name, 'color']}
-                                fieldKey={[field.fieldKey, 'color']}
-                                rules={[{ required: true, message: 'Vui lòng chọn màu sắc' }]}
-                                style={{ flex: 1, marginRight: 8 }}
-                                labelAlign="left"
-                              >
-                                <Select placeholder="Chọn màu sắc">
-                                  {form.getFieldValue('colors') && form.getFieldValue('colors').map((color, index) => (
-                                    <Option key={index} value={color.color}>
-                                      {color.color}
-                                    </Option>
-                                  ))}
-                                </Select>
-                              </Form.Item>
-                              <Form.Item
-                                {...field}
-                                name={[field.name, 'storage']}
-                                fieldKey={[field.fieldKey, 'storage']}
-                                rules={[{ required: true, message: 'Vui lòng nhập dung lượng' }]}
-                                style={{ flex: 1, marginRight: 8 }}
-                                labelAlign="left"
-                              >
-                                <Input placeholder="Dung lượng" />
-                              </Form.Item>
-                              <Form.Item
-                                {...field}
-                                name={[field.name, 'quantity']}
-                                fieldKey={[field.fieldKey, 'quantity']}
-                                rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]}
-                                style={{ flex: 1, marginRight: 8 }}
-                                labelAlign="left"
-                              >
-                                <Input placeholder="Số lượng" />
-                              </Form.Item>
-                              <Button
-                                type="link"
-                                onClick={() => remove(field.name)}
-                                style={{ flex: 'none' }}
-                              >
-                                Xóa
-                              </Button>
-                            </div>
-                          ))}
-                          <Form.Item wrapperCol={{ span: 24 }}>
-                            <Button
-                              type="dashed"
-                              onClick={() => add()}
-                              block
-                              icon={<PlusOutlined />}
-                            >
-                              Thêm dung lượng và số lượng
-                            </Button>
-                          </Form.Item>
-                        </>
-                      )}
-                    </Form.List>
-                  )}
-
                   <Form.Item wrapperCol={{ span: 24 }}>
                     <Button type="primary" htmlType="submit" block>
                       Thêm

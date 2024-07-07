@@ -14,7 +14,6 @@ export const WrapperBox = styled.div`
     width: 1200px;
     padding-top: 20px;
     padding-bottom: 20px;
-    display: flex;
 `
 
 export const WrapContent = styled.div`
