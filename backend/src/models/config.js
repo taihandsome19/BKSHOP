@@ -10,6 +10,7 @@ var initializeApp = require('firebase/app')
 const firebaseConfig = {
   apiKey: "AIzaSyAt_Xn_NCaIHvofXnmBs4DtGcqEpNkRIis",
   authDomain: "co3103.firebaseapp.com",
+  databaseURL: "https://co3103-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "co3103",
   storageBucket: "co3103.appspot.com",
   messagingSenderId: "994368899903",
