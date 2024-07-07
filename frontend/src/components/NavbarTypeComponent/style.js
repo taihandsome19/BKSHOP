@@ -11,7 +11,7 @@ export const WrapperTypeProduct = styled.div`
     display: flex;
     font-size: 13px;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
     padding: 10px 0;
     height: 30px;
     font-family: 'Roboto', sans-serif;

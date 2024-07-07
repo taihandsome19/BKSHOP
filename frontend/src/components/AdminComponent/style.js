@@ -14,7 +14,7 @@ export const SlideBarContainer = styled.div`
 export const FixedHeader = styled.div`
   position: fixed;
   top: 0;
-  left: 270px;
+  left: 271px;
   right: 0px;
   background-color: #fff;
   height: 70px;

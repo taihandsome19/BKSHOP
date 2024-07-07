@@ -1,12 +1,24 @@
 import styled from "styled-components";
 import { Card } from 'antd';
 
-
 export const WrapperCard = styled(Card)`
+    position: relative;
     border-radius: 4px;
     border: none;
-    padding: 10px;
+    padding: 30px 10px 5px 5px;
     box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .1), 0 2px 6px 2px rgba(60, 64, 67, .15);
+`
+
+export const Tag = styled.div`
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: #0688B4;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
 `
 
 export const WrapperName = styled.div`
@@ -29,6 +41,6 @@ export const WrapperPrice = styled.div`
     text-align: left;
     font-size: 16px;
     line-height: 150%;
-    font-weight: 600;
-    color: rgb(255, 66, 78);
+    font-weight: bold;
+    color: #0688b4;
 `

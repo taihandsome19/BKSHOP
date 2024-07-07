@@ -7,11 +7,13 @@ import { Link } from 'react-router-dom';
 const SlideBarAdmin = ({ statenow }) => {
   return (
     <SlideBarContainer>
+      <Link to="/admin" style={{ textDecoration: "none" }}>
       <div style={{ display: 'flex', justifyContent: 'center', height: '70px', alignItems: 'center' }}>
         <div style={{ fontSize: "22px", fontWeight: "bold", color: '#12142D' }}>
           BKShopMyAdmin
         </div>
       </div>
+      </Link>
       <div style={{ padding: '0 20px', height: '100vh' }}>
         <div style={{ paddingTop: '30px', fontSize: '15px', fontWeight: 'bold', color: '#2A3546', paddingLeft: '10px', paddingBottom: '5px' }}>
           TRANG CHỦ
