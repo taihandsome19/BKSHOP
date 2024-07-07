@@ -1,26 +1,44 @@
-const db = require('../models/database');
+const { db, ref, onValue } = require('../models/database');
 
-const overview = async () => {
-    var arr_name = [];
-    var arr_price = [];
-    var arr_id = [];
+class ProductService {
+    overview = async () => {
+        const dbRef = ref(db, `Products`);
+        return new Promise((resolve, reject) => {
+            onValue(dbRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const products = snapshot.val();
+                    const productInfo = Object.keys(products).map(productId => ({
+                        key: productId,
+                        name: products[productId].Name,
+                        price: products[productId].Price,
+                        image: products[productId].Image[0]
+                    }));
+                    console.log(products)
+                    resolve(productInfo);
+                } else {
+                    resolve(null);
+                }
+            }, (error) => reject(error))
+        });
+    }
 
-    db.get((db.dbRef, `/Products/`))
-        .then((snapshot) => {
-            console.log("AA")
-            
-            if(snapshot) {
-                arr_name.push(snapshot.Name);
-                arr_price.push(snapshot.Price);
-                arr_id.push(snapshot.key);
-            }
-        })
-        .catch((err) => {
-            return err;
-        })
-    return "aaa";
+    productDetail = async (product_id) => {
+        const dbRef = ref(db, `Products/${product_id}`);
+        return new Promise((resolve, reject) => {
+            onValue(dbRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const product = snapshot.val();
+                    console.log(product)
+                    // resolve({ // optional
+                    //     product_id: product_id,
+                    //     ...product});
+                    resolve(product);
+                } else {
+                    resolve(null);
+                }
+            }, (error) => reject(error))
+        });
+    }
 }
 
-module.exports = {
-    overview
-}
+module.exports = new ProductService

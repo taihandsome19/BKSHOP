@@ -1,15 +1,25 @@
 const UserService = require('../services/UserService')
-const createUser = (req, res) => {
-    try {
-        console.log(req.body);
 
-    } catch(err) {
-        return res.status(404).json({
-            message: err
-        });
+class UserController {
+    info = async (req, res) => {
+        try {
+            return res.status(200).send("NULL");
+        } catch(err) {
+            return res.status(404).json({
+                message: err
+            });
+        }
+    }
+
+    order = async (req, res) => {
+        try {
+            return res.status(200).send("NULL");
+        } catch(err) {
+            return res.status(404).json({
+                message: err
+            });
+        }
     }
 }
 
-module.exports = {
-    createUser
-}
+module.exports = new UserController
