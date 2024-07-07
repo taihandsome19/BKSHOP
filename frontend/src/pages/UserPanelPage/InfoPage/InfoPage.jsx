@@ -33,7 +33,7 @@ import {
   WrapperButtonSave,
   WrapperTitleRow
 } from "./style";
-import avt from "../../assets/images/avt.png";
+import avt from "../../../assets/images/avt.png";
 import { Link } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 import { Input } from 'antd';
@@ -64,19 +64,24 @@ const UserPage = () => {
               <UserOutlined style={{ fontSize: "20px", color: "#0688B4" }} />
               <WrapperTextNavMain>Tài khoản của bạn</WrapperTextNavMain>
             </WrapperBoxTextMain>
-
+            <Link to={'/user/order'} style={{textDecoration: "none"}}>
             <WrapperBoxText>
               <ShopOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
               <WrapperTextNav>Lịch sử mua hàng</WrapperTextNav>
             </WrapperBoxText>
+            </Link>
+            <Link to={'/user/change_pass'} style={{ textDecoration: "none" }}>
             <WrapperBoxText>
               <KeyOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
               <WrapperTextNav>Thay đổi mật khẩu</WrapperTextNav>
             </WrapperBoxText>
+            </Link>
+            <Link to={'/user/support'} style={{ textDecoration: "none" }}>
             <WrapperBoxText>
               <QuestionCircleOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
               <WrapperTextNav>Hỗ trợ</WrapperTextNav>
             </WrapperBoxText>
+            </Link>
             <WrapperBoxText>
               <LogoutOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
               <WrapperTextNav>Thoát tài khoản</WrapperTextNav>

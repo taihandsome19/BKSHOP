@@ -1,10 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-import TypeProduct from "../../components/TypeProduct/TypeProduct";
 import SliderComponent from "../../components/SliderComponent/SliderComponent";
 import CardComponent from "../../components/CardComponent/CardComponent"
 import {
-    WrapperTypeProduct,
     WrapperProducts,
     WrapperPage
 } from "./style"
@@ -15,24 +13,12 @@ import b4 from "../../assets/images/banner4.jpg";
 import b5 from "../../assets/images/banner5.png";
 import b6 from "../../assets/images/banner6.jpg";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
+import NavbarTypeComponent from "../../components/NavbarTypeComponent/NavbarTypeComponent";
 
 const HomePage = () => {
-    const arr = ["APPLE", "XIAOMI", "SAMSUNG", "OPPO", "VIVO", "TECNO", "REALME"]
     return (
         <div style={{ backgroundColor: "#f6f6f6", minHeight: "100vh" }}>
-            <div style={{ background: '#fff'}}>
-                <WrapperPage>
-                <div style={{width: '1200px'}}>
-                <WrapperTypeProduct>
-                    {arr.map((item) => {
-                        return ( 
-                            <TypeProduct name={item} key={item} />
-                        )
-                    })}
-                </WrapperTypeProduct>
-                </div>
-                </WrapperPage>
-            </div>
+            <NavbarTypeComponent />
             <WrapperPage>
                 <div style={{width: '1200px'}}>
                     <Helmet>
