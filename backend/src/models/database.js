@@ -1,6 +1,6 @@
 const { fb_app } = require("./config")
-const { getDatabase, ref, get, child } = require("firebase/database");
+const { getDatabase, ref, set, get, child, onValue } = require("firebase/database");
 
 const db = getDatabase(fb_app);
-const dbRef = ref(db);
-module.exports = { db, dbRef, get, child };
+
+module.exports = { db, ref, get, set, child, onValue };

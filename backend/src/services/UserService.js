@@ -1,13 +1,7 @@
-const createUser = () => {
-    return new Promise((request, reject) => {
-        try {
+const { db, ref, get, onValue } = require('../models/database');
 
-        } catch(err) {
-            reject(err);
-        }
-    })
+class UserService {
+    
 }
 
-module.exports = {
-    createUser
-}
+module.exports = new UserService
