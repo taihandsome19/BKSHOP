@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Image, Input, Button, message } from 'antd';
 import bg from "../../assets/images/bglogin.jpg";
 import icon from "../../assets/images/iconlogin.png";
-import { 
+import {
   WrapperContainerLeft,
   WrapperContainerRight,
   WrapperTitle,
@@ -12,9 +12,18 @@ import {
 } from './style';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet'; 
 
-const SigninPage = () => {
+const SigninPage = () => { 
+  useEffect(() => {
+    const isLogged = localStorage.getItem("isLogged");
+    if (isLogged === 'true') {
+      window.location.href = '/';
+    }
+  }, []);
+
+  const [loading, setLoading] = useState(false);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -44,14 +53,30 @@ const SigninPage = () => {
     }
 
     try {
-      const response = await axios.post('/api/login', { email, password });
+      setLoading(true);
+
+      const response = await axios.post('http://localhost:3001/auth/log_in', { email, password });
+      console.log(response.data);
+
       if (response.status === 200) {
         message.success('Đăng nhập thành công');
+
+        const { Name, Email } = response.data;
+        localStorage.setItem("isLogged", true);
+        localStorage.setItem("User_name", Name);
+        localStorage.setItem("User_email", Email);
+        localStorage.setItem("User_cart", 0);
+        
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
       } else {
         message.error('Đăng nhập thất bại');
       }
     } catch (error) {
       message.error('Có lỗi xảy ra khi đăng nhập');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,9 +110,9 @@ const SigninPage = () => {
           </div>
           <div>
             <WrapperTextSmall>Email</WrapperTextSmall>
-            <Input 
-              placeholder="Vui lòng nhập email" 
-              value={email} 
+            <Input
+              placeholder="Vui lòng nhập email"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               ref={emailRef}
             />
@@ -102,20 +127,20 @@ const SigninPage = () => {
               ref={passwordRef}
             />
           </div>
-          <Button type="primary" onClick={handleSubmit}>
+          <Button type="primary" loading={loading} onClick={handleSubmit}>
             Đăng nhập
           </Button>
-          <div style={{flexDirection: 'row', display: 'flex', gap: '5px'}}>
+          <div style={{ flexDirection: 'row', display: 'flex', gap: '5px' }}>
             <WrapperTextSmall>Bạn chưa có tài khoản?</WrapperTextSmall>
-            <Link to="/register">
+            <Link to="/auth/sign_up">
               <WrapperTextBlue>Đăng ký ngay!</WrapperTextBlue>
             </Link>
           </div>
         </WrapperContainerLeft>
         <WrapperContainerRight>
           <WrapperTitle>Xin chào!</WrapperTitle>
-          <WrapperTextSmall style={{textAlign: 'center', padding: '5px 20px'}}>Chào mừng bạn đến cửa hàng điện thoại chất lượng nhất thị trường.</WrapperTextSmall>
-          <Image src={icon} preview={false} alt="image-logo" width="200px" height="200px"/>
+          <WrapperTextSmall style={{ textAlign: 'center', padding: '5px 20px' }}>Chào mừng bạn đến cửa hàng điện thoại chất lượng nhất thị trường.</WrapperTextSmall>
+          <Image src={icon} preview={false} alt="image-logo" width="200px" height="200px" />
         </WrapperContainerRight>
       </div>
     </div>
