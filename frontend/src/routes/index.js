@@ -18,10 +18,15 @@ import Payment from '../pages/PaymentPage/PaymentPage'
 import AdminUser from '../pages/AdminPage/AdminUser/AdminUser'
 import AdminProduct from '../pages/AdminPage/AdminProduct/AdminProduct'
 import AdminOrder from '../pages/AdminPage/AdminOrder/AdminOrder'
+import { Navigate } from 'react-router-dom'; 
 
 export const routes =[
     {
         'path': '/',
+        page: () => <Navigate to="/home" />
+    },
+    {
+        'path': '/home',
         'page': HomePage,
         isShowHeader: true
     },
@@ -36,11 +41,11 @@ export const routes =[
         isShowHeader: true
     },
     {
-        'path': '/login',
+        'path': '/auth/log_in',
         'page': SigninPage,
     },
     {
-        'path': '/register',
+        'path': '/auth/sign_up',
         'page': SignupPage,
     },
     {

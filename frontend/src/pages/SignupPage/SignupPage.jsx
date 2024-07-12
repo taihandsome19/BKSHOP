@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect} from 'react';
 import axios from 'axios';
 import { Image, Input, Button, message } from 'antd';
 import bg from "../../assets/images/bglogin.jpg";
@@ -15,6 +15,13 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 const SignupPage = () => {
+  useEffect(() => {
+    const isLogged = localStorage.getItem("isLogged");
+    if (isLogged === 'true') {
+      window.location.href = '/';
+    }
+  }, []);
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -62,9 +69,19 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await axios.post('/api/register', { name, email, password });
+      const response = await axios.post('http://localhost:3001/auth/sign_up', { name, email, password });
       if (response.status === 200) {
         message.success('Đăng ký thành công');
+
+        localStorage.setItem("isLogged", true);
+        localStorage.setItem("User_name", name);
+        localStorage.setItem("User_email", email);
+        localStorage.setItem("User_cart", 0);
+        
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+
       } else {
         message.error('Đăng ký thất bại');
       }
@@ -134,7 +151,7 @@ const SignupPage = () => {
           </Button>
           <div style={{flexDirection: 'row', display: 'flex', gap: '5px'}}>
             <WrapperTextSmall>Bạn đã có tài khoản?</WrapperTextSmall>
-            <Link to="/login">
+            <Link to="/auth/log_in">
               <WrapperTextBlue>Đăng nhập ngay!</WrapperTextBlue>
             </Link>
           </div>
