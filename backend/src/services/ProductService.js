@@ -2,16 +2,16 @@ const { db, ref, onValue } = require('../models/database');
 
 class ProductService {
     overview = async () => {
-        const dbRef = ref(db, `Products`);
+        const dbRef = ref(db, `products`);
         return new Promise((resolve, reject) => {
             onValue(dbRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const products = snapshot.val();
                     const productInfo = Object.keys(products).map(productId => ({
-                        key: productId,
-                        name: products[productId].Name,
-                        price: products[productId].Price,
-                        image: products[productId].Image[0]
+                        productId: productId,
+                        name: products[productId].name,
+                        price: products[productId].price,
+                        image: products[productId].image[0]
                     }));
                     // console.log(products)
                     resolve(productInfo);
@@ -23,12 +23,12 @@ class ProductService {
     }
 
     productDetail = async (product_id) => {
-        const dbRef = ref(db, `Products/${product_id}`);
+        const dbRef = ref(db, `products/${product_id}`);
         return new Promise((resolve, reject) => {
             onValue(dbRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const product = snapshot.val();
-                    console.log(product)
+                    // console.log(product)
                     // resolve({ // optional
                     //     product_id: product_id,
                     //     ...product});
@@ -41,20 +41,20 @@ class ProductService {
     }
 
     productBrand = async (brand) => {
-        const dbRef = ref(db, `Products`);
+        const dbRef = ref(db, `products`);
         return new Promise((resolve, reject) => {
             onValue(dbRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const products = snapshot.val();
                     const brandProductKeys = Object.keys(products).filter(key => products[key].Supplier === brand)
                     .map(productId => ({
-                        key: productId,
-                        name: products[productId].Name,
-                        price: products[productId].Price,
-                        image: products[productId].Image[0]
+                        productId: productId,
+                        name: products[productId].name,
+                        price: products[productId].price,
+                        image: products[productId].image[0]
                     }));
                     console.log({...brandProductKeys})
-                    resolve(brandProduct);
+                    resolve(brandProductKeys);
                 } else {
                     resolve(null);
                 }

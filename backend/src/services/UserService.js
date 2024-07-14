@@ -5,7 +5,7 @@ class UserService {
     info = async () => {
         const uid = await auth.currentUser.uid;
         console.log(uid)
-        const dbRef = ref(db, `Users/${uid}`);
+        const dbRef = ref(db, `users/${uid}`);
         return new Promise((resolve, reject) => {
             onValue(dbRef, (snapshot) => {
                 if (snapshot.exists()) {
