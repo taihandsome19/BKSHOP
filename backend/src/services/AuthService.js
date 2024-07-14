@@ -13,16 +13,15 @@ class AuthService {
                     createUserWithEmailAndPassword(auth, email, password)
                     .then((userCredential) => {
                         const uid = userCredential.user.uid;
-                        const userRef = child(ref(db, "Users"), `${uid}`);
+                        const userRef = child(ref(db, "users"), `${uid}`);
                         set(userRef, {
-                            Infor: {
-                                Name: name,
-                                PhoneNum: "",
-                                Email: email,
-                                Address: ""
+                            infor: {
+                                name: name,
+                                phonenum: "",
+                                email: email,
+                                address: ""
                             },
-                            OrderList: "",
-                            Role: "user"
+                            orderList: ""
                         });
                         // console.log(`Đăng ký thành công. UID: ${uid}`);
                         resolve({status: true});
@@ -51,14 +50,14 @@ class AuthService {
         return new Promise((resolve, reject) => {
             signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                const dbRef = ref(db, `Users/${userCredential.user.uid}`);
+                const dbRef = ref(db, `users/${userCredential.user.uid}`);
                 onValue(dbRef, (snapshot) => {
                     if (snapshot.exists()) {
                         const products = snapshot.val();
                         resolve({
                             status: true,
-                            name: products.Infor.Name,
-                            email: products.Infor.Email
+                            name: products.infor.name,
+                            email: products.infor.email
                         });
                     } else {
                         resolve({status: false});
@@ -97,8 +96,8 @@ class AuthService {
                     .then(() => {
                         console.log("Password updated successfully.");
                         resolve({
-                            Email: user.email,
-                            Password: newPassword
+                            email: user.email,
+                            password: newPassword
                         })
                     })
                     .catch((error) => {
