@@ -8,12 +8,14 @@ class AuthService {
             fetchSignInMethodsForEmail(auth, email)//Check email đã đk hay ch?
             .then((signInMethods) => {
                 if(signInMethods.length > 0) { //Email đã đăng ký
-                    reject({status: false});
+                    resolve({status: false});
                 } else {
                     createUserWithEmailAndPassword(auth, email, password)
                     .then((userCredential) => {
                         const uid = userCredential.user.uid;
                         const userRef = child(ref(db, "users"), `${uid}`);
+                        const orderRef = child(ref(db, "orders"), `${uid}`);
+                        const cartRef = child(ref(db, "carts"), `${uid}`);
                         set(userRef, {
                             infor: {
                                 name: name,
@@ -21,8 +23,11 @@ class AuthService {
                                 email: email,
                                 address: ""
                             },
-                            orderList: ""
+                            orderlist: "",
+                            role: "user"
                         });
+                        set(orderRef, "");
+                        set(cartRef, "");
                         // console.log(`Đăng ký thành công. UID: ${uid}`);
                         resolve({status: true});
                     })
