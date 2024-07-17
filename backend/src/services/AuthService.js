@@ -27,7 +27,7 @@ class AuthService {
                         resolve({status: true});
                     })
                     .catch((error) => {
-                        reject(error);
+                        resolve({status: false, error: error});
                     })
                 }
             })
@@ -65,7 +65,7 @@ class AuthService {
                 }, (error) => reject(error));
             })
             .catch((error) => {
-                reject(error);
+                resolve({status: false, error: error});
             })
         })
     }
@@ -113,6 +113,20 @@ class AuthService {
             }
         })
     }
+
+    loginState = () => {
+        return new Promise((resolve) => {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    resolve({status: true});
+                } else {
+                    resolve({status: false});
+                }
+            }, (error) => {
+                resolve({status: false, error: error});
+            });
+        });
+    };
 }
 
 module.exports = new AuthService

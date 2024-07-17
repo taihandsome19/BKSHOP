@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect} from 'react';
+import React, { useState, useRef} from 'react';
 import axios from 'axios';
 import { Image, Input, Button, message } from 'antd';
 import bg from "../../assets/images/bglogin.jpg";
@@ -15,12 +15,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 const SignupPage = () => {
-  useEffect(() => {
-    const isLogged = localStorage.getItem("isLogged");
-    if (isLogged === 'true') {
-      window.location.href = '/';
-    }
-  }, []);
+  const [loading, setLoading] = useState(false);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -68,9 +63,11 @@ const SignupPage = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
       const response = await axios.post('http://localhost:3001/auth/sign_up', { name, email, password });
-      if (response.status === 200) {
+      if (response.data.status === true) {
         message.success('Đăng ký thành công');
 
         localStorage.setItem("isLogged", true);
@@ -83,10 +80,12 @@ const SignupPage = () => {
         }, 2000);
 
       } else {
-        message.error('Đăng ký thất bại');
+        message.error('Email đã tồn tại trên hệ thống');
       }
     } catch (error) {
       message.error('Có lỗi xảy ra khi đăng ký');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,7 +145,7 @@ const SignupPage = () => {
               ref={passwordRef}
             />
           </div>
-          <Button type="primary" onClick={handleSubmit}>
+          <Button type="primary" loading={loading} onClick={handleSubmit}>
             Đăng ký
           </Button>
           <div style={{flexDirection: 'row', display: 'flex', gap: '5px'}}>
