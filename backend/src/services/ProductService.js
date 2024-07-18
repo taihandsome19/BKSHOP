@@ -46,7 +46,7 @@ class ProductService {
             onValue(dbRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const products = snapshot.val();
-                    const brandProductKeys = Object.keys(products).filter(key => products[key].Supplier === brand)
+                    const brandProductKeys = Object.keys(products).filter(key => products[key].brand === brand)
                     .map(productId => ({
                         productId: productId,
                         name: products[productId].name,

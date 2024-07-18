@@ -56,14 +56,15 @@ class UserService {
     addToCart = async (productInfo) => {
         const uid = await auth.currentUser.uid;
         const { productId, quantity, color, name, memorysize, image } = productInfo;
-        var data = null;
+        var data = [];
         var found = false;
         
         return new Promise((resolve, reject) => {
             try {
                 get(child(ref(db), `carts/${uid}`))
                 .then((snapshot) => {
-                    data = snapshot.val().map((item) => {
+                    const obj = Object.values(snapshot.val());
+                    data = obj.map((item) => {
                         if(item.productId === productId && item.color === color && item.memorysize === memorysize) {
                             found = true;
                             item.quantity += quantity;
@@ -86,6 +87,61 @@ class UserService {
         })
     }
     
+    increaseQuantity = async (body) => {
+        const uid = await auth.currentUser.uid;
+        const { index } = body;
+        // console.log(index)
+        return new Promise((resolve, reject) => {
+            get(child(ref(db), `carts/${uid}/${index}/quantity`))
+            .then((snapshot) => {
+                const data = snapshot.val();
+                // console.log(data)
+                set(ref(db, `carts/${uid}/${index}/quantity`), data + 1);
+                resolve({status: true})
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        })
+    }
+
+    decreaseQuantity = async (body) => {
+        const uid = await auth.currentUser.uid;
+        const { index } = body;
+        // console.log(index)
+        return new Promise((resolve, reject) => {
+            get(child(ref(db), `carts/${uid}/${index}/quantity`))
+            .then((snapshot) => {
+                const data = snapshot.val();
+                // console.log(data)
+                set(ref(db, `carts/${uid}/${index}/quantity`), data - 1);
+                resolve({status: true})
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        })
+    }
+
+    remove = async (body) => { //Chưa lm cc gì, bùn ngủ quá nên đi ngủ :DD
+        const uid = await auth.currentUser.uid;
+        const { index } = body;
+        // console.log(index)
+        return new Promise((resolve, reject) => {
+            get(child(ref(db), `carts/${uid}`))
+            .then((snapshot) => {
+                var data = Object.values(snapshot.val());
+                // console.log(data)
+                data.splice(index, 1);
+                set(ref(db, `carts/${uid}`), data);
+                resolve({status: true})
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        })
+    }
+
 }
 
 module.exports = new UserService

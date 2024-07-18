@@ -36,6 +36,33 @@ class UserController {
             return res.status(404).json({status: false, error: err});
         }
     }
+
+    increaseQuantity = async (req, res) => {
+        try {
+            const result = await UserService.increaseQuantity(req.body);
+            return res.status(200).send(result);
+        } catch(err) {
+            return res.status(404).json({status: false, error: err});
+        }
+    }
+
+    decreaseQuantity = async (req, res) => {
+        try {
+            const result = await UserService.increaseQuantity(req.body);
+            return res.status(200).send(result);
+        } catch(err) {
+            return res.status(404).json({status: false, error: err});
+        }
+    }
+
+    remove = async (req, res) => {
+        try {
+            const result = await UserService.remove(req.body);
+            return res.status(200).send(result);
+        } catch(err) {
+            return res.status(404).json({status: false, error: err});
+        }
+    }
 }
 
 module.exports = new UserController
