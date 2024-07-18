@@ -123,7 +123,7 @@ class UserService {
         })
     }
 
-    remove = async (body) => { //Chưa lm cc gì, bùn ngủ quá nên đi ngủ :DD
+    remove = async (body) => {
         const uid = await auth.currentUser.uid;
         const { index } = body;
         // console.log(index)
