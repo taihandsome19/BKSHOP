@@ -32,10 +32,7 @@ const handleLogout = async () => {
     try {
         await axios.post('http://localhost:3001/auth/log_out');
         
-        localStorage.setItem("isLogged", false);
-        localStorage.setItem("User_name", '');
-        localStorage.setItem("User_email", '');
-        localStorage.setItem("User_cart", 0);
+       localStorage.clear();
 
         window.location.href = '/';
     } catch (error) {
@@ -135,9 +132,9 @@ const HeaderComponent = () => {
                         {isLogged === 'true' ? (
                             <WrapperAccountHeader>
                                 <Dropdown overlay={notice} trigger={['click']}>
-                                    <Badge>
+                                   
                                         <BellOutlined style={{ fontSize: '22px', color: '#fff' }} />
-                                    </Badge>
+                                    
                                 </Dropdown>
                                 <Dropdown overlay={menu} trigger={['click']}>
                                     <img src={`https://ui-avatars.com/api/?background=random&name=${User_name.replace(" ", "+")}`} alt="avt" style={{ width: '30px', height: '30px', borderRadius: '50%', marginLeft: '20px' }} />

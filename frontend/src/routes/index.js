@@ -1,5 +1,4 @@
 import HomePage from '../pages/HomePage/HomePage'
-import OrderPage from '../pages/OrderPage/OrderPage'
 import ProductsPage from '../pages/ProductsPage/ProductsPage'
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage'
 import SigninPage from '../pages/SigninPage/SigninPage'
@@ -18,101 +17,128 @@ import Payment from '../pages/PaymentPage/PaymentPage'
 import AdminUser from '../pages/AdminPage/AdminUser/AdminUser'
 import AdminProduct from '../pages/AdminPage/AdminProduct/AdminProduct'
 import AdminOrder from '../pages/AdminPage/AdminOrder/AdminOrder'
-import { Navigate } from 'react-router-dom'; 
+import { Navigate } from 'react-router-dom';
 
-export const routes =[
-    {
-        'path': '/',
-        page: () => <Navigate to="/home" />
-    },
-    {
-        'path': '/home',
-        'page': HomePage,
-        isShowHeader: true
-    },
-    {
-        'path': '/order',
-        'page': OrderPage,
-        isShowHeader: true
-    },
-    {
-        'path': '/product',
-        'page': ProductsPage,
-        isShowHeader: true
-    },
-    {
-        'path': '/auth/log_in',
-        'page': SigninPage,
-    },
-    {
-        'path': '/auth/sign_up',
-        'page': SignupPage,
-    },
-    {
-        'path': '/user',
-        'page': UserPage,
-        isShowHeader: true
-    },
-    {
-        'path': '/user/info',
-        'page': InfoPage,
-        isShowHeader: true
-    },
-    {
-        'path': '/user/order',
-        'page': HistoryOrderpage,
-        isShowHeader: true
-    },
-    {
-        'path': '/user/change_pass',
-        'page': ChangePassPage,
-        isShowHeader: true
-    },
-    {
-        'path': '/user/support',
-        'page': SupportPage,
-        isShowHeader: true
-    },
-    {
-        'path': '/product_detail',
-        'page': ProductDetailsPage,
-        isShowHeader: true
-    },
-    {
-        'path': '/cart',
-        'page': CartPage,
-    },
-    {
-        'path': '/cart/payment_info',
-        'page': PaymentInfo,
-    },
-    {
-        'path': '/cart/payment',
-        'page': Payment,
-    },
-    {
-        'path': '/search',
-        'page': SearchPage,
-        isShowHeader: true
-    },
-    {
-        'path': '/admin',
-        'page': AdminHomePage
-    },
-    {
-        'path': '/admin/member',
-        'page': AdminUser
-    },
-    {
-        'path': '/admin/product',
-        'page': AdminProduct
-    },
-    {
-        'path': '/admin/order',
-        'page': AdminOrder
-    },
-    {
-        'path': '*',
-        'page': NotFoundPage
-    }
-]
+  
+
+export const routes = [
+  {
+    path: '/',
+    page: () => <Navigate to="/home" />,
+  },
+  {
+    path: '/home',
+    page: HomePage,
+    isShowHeader: true,
+  },
+  {
+    path: '/product/brand',
+    page: ProductsPage,
+    isShowHeader: true,
+  },
+  {
+    path: '/auth/log_in',
+    page: SigninPage,
+    isProtected: true,
+    trigger: true,
+    redirectTo: '/home',
+  },
+  {
+    path: '/auth/sign_up',
+    page: SignupPage,
+    isProtected: true,
+    trigger: true,
+    redirectTo: '/home',
+  },
+  {
+    path: '/user',
+    page: UserPage,
+    isShowHeader: true,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/user/info',
+    page: InfoPage,
+    isShowHeader: true,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/user/order',
+    page: HistoryOrderpage,
+    isShowHeader: true,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/user/change_pass',
+    page: ChangePassPage,
+    isShowHeader: true,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/user/support',
+    page: SupportPage,
+    isShowHeader: true,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/product/detail',
+    page: ProductDetailsPage,
+    isShowHeader: true,
+  },
+  {
+    path: '/cart',
+    page: CartPage,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/cart/payment_info',
+    page: PaymentInfo,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/cart/payment',
+    page: Payment,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/search',
+    page: SearchPage,
+    isShowHeader: true,
+  },
+  {
+    path: '/admin',
+    page: AdminHomePage,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/admin/member',
+    page: AdminUser,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/admin/product',
+    page: AdminProduct,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/admin/order',
+    page: AdminOrder,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '*',
+    page: NotFoundPage,
+  },
+];

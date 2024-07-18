@@ -48,6 +48,15 @@ class AuthController {
             return res.status(404).json({status: false, error: err});
         }
     }
+
+    loginState = async (req, res) => {
+        try {
+            const result = await AuthService.loginState();
+            return res.status(200).send(result);
+        } catch(err) {
+            return res.status(404).json({status: false, error: err});
+        };
+    }
 }
 
 module.exports = new AuthController
