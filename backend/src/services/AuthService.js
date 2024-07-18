@@ -77,7 +77,7 @@ class AuthService {
             for (let key in email) {
                 rac += email[key]
             }
-            sendPasswordResetEmail(auth, rac)
+            sendPasswordResetEmail(auth, email)
             .then(() => {
                 // alert("An email has been sent to you with instructions to reset your password.");
                 resolve({status: true});
