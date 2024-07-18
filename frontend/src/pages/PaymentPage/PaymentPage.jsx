@@ -59,9 +59,9 @@ const PaymentPage = () => {
             address,
             method: selectedPaymentMethod.toUpperCase(),
             items: dataPayment.reduce((items, product) => {
-                items[product.id] = {
+                items[product.productId] = {
                     color: product.color,
-                    memorysize: product.memory,
+                    memorysize: product.memorysize,
                     name: product.name,
                     quantity: product.quantity,
                     price: product.price
@@ -115,7 +115,7 @@ const PaymentPage = () => {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '15px', padding: '10px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div style={{ color: '#909EAB', paddingBottom: '10px' }}>Số lượng sản phẩm</div>
-                                    <div>01</div>
+                                    <div>{dataPayment.reduce((totalQuantity, product) => totalQuantity + product.quantity, 0)}</div>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div style={{ color: '#909EAB', paddingBottom: '10px' }}>Tiền hàng</div>

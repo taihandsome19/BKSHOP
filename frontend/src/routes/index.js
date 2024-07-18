@@ -32,7 +32,7 @@ export const routes = [
     isShowHeader: true,
   },
   {
-    path: '/product',
+    path: '/product/brand',
     page: ProductsPage,
     isShowHeader: true,
   },
@@ -86,7 +86,7 @@ export const routes = [
     redirectTo: '/auth/log_in',
   },
   {
-    path: '/product_detail',
+    path: '/product/detail',
     page: ProductDetailsPage,
     isShowHeader: true,
   },

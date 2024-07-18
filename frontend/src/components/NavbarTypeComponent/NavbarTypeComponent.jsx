@@ -2,7 +2,7 @@ import React from 'react'
 import {WrapperPage, WrapperTypeProduct} from './style'
 import TypeProduct from "../../components/TypeProduct/TypeProduct";
 
-const arr = ["APPLE", "XIAOMI", "SAMSUNG", "OPPO", "VIVO", "TECNO", "REALME"]
+const arr = ["Apple", "Vivo", "Oppo", "Xiaomi", "Samsung", "OnePlus"]
 
 const NavbarTypeComponent = () => {
     return (

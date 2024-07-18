@@ -132,9 +132,9 @@ const HeaderComponent = () => {
                         {isLogged === 'true' ? (
                             <WrapperAccountHeader>
                                 <Dropdown overlay={notice} trigger={['click']}>
-                                    <Badge count={18} style={{backgroundColor: '#00D67F'}} showZero>
+                                   
                                         <BellOutlined style={{ fontSize: '22px', color: '#fff' }} />
-                                    </Badge>
+                                    
                                 </Dropdown>
                                 <Dropdown overlay={menu} trigger={['click']}>
                                     <img src={`https://ui-avatars.com/api/?background=random&name=${User_name.replace(" ", "+")}`} alt="avt" style={{ width: '30px', height: '30px', borderRadius: '50%', marginLeft: '20px' }} />

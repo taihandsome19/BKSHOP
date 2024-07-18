@@ -56,7 +56,9 @@ const SigninPage = () => {
         localStorage.setItem("isLogged", true);
         localStorage.setItem("User_name", name);
         localStorage.setItem("User_email", email);
-        localStorage.setItem("User_cart", 0);
+
+        const ress = await axios.get('http://localhost:3001/user/cart');
+        localStorage.setItem('User_cart', ress.data.length);
         
         setTimeout(() => {
           window.location.href = '/';

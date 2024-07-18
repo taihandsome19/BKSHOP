@@ -24,7 +24,7 @@ const ProtectedRoute = ({ component: Component, isProtected, redirectTo, trigger
   }, []);
 
   if (isLogged === null) {
-    return null; // Có thể thêm một indicator loading tại đây
+    return null;
   }
 
   if (isProtected && isLogged === true && trigger) {

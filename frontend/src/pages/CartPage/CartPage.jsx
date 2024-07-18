@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Checkbox } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Checkbox, message, Spin } from 'antd';
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 import {
     WrapperPage,
@@ -21,9 +21,30 @@ import {
 } from '@ant-design/icons';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import img from "../../assets/images/ip13/ip13.webp";
+import axios from 'axios';
 
 const CartPage = () => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        axios.get('http://localhost:3001/user/cart')
+            .then(response => {
+                const updatedProducts = response.data.map(product => ({
+                    ...product,
+                    checked: false
+                }));
+                setProducts(updatedProducts);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching products:', error);
+                message.error("Lỗi khi lấy thông tin giỏ hàng");
+                setLoading(false);
+            });
+    }, []);
+
+    /*
     const [products, setProducts] = useState([
         {
             id: 1,
@@ -53,12 +74,13 @@ const CartPage = () => {
             checked: false
         }
     ]);
+    */
 
     const [checkedAll, setCheckedAll] = useState(false);
 
     const handleQuantityChange = (id, increment) => {
         setProducts(products.map(product =>
-            product.id === id ? {
+            product.productId === id ? {
                 ...product,
                 quantity: increment ? product.quantity + 1 : Math.max(product.quantity - 1, 1)
             } : product
@@ -66,7 +88,7 @@ const CartPage = () => {
     };
 
     const handleDelete = (id) => {
-        setProducts(products.filter(product => product.id !== id));
+        setProducts(products.filter(product => product.productId !== id));
     };
 
     const handleSelectAll = () => {
@@ -77,7 +99,7 @@ const CartPage = () => {
 
     const handleProductCheck = (id) => {
         setProducts(products.map(product =>
-            product.id === id ? { ...product, checked: !product.checked } : product
+            product.productId === id ? { ...product, checked: !product.checked } : product
         ));
     };
 
@@ -86,16 +108,22 @@ const CartPage = () => {
         setCheckedAll(false);
     };
 
+    const handleBuyNow = () => {
+        const selectedProducts = products.filter(product => product.checked);
+        localStorage.setItem('dataPayment', JSON.stringify(selectedProducts));
+        window.location.href = '/cart/payment_info';
+    };
+
     const ProductCard = ({ product }) => (
         <WrappCard>
             <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", paddingBottom: "10px" }}>
-                <Checkbox checked={product.checked} onChange={() => handleProductCheck(product.id)} />
+                <Checkbox checked={product.checked} onChange={() => handleProductCheck(product.productId)} />
                 <WrapperProduct>
-                    <img src={img} alt="icon" preview={false} height={"100px"} />
+                    <img src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${product.image}?alt=media`} alt="icon" preview={false} height={"100px"} />
                     <div style={{ width: "100%" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px" }}>
                             <div style={{ fontSize: "15px" }}>{product.name}</div>
-                            <DeleteOutlined style={{ fontSize: "18px" }} onClick={() => handleDelete(product.id)} />
+                            <DeleteOutlined style={{ fontSize: "18px" }} onClick={() => handleDelete(product.productId)} />
                         </div>
                         <div style={{ display: "flex", gap: "5px", fontSize: "13px", color: "#9F9D9D", paddingBottom: "10px" }}>
                             <div>Màu sắc:</div>
@@ -103,14 +131,14 @@ const CartPage = () => {
                         </div>
                         <div style={{ display: "flex", gap: "5px", fontSize: "13px", color: "#9F9D9D", paddingBottom: "10px" }}>
                             <div>Dung lượng:</div>
-                            <div>{product.memory}</div>
+                            <div>{product.memorysize}</div>
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "16px", fontWeight: "500", color: "#0688B4" }}>
-                            <div>{product.price.toLocaleString('vi-VN')}đ</div>
+                            <div>{parseInt(product.price).toLocaleString('vi-VN')}đ</div>
                             <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-                                <ButtonProduct onClick={() => handleQuantityChange(product.id, false)}>-</ButtonProduct>
+                                <ButtonProduct onClick={() => handleQuantityChange(product.productId, false)}>-</ButtonProduct>
                                 <div style={{ color: "#444" }}>{product.quantity}</div>
-                                <ButtonProduct onClick={() => handleQuantityChange(product.id, true)}>+</ButtonProduct>
+                                <ButtonProduct onClick={() => handleQuantityChange(product.productId, true)}>+</ButtonProduct>
                             </div>
                         </div>
                     </div>
@@ -120,6 +148,15 @@ const CartPage = () => {
     );
 
     const totalSelectedProducts = products.filter(product => product.checked).length;
+
+    if (loading) {
+        return (
+            <Spin
+                size="large"
+                style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
+            />
+        );
+    }
 
     return (
         <HelmetProvider>
@@ -166,7 +203,7 @@ const CartPage = () => {
                         )};
                         <div style={{paddingBottom: "40px"}}>
                             {products.map(product => (
-                                <ProductCard key={product.id} product={product} />
+                                <ProductCard key={product.productId} product={product} />
                             ))}
                         </div>
 
@@ -186,7 +223,7 @@ const CartPage = () => {
                                             Mua với giá ưu đãi nhất
                                         </div>
                                     </div>
-                                    <BuyButton disabled={totalSelectedProducts === 0}>
+                                    <BuyButton disabled={totalSelectedProducts === 0} onClick={handleBuyNow}>
                                         Mua ngay ({totalSelectedProducts})
                                     </BuyButton>
                                 </div>
