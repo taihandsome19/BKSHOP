@@ -138,9 +138,6 @@ const ProductDetailsPage = () => {
       
       const count = await axios.get('http://localhost:3001/user/cart');
       localStorage.setItem('User_cart',count.data.length)
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
     } catch (error) {
       message.error('Vui lòng đăng nhập để mua hàng');
       setTimeout(() => {

@@ -44,51 +44,59 @@ const CartPage = () => {
             });
     }, []);
 
-    /*
-    const [products, setProducts] = useState([
-        {
-            id: 1,
-            name: "iPhone 13 VNA",
-            color: "Trắng",
-            memory: "128GB",
-            price: 13790000,
-            quantity: 1,
-            checked: false
-        },
-        {
-            id: 2,
-            name: "iPhone 15 | Chính hãng VNA",
-            color: "Hồng",
-            memory: "256B",
-            price: 23790000,
-            quantity: 1,
-            checked: false
-        },
-        {
-            id: 3,
-            name: "Samsung Galaxy S24",
-            color: "Hồng",
-            memory: "256B",
-            price: 23790000,
-            quantity: 1,
-            checked: false
-        }
-    ]);
-    */
-
     const [checkedAll, setCheckedAll] = useState(false);
 
-    const handleQuantityChange = (id, increment) => {
-        setProducts(products.map(product =>
-            product.productId === id ? {
-                ...product,
-                quantity: increment ? product.quantity + 1 : Math.max(product.quantity - 1, 1)
-            } : product
-        ));
+    const handleQuantityChange = (index, increment) => {
+        const newQuantity = increment ? products[index].quantity + 1 : Math.max(products[index].quantity - 1, 1);
+        if(increment){
+            axios.post('http://localhost:3001/user/increase', {
+                index: index,
+            }).then(response => {
+                setProducts(products.map((product, idx) => {
+                    if (idx === index) {
+                        return {
+                            ...product,
+                            quantity: newQuantity
+                        };
+                    }
+                    return product;
+                }));
+            }).catch(error => {
+                console.error('Error updating quantity:', error);
+                message.error("Lỗi khi cập nhật số lượng sản phẩm");
+            });
+        } else if(products[index].quantity !== 1){
+            axios.post('http://localhost:3001/user/decrease', {
+                index: index,
+            }).then(response => {
+                setProducts(products.map((product, idx) => {
+                    if (idx === index) {
+                        return {
+                            ...product,
+                            quantity: newQuantity
+                        };
+                    }
+                    return product;
+                }));
+            }).catch(error => {
+                console.error('Error updating quantity:', error);
+                message.error("Lỗi khi cập nhật số lượng sản phẩm");
+            });
+        }
     };
+    
 
-    const handleDelete = (id) => {
-        setProducts(products.filter(product => product.productId !== id));
+    const handleDelete = (index, flag) => {
+        axios.post('http://localhost:3001/user/remove', {
+            index: index,
+        }).then(response => {
+            if(flag){
+                setProducts(products.filter((_, idx) => idx !== index));
+            }
+        }).catch(error => {
+            console.error('Error updating quantity:', error);
+            message.error("Lỗi khi xoá sản phẩm");
+        });
     };
 
     const handleSelectAll = () => {
@@ -97,16 +105,42 @@ const CartPage = () => {
         setProducts(products.map(product => ({ ...product, checked: newCheckedAll })));
     };
 
-    const handleProductCheck = (id) => {
-        setProducts(products.map(product =>
-            product.productId === id ? { ...product, checked: !product.checked } : product
+    const handleProductCheck = (index) => {
+        setProducts(products.map((product, idx) =>
+            idx === index ? { ...product, checked: !product.checked } : product
         ));
     };
 
-    const handleDeleteSelected = () => {
-        setProducts(products.filter(product => !product.checked));
+    const handleDeleteSelected = async () => {
+        setLoading(true);
+    
+        const selectedIndexes = products
+            .map((product, index) => product.checked ? index : null)
+            .filter(index => index !== null);
+    
+        if (selectedIndexes.length === 0) {
+            message.info("Chưa chọn sản phẩm nào để xoá.");
+            setLoading(false);
+            return;
+        }
+    
+        selectedIndexes.sort((a, b) => b - a);
+    
+        for (const index of selectedIndexes) {
+            try {
+                await handleDelete(index, false);
+                setProducts(prevProducts => prevProducts.filter((_, idx) => idx !== index));
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                message.error("Lỗi khi xoá sản phẩm");
+                break;
+            }
+        }
+    
         setCheckedAll(false);
+        setLoading(false);
     };
+    
 
     const handleBuyNow = () => {
         const selectedProducts = products.filter(product => product.checked);
@@ -114,16 +148,16 @@ const CartPage = () => {
         window.location.href = '/cart/payment_info';
     };
 
-    const ProductCard = ({ product }) => (
+    const ProductCard = ({ product, index }) => (
         <WrappCard>
             <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", paddingBottom: "10px" }}>
-                <Checkbox checked={product.checked} onChange={() => handleProductCheck(product.productId)} />
+                <Checkbox checked={product.checked} onChange={() => handleProductCheck(index)} />
                 <WrapperProduct>
                     <img src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${product.image}?alt=media`} alt="icon" preview={false} height={"100px"} />
                     <div style={{ width: "100%" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px" }}>
                             <div style={{ fontSize: "15px" }}>{product.name}</div>
-                            <DeleteOutlined style={{ fontSize: "18px" }} onClick={() => handleDelete(product.productId)} />
+                            <DeleteOutlined style={{ fontSize: "18px" }} onClick={() => handleDelete(index, true)} />
                         </div>
                         <div style={{ display: "flex", gap: "5px", fontSize: "13px", color: "#9F9D9D", paddingBottom: "10px" }}>
                             <div>Màu sắc:</div>
@@ -136,9 +170,9 @@ const CartPage = () => {
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "16px", fontWeight: "500", color: "#0688B4" }}>
                             <div>{parseInt(product.price).toLocaleString('vi-VN')}đ</div>
                             <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-                                <ButtonProduct onClick={() => handleQuantityChange(product.productId, false)}>-</ButtonProduct>
+                                <ButtonProduct onClick={() => handleQuantityChange(index, false)}>-</ButtonProduct>
                                 <div style={{ color: "#444" }}>{product.quantity}</div>
-                                <ButtonProduct onClick={() => handleQuantityChange(product.productId, true)}>+</ButtonProduct>
+                                <ButtonProduct onClick={() => handleQuantityChange(index, true)}>+</ButtonProduct>
                             </div>
                         </div>
                     </div>
@@ -149,15 +183,6 @@ const CartPage = () => {
 
     const totalSelectedProducts = products.filter(product => product.checked).length;
 
-    if (loading) {
-        return (
-            <Spin
-                size="large"
-                style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
-            />
-        );
-    }
-
     return (
         <HelmetProvider>
             <div>
@@ -167,12 +192,28 @@ const CartPage = () => {
                 <HeaderComponent />
                 <WrapperPage>
                     <WrapperBox>
+                        {loading && (
+                            <div style={{
+                                position: 'fixed',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                                zIndex: 9999
+                            }}>
+                                <Spin size="large" />
+                            </div>
+                        )}
                         <HeaderAreaCart>
-                                <IconWrapper>
-                                    <Link to="/" style={{color: '#323232', textDecoration: "none"}}>
+                            <IconWrapper>
+                                <Link to="/" style={{ color: '#323232', textDecoration: "none" }}>
                                     <ArrowLeftOutlined style={{ fontSize: "20px" }} />
-                                    </Link>
-                                </IconWrapper>
+                                </Link>
+                            </IconWrapper>
                             Giỏ hàng của bạn
                         </HeaderAreaCart>
                         {products.length === 0 ? (
@@ -200,10 +241,10 @@ const CartPage = () => {
                                     )}
                                 </div>
                             </SelectAll>
-                        )};
-                        <div style={{paddingBottom: "40px"}}>
-                            {products.map(product => (
-                                <ProductCard key={product.productId} product={product} />
+                        )}
+                        <div style={{ paddingBottom: "40px" }}>
+                            {products.map((product, index) => (
+                                <ProductCard key={index} product={product} index={index} />
                             ))}
                         </div>
 
