@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { Modal, Button, message } from 'antd';
+import { Modal, Button, message, Spin } from 'antd';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
 import TableComponent from '../../../components/TableComponent/TableComponent';
@@ -11,23 +11,24 @@ const AdminUser = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('https://jsonplaceholder.typicode.com/todos/')
+    window.scrollTo(0, 0);
+    axios.get('http://localhost:3001/admin/manage_user')
       .then(response => {
-        // Map the data to fit your table format
         const formattedData = response.data.map((item, index) => [
           (index + 1).toString(),
-          item.userId,
-          item.id,
-          item.title,
-          item.completed,
+          item.name,
+          item.email,
+          item.phone
         ]);
         setData(formattedData);
+        setLoading(false);
       })
       .catch(error => {
-        console.error('Error fetching data:', error);
         message.error('Lỗi không lấy được dữ liệu!');
+        setLoading(false);
       });
   }, []);
 
@@ -63,7 +64,6 @@ const AdminUser = () => {
       },
     },
     { name: 'name', label: 'Họ và tên' },
-    { name: 'sex', label: 'Giới tính' },
     { name: 'email', label: 'Địa chỉ mail' },
     { name: 'phone', label: 'Số điện thoại' },
     {
@@ -75,12 +75,21 @@ const AdminUser = () => {
             type="primary"
             onClick={() => showModal(tableMeta.rowData)}
           >
-            Đơn hàng
+            Xem đơn hàng
           </Button>
         ),
       },
     },
   ];
+
+  if (loading) {
+    return (
+      <Spin
+        size="large"
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
+      />
+    );
+  }
 
   return (
     <HelmetProvider>
@@ -95,7 +104,7 @@ const AdminUser = () => {
             <div style={{ flex: '1', padding: '20px 30px' }}>
               <TableComponent columns={columns} data={data} title="Danh sách khách hàng" />
               <Modal
-                title="Thông tin chi tiết"
+                title="Danh sách đơn hàng"
                 visible={isModalVisible}
                 onCancel={handleCancel}
                 footer={[
@@ -106,11 +115,8 @@ const AdminUser = () => {
               >
                 {selectedRowData && (
                   <div>
-                    <p><strong>S.No:</strong> {selectedRowData[0]}</p>
                     <p><strong>Họ và tên:</strong> {selectedRowData[1]}</p>
-                    <p><strong>Giới tính:</strong> {selectedRowData[2]}</p>
-                    <p><strong>Địa chỉ mail:</strong> {selectedRowData[3]}</p>
-                    <p><strong>Số điện thoại:</strong> {selectedRowData[4]}</p>
+                    <p><strong>Địa chỉ mail:</strong> {selectedRowData[2]}</p>
                   </div>
                 )}
               </Modal>

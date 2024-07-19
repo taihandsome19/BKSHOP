@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { Modal, Button, message } from 'antd';
+import { Modal, Button, message, Spin } from 'antd';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
 import TableComponent from '../../../components/TableComponent/TableComponent';
@@ -11,23 +11,24 @@ const AdminOrder = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('https://jsonplaceholder.typicode.com/todos/')
+    window.scrollTo(0, 0);
+    axios.get('http://localhost:3001/admin/manage_user')
       .then(response => {
-        // Map the data to fit your table format
         const formattedData = response.data.map((item, index) => [
           (index + 1).toString(),
-          item.userId,
-          item.id,
-          item.title,
-          item.completed,
+          item.name,
+          item.email,
+          item.phone
         ]);
         setData(formattedData);
+        setLoading(false);
       })
       .catch(error => {
-        console.error('Error fetching data:', error);
         message.error('Lỗi không lấy được dữ liệu!');
+        setLoading(false);
       });
   }, []);
 
@@ -62,9 +63,10 @@ const AdminOrder = () => {
         },
       },
     },
-    { name: 'name', label: 'Họ và tên' },
-    { name: 'product', label: 'Tên sản phẩm' },
+    { name: 'name', label: 'Tên người mua' },
+    { name: 'email', label: 'Địa chỉ mail ' },
     { name: 'count', label: 'Số lượng' },
+    { name: 'price', label: 'Tổng tiền' },
     { name: 'state', label: 'Trạng thái' },
     {
       name: 'action',
@@ -75,12 +77,21 @@ const AdminOrder = () => {
             type="primary"
             onClick={() => showModal(tableMeta.rowData)}
           >
-            Đơn hàng
+            Cập nhật
           </Button>
         ),
       },
     },
   ];
+
+  if (loading) {
+    return (
+      <Spin
+        size="large"
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
+      />
+    );
+  }
 
   return (
     <HelmetProvider>

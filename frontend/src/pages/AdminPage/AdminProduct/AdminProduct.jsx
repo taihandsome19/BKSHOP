@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { Modal, Button, Input, Form, Select, Upload } from 'antd';
+import { Modal, Button, Input, Form, Select, Upload, message, Spin } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
@@ -17,12 +17,36 @@ const AdminProduct = () => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [productData, setProductData] = useState([]);
-  const [brands, setBrands] = useState(['Apple', 'Samsung', 'Xiaomi']); // Example brands
+  const [brands, setBrands] = useState(["Apple", "Vivo", "Oppo", "Xiaomi", "Samsung", "OnePlus"]); // hard code
   const [newBrand, setNewBrand] = useState('');
   const [colors, setColors] = useState([]);
   const [storages, setStorages] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [form] = Form.useForm();
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    axios.get('http://localhost:3001/admin/manage_user')
+      .then(response => {
+        const formattedData = response.data.map((item, index) => [
+          (index + 1).toString(),
+          item.name,
+          item.email,
+          item.phone
+        ]);
+        setProductData(formattedData);
+        setLoading(false);
+      })
+      .catch(error => {
+        message.error('Lỗi không lấy được dữ liệu!');
+        setLoading(false);
+      });
+  }, []);
+
+
+
 
   const showModal = (rowData) => {
     setSelectedRowData(rowData);
@@ -118,7 +142,7 @@ const AdminProduct = () => {
   const columns = [
     {
       name: 'id',
-      label: 'S.No',
+      label: 'Mã sản phẩm',
       options: {
         sortCompare: (order) => {
           return (a, b) => {
@@ -137,7 +161,8 @@ const AdminProduct = () => {
       },
     },
     { name: 'name', label: 'Tên sản phẩm' },
-    { name: 'count', label: 'Số lượng' },
+    { name: 'brand', label: 'Hãng' },
+    { name: 'price', label: 'Giá' },
     {
       name: 'action',
       label: 'Hành động',
@@ -150,6 +175,15 @@ const AdminProduct = () => {
       },
     },
   ];
+
+  if (loading) {
+    return (
+      <Spin
+        size="large"
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
+      />
+    );
+  }
 
   return (
     <HelmetProvider>
@@ -178,10 +212,10 @@ const AdminProduct = () => {
               >
                 {selectedRowData && (
                   <div>
-                    <p><strong>S.No:</strong> {selectedRowData[0]}</p>
-                    <p><strong>Họ và tên:</strong> {selectedRowData[1]}</p>
-                    <p><strong>Giới tính:</strong> {selectedRowData[2]}</p>
-                    <p><strong>Địa chỉ mail:</strong> {selectedRowData[3]}</p>
+                    <p><strong>Mã sản phẩm:</strong> {selectedRowData[0]}</p>
+                    <p><strong>Tên sản phẩm:</strong> {selectedRowData[1]}</p>
+                    <p><strong>Hãng</strong> {selectedRowData[2]}</p>
+                    <p><strong>Giá</strong> {selectedRowData[3]}</p>
                     <p><strong>Số điện thoại:</strong> {selectedRowData[4]}</p>
                   </div>
                 )}

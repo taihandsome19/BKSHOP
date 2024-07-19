@@ -32,7 +32,7 @@ class AdminController {
         }
     }
 
-    manageproduct = async (req, res) => {
+    manageProduct = async (req, res) => {
         try {
             const result = await AdminService.manageProduct();
             // console.log(result);
@@ -42,6 +42,7 @@ class AdminController {
             return res.status(404).json({status: false, error: err});
         }
     }
+
 }
 
 module.exports = new AdminController

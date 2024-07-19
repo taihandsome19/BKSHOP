@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 // import { initializeApp } from "firebase/app";
 var initializeApp = require('firebase/app')
+const { getStorage } = require('firebase/storage');
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -20,4 +21,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const fb_app = initializeApp.initializeApp(firebaseConfig);
-module.exports = fb_app;
+const storage = getStorage(fb_app);
+
+module.exports = { fb_app, storage };
