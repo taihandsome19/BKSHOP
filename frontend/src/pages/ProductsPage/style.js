@@ -12,6 +12,10 @@ export const WrapperBox = styled.div`
     padding-bottom: 20px;
     display: flex;
     gap: 20px;
+<<<<<<< HEAD
+=======
+    min-height: 100vh;
+>>>>>>> nhap
 `;
 
 export const ButtonSort = styled.div`

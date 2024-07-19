@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
+=======
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+>>>>>>> nhap
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 import {
     WrapperPage,
@@ -10,13 +15,18 @@ import {
     WrappCard,
 } from "./style";
 import { ArrowLeftOutlined } from '@ant-design/icons';
+<<<<<<< HEAD
 import { Input, Checkbox } from 'antd';
+=======
+import { Input, Checkbox, message } from 'antd';
+>>>>>>> nhap
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import card from '../../assets/images/card.png';
 import cod from '../../assets/images/cod.png';
 
 const PaymentPage = () => {
+<<<<<<< HEAD
     const [products] = useState([
         {
             id: 1,
@@ -40,11 +50,77 @@ const PaymentPage = () => {
 
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cod');
 
+=======
+    const [dataInfo, setDataInfo] = useState(null);
+    const [dataPayment, setDataPayment] = useState(null);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cod');
+
+    useEffect(() => {
+        const retrievedDataInfo = localStorage.getItem('dataInfo');
+        if (retrievedDataInfo) {
+            setDataInfo(JSON.parse(retrievedDataInfo));
+        } else {
+            message.error("Không tìm thấy địa chỉ nhận hàng!");
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }
+
+        const retrieveddataPayment = localStorage.getItem('dataPayment');
+        if (retrieveddataPayment) {
+            setDataPayment(JSON.parse(retrieveddataPayment));
+        } else {
+            message.error("Không tìm thấy thông tin đặt hàng!");
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }
+    }, []);
+
+>>>>>>> nhap
     const handlePaymentMethodChange = (method) => {
         setSelectedPaymentMethod(method);
     };
 
+<<<<<<< HEAD
     const totalAmount = products.reduce((total, product) => total + product.price * product.quantity, 0);
+=======
+    const handlePayment = async () => {
+        const email = document.getElementById('email-input').value;
+        const phone = document.getElementById('phone-input').value;
+        const address = document.getElementById('address-input').value;
+
+        const payload = {
+            email,
+            phone,
+            address,
+            method: selectedPaymentMethod.toUpperCase(),
+            items: dataPayment.reduce((items, product) => {
+                items[product.productId] = {
+                    color: product.color,
+                    memorysize: product.memorysize,
+                    name: product.name,
+                    quantity: product.quantity,
+                    price: product.price
+                };
+                return items;
+            }, {})
+        };
+
+        try {
+            const response = await axios.post('YOUR_API_ENDPOINT_HERE', payload);
+            console.log('Payment successful', response.data);
+        } catch (error) {
+            console.error('Payment failed', error);
+        }
+    };
+
+    if (dataPayment === null || dataInfo === null) {
+        return null; 
+    }
+
+    const totalAmount = dataPayment.reduce((total, product) => total + product.price * product.quantity, 0);
+>>>>>>> nhap
 
     return (
         <HelmetProvider>
@@ -57,7 +133,11 @@ const PaymentPage = () => {
                     <WrapperBox>
                         <HeaderAreaCart>
                             <IconWrapper>
+<<<<<<< HEAD
                                 <Link to="/cart" style={{ color: '#323232', textDecoration: "none" }}>
+=======
+                                <Link to="/cart/payment_info" style={{ color: '#323232', textDecoration: "none" }}>
+>>>>>>> nhap
                                     <ArrowLeftOutlined style={{ fontSize: "20px" }} />
                                 </Link>
                             </IconWrapper>
@@ -65,7 +145,13 @@ const PaymentPage = () => {
                         </HeaderAreaCart>
                         <div style={{ display: 'flex', gap: '30px' }}>
                             <div style={{ display: 'flex', justifyContent: 'center', width: '100%', color: '#909EAB', fontWeight: '600', fontSize: '16px', borderBottom: '3px solid #909EAB', padding: '0 10px 10px' }}>
+<<<<<<< HEAD
                                 1. THÔNG TIN
+=======
+                                <Link to="/cart/payment_info" style={{ color: '#909EAB', textDecoration: "none" }}>
+                                    1. THÔNG TIN
+                                </Link>
+>>>>>>> nhap
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'center', width: '100%', color: '#0688B4', fontWeight: '600', fontSize: '16px', borderBottom: '3px solid #0688B4', padding: '0 10px 10px' }}>
                                 2. THANH TOÁN
@@ -75,7 +161,11 @@ const PaymentPage = () => {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '15px', padding: '10px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div style={{ color: '#909EAB', paddingBottom: '10px' }}>Số lượng sản phẩm</div>
+<<<<<<< HEAD
                                     <div>01</div>
+=======
+                                    <div>{dataPayment.reduce((totalQuantity, product) => totalQuantity + product.quantity, 0)}</div>
+>>>>>>> nhap
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div style={{ color: '#909EAB', paddingBottom: '10px' }}>Tiền hàng</div>
@@ -136,6 +226,7 @@ const PaymentPage = () => {
                                 <div style={{ fontSize: '14px', fontWeight: '600', textTransform: 'uppercase' }}>TRẦN THÀNH TÀI</div>
                                 <div>
                                     <div style={{ color: '#909EAB', paddingBottom: '10px' }}>Email</div>
+<<<<<<< HEAD
                                     <Input placeholder="Địa chỉ mail" value="tai.tranthanh@hcmut.edu.vn" disabled={true} />
                                 </div>
                                 <div>
@@ -145,6 +236,17 @@ const PaymentPage = () => {
                                 <div>
                                     <div style={{ color: '#909EAB', paddingBottom: '10px' }}>Địa chỉ nhận hàng</div>
                                     <Input placeholder="Địa chỉ nhận hàng" value="Khu phố Tân Lập, Phường Đông Hòa, TP. Dĩ An, Tỉnh Bình Dương" disabled={true} />
+=======
+                                    <Input id="email-input" placeholder="Địa chỉ mail" defaultValue={dataInfo ? dataInfo.email : ''} disabled={true} />
+                                </div>
+                                <div>
+                                    <div style={{ color: '#909EAB', paddingBottom: '10px' }}>Số điện thoại</div>
+                                    <Input id="phone-input" placeholder="Số điện thoại" defaultValue={dataInfo ? dataInfo.phone : ''} disabled={true} />
+                                </div>
+                                <div>
+                                    <div style={{ color: '#909EAB', paddingBottom: '10px' }}>Địa chỉ nhận hàng</div>
+                                    <Input id="address-input" placeholder="Địa chỉ nhận hàng" defaultValue={dataInfo ? dataInfo.address : ''} disabled={true} />
+>>>>>>> nhap
                                 </div>
                             </div>
                         </WrappCard>
@@ -165,7 +267,11 @@ const PaymentPage = () => {
                                             Mua với giá ưu đãi nhất
                                         </div>
                                     </div>
+<<<<<<< HEAD
                                     <BuyButton >
+=======
+                                    <BuyButton onClick={handlePayment}>
+>>>>>>> nhap
                                         Thanh toán
                                     </BuyButton>
                                 </div>

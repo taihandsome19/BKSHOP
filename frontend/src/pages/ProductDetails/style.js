@@ -137,6 +137,20 @@ export const ButtonBuyNow = styled.button`
     }
 `;
 
+<<<<<<< HEAD
+=======
+export const ButtonSoldOut = styled.button`
+    background-color: #92a8af;
+    width: 100%;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.1s;
+`;
+
+>>>>>>> nhap
 export const ButtonCart = styled.button`
     border: 1.5px solid #0688B4;
     border-radius: 5px;
@@ -165,7 +179,17 @@ export const CardInfo = styled.div`
 
 export const WrapperSectionText = styled.div`
     width: 100%;
+<<<<<<< HEAD
     padding: 15px 15px;
     font-size: 16px;
     font-weight: 600;
+=======
+    padding: 15px 15px 15px 15px;
+    font-size: 16px;
+    font-weight: 600;
+`;
+export const WrapperContent = styled.div`
+    width: 100%;
+    font-size: 14px;
+>>>>>>> nhap
 `;

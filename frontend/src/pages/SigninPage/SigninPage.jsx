@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useRef, useEffect } from 'react';
+=======
+import React, { useState, useRef } from 'react';
+>>>>>>> nhap
 import axios from 'axios';
 import { Image, Input, Button, message } from 'antd';
 import bg from "../../assets/images/bglogin.jpg";
@@ -15,6 +19,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet'; 
 
 const SigninPage = () => { 
+<<<<<<< HEAD
   useEffect(() => {
     const isLogged = localStorage.getItem("isLogged");
     if (isLogged === 'true') {
@@ -22,6 +27,8 @@ const SigninPage = () => {
     }
   }, []);
 
+=======
+>>>>>>> nhap
   const [loading, setLoading] = useState(false);
 
   const [email, setEmail] = useState('');
@@ -56,6 +63,7 @@ const SigninPage = () => {
       setLoading(true);
 
       const response = await axios.post('http://localhost:3001/auth/log_in', { email, password });
+<<<<<<< HEAD
       console.log(response.data);
 
       if (response.status === 200) {
@@ -66,12 +74,28 @@ const SigninPage = () => {
         localStorage.setItem("User_name", Name);
         localStorage.setItem("User_email", Email);
         localStorage.setItem("User_cart", 0);
+=======
+      if (response.data.status === true) {
+        message.success('Đăng nhập thành công');
+
+        const { name, email } = response.data;
+        localStorage.setItem("isLogged", true);
+        localStorage.setItem("User_name", name);
+        localStorage.setItem("User_email", email);
+
+        const ress = await axios.get('http://localhost:3001/user/cart');
+        localStorage.setItem('User_cart', ress.data.length);
+>>>>>>> nhap
         
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
       } else {
+<<<<<<< HEAD
         message.error('Đăng nhập thất bại');
+=======
+        message.error('Sai tài khoản hoặc mật khẩu');
+>>>>>>> nhap
       }
     } catch (error) {
       message.error('Có lỗi xảy ra khi đăng nhập');

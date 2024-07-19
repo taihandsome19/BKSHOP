@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useRef, useEffect} from 'react';
+=======
+import React, { useState, useRef} from 'react';
+>>>>>>> nhap
 import axios from 'axios';
 import { Image, Input, Button, message } from 'antd';
 import bg from "../../assets/images/bglogin.jpg";
@@ -15,12 +19,16 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 const SignupPage = () => {
+<<<<<<< HEAD
   useEffect(() => {
     const isLogged = localStorage.getItem("isLogged");
     if (isLogged === 'true') {
       window.location.href = '/';
     }
   }, []);
+=======
+  const [loading, setLoading] = useState(false);
+>>>>>>> nhap
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -68,25 +76,48 @@ const SignupPage = () => {
       return;
     }
 
+<<<<<<< HEAD
     try {
       const response = await axios.post('http://localhost:3001/auth/sign_up', { name, email, password });
       if (response.status === 200) {
+=======
+    setLoading(true);
+
+    try {
+      const response = await axios.post('http://localhost:3001/auth/sign_up', { name, email, password });
+      if (response.data.status === true) {
+>>>>>>> nhap
         message.success('Đăng ký thành công');
 
         localStorage.setItem("isLogged", true);
         localStorage.setItem("User_name", name);
         localStorage.setItem("User_email", email);
+<<<<<<< HEAD
         localStorage.setItem("User_cart", 0);
+=======
+
+        const ress = await axios.get('http://localhost:3001/user/cart');
+        localStorage.setItem('User_cart', ress.data.length);
+>>>>>>> nhap
         
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
 
       } else {
+<<<<<<< HEAD
         message.error('Đăng ký thất bại');
       }
     } catch (error) {
       message.error('Có lỗi xảy ra khi đăng ký');
+=======
+        message.error('Email đã tồn tại trên hệ thống');
+      }
+    } catch (error) {
+      message.error('Có lỗi xảy ra khi đăng ký');
+    } finally {
+      setLoading(false);
+>>>>>>> nhap
     }
   };
 
@@ -146,7 +177,11 @@ const SignupPage = () => {
               ref={passwordRef}
             />
           </div>
+<<<<<<< HEAD
           <Button type="primary" onClick={handleSubmit}>
+=======
+          <Button type="primary" loading={loading} onClick={handleSubmit}>
+>>>>>>> nhap
             Đăng ký
           </Button>
           <div style={{flexDirection: 'row', display: 'flex', gap: '5px'}}>

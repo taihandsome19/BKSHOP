@@ -8,27 +8,31 @@ class AuthService {
             fetchSignInMethodsForEmail(auth, email)//Check email đã đk hay ch?
             .then((signInMethods) => {
                 if(signInMethods.length > 0) { //Email đã đăng ký
-                    reject({status: false});
+                    resolve({status: false});
                 } else {
                     createUserWithEmailAndPassword(auth, email, password)
                     .then((userCredential) => {
                         const uid = userCredential.user.uid;
-                        const userRef = child(ref(db, "Users"), `${uid}`);
+                        const userRef = child(ref(db, "users"), `${uid}`);
+                        const orderRef = child(ref(db, "orders"), `${uid}`);
+                        const cartRef = child(ref(db, "carts"), `${uid}`);
                         set(userRef, {
-                            Infor: {
-                                Name: name,
-                                PhoneNum: "",
-                                Email: email,
-                                Address: ""
+                            infor: {
+                                name: name,
+                                phonenum: "",
+                                email: email,
+                                address: ""
                             },
-                            OrderList: "",
-                            Role: "user"
+                            orderlist: "",
+                            role: "user"
                         });
+                        // set(orderRef, "");
+                        // set(cartRef, "");
                         // console.log(`Đăng ký thành công. UID: ${uid}`);
                         resolve({status: true});
                     })
                     .catch((error) => {
-                        reject(error);
+                        resolve({status: false, error: error});
                     })
                 }
             })
@@ -51,14 +55,14 @@ class AuthService {
         return new Promise((resolve, reject) => {
             signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                const dbRef = ref(db, `Users/${userCredential.user.uid}`);
+                const dbRef = ref(db, `users/${userCredential.user.uid}`);
                 onValue(dbRef, (snapshot) => {
                     if (snapshot.exists()) {
                         const products = snapshot.val();
                         resolve({
                             status: true,
-                            name: products.Infor.Name,
-                            email: products.Infor.Email
+                            name: products.infor.name,
+                            email: products.infor.email
                         });
                     } else {
                         resolve({status: false});
@@ -66,18 +70,14 @@ class AuthService {
                 }, (error) => reject(error));
             })
             .catch((error) => {
-                reject(error);
+                resolve({status: false, error: error});
             })
         })
     }
 
     forgotPassword = async (email) => {
         return new Promise ((resolve, reject) => {
-            var rac = ""
-            for (let key in email) {
-                rac += email[key]
-            }
-            sendPasswordResetEmail(auth, rac)
+            sendPasswordResetEmail(auth, email)
             .then(() => {
                 // alert("An email has been sent to you with instructions to reset your password.");
                 resolve({status: true});
@@ -101,8 +101,8 @@ class AuthService {
                     .then(() => {
                         console.log("Password updated successfully.");
                         resolve({
-                            Email: user.email,
-                            Password: newPassword
+                            email: user.email,
+                            password: newPassword
                         })
                     })
                     .catch((error) => {
@@ -114,10 +114,24 @@ class AuthService {
                 });
             }
             else {
-                reject({status: false});
+                resolve({status: false});
             }
         })
     }
+
+    loginState = () => {
+        return new Promise((resolve) => {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    resolve({status: true});
+                } else {
+                    resolve({status: false});
+                }
+            }, (error) => {
+                resolve({status: false, error: error});
+            });
+        });
+    };
 }
 
 module.exports = new AuthService
