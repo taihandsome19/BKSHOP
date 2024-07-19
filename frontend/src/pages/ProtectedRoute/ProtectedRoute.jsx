@@ -13,6 +13,9 @@ const ProtectedRoute = ({ component: Component, isProtected, redirectTo, trigger
         
         const l_islog = localStorage.getItem("isLogged");
         if(String(l_islog) !== String(res.data.status)){
+            if(String(res.data.status) === 'false'){
+              localStorage.clear();
+            }
             localStorage.setItem('isLogged', res.data.status);
             window.location.reload();
         }
