@@ -20,7 +20,7 @@ class UserService {
         });
     }
 
-    order = async () => {
+    order = async () => { //Chưa làm xog
         const uid = await auth.currentUser.uid;
         const dbRef = ref(db, `orders/${uid}`);
         return new Promise((resolve, reject) => {
@@ -55,7 +55,7 @@ class UserService {
 
     addToCart = async (productInfo) => {
         const uid = await auth.currentUser.uid;
-        const { productId, quantity, color, name, memorysize, image } = productInfo;
+        const { productId, quantity, color, memorysize } = productInfo;
         var data = [];
         var found = false;
         
@@ -63,18 +63,24 @@ class UserService {
             try {
                 get(child(ref(db), `carts/${uid}`))
                 .then((snapshot) => {
-                    const obj = Object.values(snapshot.val());
-                    data = obj.map((item) => {
-                        if(item.productId === productId && item.color === color && item.memorysize === memorysize) {
-                            found = true;
-                            item.quantity += quantity;
+                    if(snapshot.exists() && snapshot.val() != "") {
+                        const obj = Object.values(snapshot.val());
+                        data = obj.map((item) => {
+                            if(item.productId === productId && item.color === color && item.memorysize === memorysize) {
+                                found = true;
+                                item.quantity += quantity;
+                                return item;
+                            }
                             return item;
-                        }
-                        return item;
-                    });
-                    if(!found) data.push(productInfo);
-                    set(ref(db, `/carts/${uid}`), data);
-                    resolve({status: true})
+                        });
+                        if(!found) data.push(productInfo);
+                        set(ref(db, `/carts/${uid}`), data);
+                        resolve({status: true})
+                    }
+                    else {
+                        set(ref(db, `/carts/${uid}`), [productInfo]);
+                        resolve({status: true})
+                    }
                 })
                 .catch((error) => {
                     // resolve({status: false, error: error});

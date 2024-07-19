@@ -26,8 +26,8 @@ class AuthService {
                             orderlist: "",
                             role: "user"
                         });
-                        set(orderRef, "");
-                        set(cartRef, "");
+                        // set(orderRef, "");
+                        // set(cartRef, "");
                         // console.log(`Đăng ký thành công. UID: ${uid}`);
                         resolve({status: true});
                     })
