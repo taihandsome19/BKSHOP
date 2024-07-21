@@ -45,7 +45,7 @@ class AdminController {
 
     updateOrder = async (req, res) => {
         try {
-            const result = await AdminService.updateStatusOrder(req.body);
+            const result = await AdminService.updateOrder(req.body);
             // console.log(result);
             return res.status(200).send(result);
         }

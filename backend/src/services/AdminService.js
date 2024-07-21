@@ -154,21 +154,43 @@ class AdminService {
     }
     
     updateOrder = async (body) => {
-        const { orderId, userId } = body
-        const orderRef = ref(db, `orders/${userId}/${orderId}`)
-        const userRef = ref(db, `users/${userId}`)
+        const { orderId } = body
         return new Promise((resolve, reject) => {
-            update(orderRef, {
-                status: true
-            })
-            .then(() => {
-                // update user orderlist
-                
-                resolve({status: true})
+            const Ref = ref(db, "orders")
+            get(Ref)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((users) => {
+                        users.forEach((orders) => {
+                            if (orders.key == orderId) {
+                                const userId = users.key
+                                const orderRef = ref(db, `orders/${userId}/${orderId}`)
+                                const userRef = ref(db, `users/${userId}/orderlist/${orderId}`)
+                                update(orderRef, {
+                                    status: true
+                                })
+                                .then(() => {
+                                    // update user orderlist
+                                    remove(userRef)
+                                    .then(() => {
+                                        resolve({status: true})
+                                    })
+                                    .catch((error) => {
+                                        reject(error)
+                                    });
+                                })
+                                .catch((error) => {
+                                    reject(error)
+                                });
+                            }
+                        })
+                    })
+                }
+                else resolve({status: false});
             })
             .catch((error) => {
                 reject(error)
-            })
+            });
         })
     }
 
