@@ -72,6 +72,15 @@ class UserController {
             return res.status(404).json({status: false, error: err});
         }
     }
+
+    addToOrder = async (req, res) => {
+        try {
+            const result = await UserService.addToOrder(req.body);
+            return res.status(200).send(result);
+        } catch(err) {
+            return res.status(404).json({status: false, error: err});
+        }
+    }
 }
 
 module.exports = new UserController

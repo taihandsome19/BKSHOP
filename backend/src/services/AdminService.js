@@ -165,19 +165,11 @@ class AdminService {
                             if (orders.key == orderId) {
                                 const userId = users.key
                                 const orderRef = ref(db, `orders/${userId}/${orderId}`)
-                                const userRef = ref(db, `users/${userId}/orderlist/${orderId}`)
                                 update(orderRef, {
                                     status: true
                                 })
                                 .then(() => {
-                                    // update user orderlist
-                                    remove(userRef)
-                                    .then(() => {
-                                        resolve({status: true})
-                                    })
-                                    .catch((error) => {
-                                        reject(error)
-                                    });
+                                    resolve({status: true})
                                 })
                                 .catch((error) => {
                                     reject(error)

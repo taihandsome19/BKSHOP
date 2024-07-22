@@ -10,6 +10,7 @@ router.post('/increase', UserController.increaseQuantity);
 router.post('/decrease', UserController.decreaseQuantity);
 router.post('/remove', UserController.remove);
 router.post('/updateInfo', UserController.updateInfo);
+router.post('/order', UserController.addToOrder);
 
 // router.post('/order', UserController.makeOrder);
 
