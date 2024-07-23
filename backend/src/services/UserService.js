@@ -78,19 +78,15 @@ class UserService {
         })
     }
 
-    addToOrder = function(body) {
+    addToOrder = async (body) => {
         const { payment, address, phonenum, indexs } = body
         const userRef = ref(db, "users")
+        const userId = await auth.currentUser.uid;
+
         return new Promise((resolve, reject) => {
             get(userRef)
             .then((snapshot) => {
                 if (!snapshot.exists()) resolve({ status: false })
-                let userId
-                snapshot.forEach((users) => {
-                    if (users.child("infor/address").val() === address && users.child("infor/phonenum").val() === phonenum) {
-                        userId = users.key
-                    }
-                })
                 if (!userId) reject(new Error('user does not exist'))
                 const time = new Date()
                 const order = {
