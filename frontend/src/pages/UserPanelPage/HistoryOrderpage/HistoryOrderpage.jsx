@@ -106,29 +106,63 @@ const HistoryOrderPage = () => {
               <ButtonGroup>Đã huỷ</ButtonGroup>
             </div>
             <CardOrder>
-              <div>
-                <div style={{ display: "flex" }}>
+
+              <div style={{ margin: '0 20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '20px', alignContent: 'center', alignItems: 'center' }}>
+                  <div style={{ fontSize: "14px", color: "#6f6f6f" }}>Mã đơn hàng: #1008894363</div>
+                  <div style={{ display: "flex", justifyContent: "center", width: "80px", padding: '8px', fontSize: "12px", borderRadius: "5px", backgroundColor: "#e3f4e9", color: "#007b55" }}>Đã giao hàng</div>
+                </div>
+                <div style={{ display: "flex", borderBottom: '2px solid #F5F5F5' }}>
+
                   <WrapperImg src={ip13} />
                   <div style={{ padding: "20px", width: "100%" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div style={{ fontSize: "16px", fontWeight: "600" }}>iPhone 13 128GB | Chính hãng VN/A</div>
-                      <div style={{ fontSize: "14px", color: "#6f6f6f" }}>Mã đơn hàng: #1008894363</div>
                     </div>
-                    <div style={{ display: "flex", gap: "8px", color: "6f6f6f", fontSize: "13px", paddingTop: "10px" }}>
+                    <div style={{ display: "flex", gap: "8px", color: "#6f6f6f", fontSize: "13px", paddingTop: "10px" }}>
+                      <div>Màu sắc: Trắng,</div>
+                      <div>Dung lượng: 128GB</div>
+                    </div>
+                    <div style={{ display: "flex", gap: "8px", color: "#6f6f6f", fontSize: "13px", paddingTop: "10px" }}>
                       <div>Số lượng: 1</div>
-                      <div>Màu sắc: Trắng</div>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "center", width: "80px", padding: "8px", marginTop: "10px", fontSize: "12px", borderRadius: "5px", backgroundColor: "#EFF8F2", color: "#007b55" }}>Đã giao hàng</div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div style={{ marginTop: "15px", fontSize: "15px", fontWeight: "bold", color: "#0688B4" }}>13.750.000đ</div>
-                      <ButtonClose>Xác nhận huỷ</ButtonClose>
+
                     </div>
                   </div>
                 </div>
+
+                <div style={{ display: "flex", borderBottom: '2px solid #F5F5F5' }}>
+                  <WrapperImg src={ip13} />
+                  <div style={{ padding: "20px", width: "100%" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ fontSize: "16px", fontWeight: "600" }}>iPhone 13 128GB | Chính hãng VN/A</div>
+
+                    </div>
+                    <div style={{ display: "flex", gap: "8px", color: "#6f6f6f", fontSize: "13px", paddingTop: "10px" }}>
+                      <div>Màu sắc: Trắng,</div>
+                      <div>Dung lượng: 128GB</div>
+                    </div>
+                    <div style={{ display: "flex", gap: "8px", color: "#6f6f6f", fontSize: "13px", paddingTop: "10px" }}>
+                      <div>Số lượng: 1</div>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ marginTop: "15px", fontSize: "15px", fontWeight: "bold", color: "#0688B4" }}>13.750.000đ</div>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ fontSize: '17px', fontWeight: 'bold', color: '#0688B4', padding: '20px 0', display: 'flex', justifyContent: 'end', gap: '5px' }}>
+                  <div style={{ color: '#6f6f6f' }}>Tổng tiền:</div>
+                  20.000.000đ
+                </div>
+                <div style={{ display: 'flex', gap: '5px', justifyContent: 'end', paddingBottom: '20px' }}>
+                  <ButtonClose>Xác nhận huỷ</ButtonClose>
+                  <ButtonClose style={{ backgroundColor: '#0688B4', color: '#fff', border: 'none' }}>Xem chi tiết</ButtonClose>
+                </div>
               </div>
             </CardOrder>
-
-
           </WrapperRight>
         </WrapperBox>
       </WrapperPage>

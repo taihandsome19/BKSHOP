@@ -140,7 +140,7 @@ export const WrapperImg = styled.img`
 export const ButtonClose = styled.button`
     border: 1.5px solid #6f6f6f;
     color: #6f6f6f;
-    padding: 8px 10px;
+    padding: 5px;
     border-radius: 5px;
     background-color: white;
     font-size: 13px;

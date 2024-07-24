@@ -6,15 +6,35 @@ import { Modal, Button, message, Spin } from 'antd';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
 import TableComponent from '../../../components/TableComponent/TableComponent';
+import CheckAdmin from '../AdminProtect/AdminProtect';
+import { useNavigate } from 'react-router-dom';
 
 const AdminOrder = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAd, setisAd] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+      const checkAdmin = async () => {
+          const isAdmin = await CheckAdmin.isAdmin();
+          if (isAdmin) {
+              setLoading(false);
+              setisAd(true);
+          } else {
+              setLoading(false);
+              navigate('/404');
+          }
+      };
+      checkAdmin();
+  }, [navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    if(isAd){
     axios.get('http://localhost:3001/admin/manage_user')
       .then(response => {
         const formattedData = response.data.map((item, index) => [
@@ -30,7 +50,12 @@ const AdminOrder = () => {
         message.error('Lỗi không lấy được dữ liệu!');
         setLoading(false);
       });
-  }, []);
+    }
+  }, [isAd]);
+
+  if(!isAd){
+    return;
+  }
 
   const showModal = (rowData) => {
     setSelectedRowData(rowData);
