@@ -6,8 +6,6 @@ import { Modal, Button, message, Spin } from 'antd';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
 import TableComponent from '../../../components/TableComponent/TableComponent';
-import CheckAdmin from '../AdminProtect/AdminProtect';
-import { useNavigate } from 'react-router-dom';
 
 const AdminUser = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -15,48 +13,24 @@ const AdminUser = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [isAd, setisAd] = useState(false);
-  const navigate = useNavigate();
-
   useEffect(() => {
-    const checkAdmin = async () => {
-      const isAdmin = await CheckAdmin.isAdmin();
-      if (isAdmin) {
-        ;
-        setisAd(true);
+    window.scrollTo(0, 0);
+    axios.get('http://localhost:3001/admin/manage_user')
+      .then(response => {
+        const formattedData = response.data.map((item, index) => [
+          (index + 1).toString(),
+          item.name,
+          item.email,
+          item.phone
+        ]);
+        setData(formattedData);
         setLoading(false);
-      } else {
+      })
+      .catch(error => {
+        message.error('Lỗi không lấy được dữ liệu!');
         setLoading(false);
-        navigate('/404');
-      }
-    };
-    checkAdmin();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (isAd) {
-      window.scrollTo(0, 0);
-      axios.get('http://localhost:3001/admin/manage_user')
-        .then(response => {
-          const formattedData = response.data.map((item, index) => [
-            (index + 1).toString(),
-            item.name,
-            item.email,
-            item.phone
-          ]);
-          setData(formattedData);
-          setLoading(false);
-        })
-        .catch(error => {
-          message.error('Lỗi không lấy được dữ liệu!');
-          setLoading(false);
-        });
-    }
-  }, [isAd]);
-
-  if (!isAd) {
-    return;
-  }
+      });
+  }, []);
 
   const showModal = (rowData) => {
     setSelectedRowData(rowData);

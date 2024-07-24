@@ -159,6 +159,12 @@ const CartPage = () => {
     const handleBuyNow = () => {
         const selectedProducts = products.filter(product => product.checked);
         localStorage.setItem('dataPayment', JSON.stringify(selectedProducts));
+        
+        const selectedIndexes = products
+            .map((product, index) => product.checked ? index : null)
+            .filter(index => index !== null);
+        localStorage.setItem('dataPaymentIndex', JSON.stringify(selectedIndexes));
+
         window.location.href = '/cart/payment_info';
     };
 

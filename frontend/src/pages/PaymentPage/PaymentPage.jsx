@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 import {
@@ -16,11 +16,13 @@ import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import card from '../../assets/images/card.png';
 import cod from '../../assets/images/cod.png';
+import { UserCartContext } from '../../components/UserCartContext/UserCartContext';
 
 const PaymentPage = () => {
     const [dataInfo, setDataInfo] = useState(null);
     const [dataPayment, setDataPayment] = useState(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cod');
+    const { setUserCart } = useContext(UserCartContext);
 
     useEffect(() => {
         const retrievedDataInfo = localStorage.getItem('dataInfo');
@@ -49,32 +51,36 @@ const PaymentPage = () => {
     };
 
     const handlePayment = async () => {
-        const email = document.getElementById('email-input').value;
         const phone = document.getElementById('phone-input').value;
         const address = document.getElementById('address-input').value;
 
+        const savedIndexes = JSON.parse(localStorage.getItem('dataPaymentIndex'));
+        if (!Array.isArray(savedIndexes)) {
+            message.error("Lỗi đồng bộ dữ liệu, vui lòng về giỏ hàng đặt lại!")
+            return;
+        }
+
         const payload = {
-            email,
-            phone,
+            payment: selectedPaymentMethod.toUpperCase(),
             address,
-            method: selectedPaymentMethod.toUpperCase(),
-            items: dataPayment.reduce((items, product) => {
-                items[product.productId] = {
-                    color: product.color,
-                    memorysize: product.memorysize,
-                    name: product.name,
-                    quantity: product.quantity,
-                    price: product.price
-                };
-                return items;
-            }, {})
+            phonenum: phone,
+            indexs: savedIndexes
         };
 
         try {
-            const response = await axios.post('YOUR_API_ENDPOINT_HERE', payload);
-            console.log('Payment successful', response.data);
+            const response = await axios.post('http://localhost:3001/user/order', payload);
+            if (response.data.status === true) {
+                localStorage.clear('dataPayment');
+                localStorage.clear('dataPaymentIndex');
+                setUserCart(prevUserCart => prevUserCart - savedIndexes.length);
+                window.location.href = '/payment/status?status=success&orderId=100'
+            } else {
+                console.log('Payment failed', response.data);
+                message.error("Đã xảy ra lỗi khi đặt hàng!");
+            }
         } catch (error) {
             console.error('Payment failed', error);
+            message.error("Đã xảy ra lỗi khi đặt hàng!");
         }
     };
 
