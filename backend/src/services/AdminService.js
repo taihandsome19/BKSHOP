@@ -122,28 +122,7 @@ class AdminService {
             get(productRef)
             .then((snapshot) => {
                 if (snapshot.exists()) {
-                    var result = []
-                    snapshot.forEach((productSnapshot) => {
-                        const products = productSnapshot.val()
-                        productSnapshot.child('inventory').forEach((product) => {
-                            product.forEach((number) => {
-                                if (number.val() > 0) {
-                                    var rac = {
-                                        id: productSnapshot.key,
-                                        name: products.name,
-                                        brand: products.brand,
-                                        price: products.price,
-                                        description: products.description.detail,
-                                        color: product.key,
-                                        memorySize: number.key,
-                                        quantity: number.val()
-                                    }
-                                    result.push(rac)
-                                }
-                            })
-                        })
-                    })
-                    resolve(result)
+                    resolve(snapshot)
                 } else {
                     resolve({status: false});
                 }})
@@ -154,7 +133,7 @@ class AdminService {
     }
     
     updateOrder = async (body) => {
-        const { orderId } = body
+        const { orderId, status } = body
         return new Promise((resolve, reject) => {
             const Ref = ref(db, "orders")
             get(Ref)
@@ -166,7 +145,40 @@ class AdminService {
                                 const userId = users.key
                                 const orderRef = ref(db, `orders/${userId}/${orderId}`)
                                 update(orderRef, {
-                                    status: true
+                                    status: status
+                                })
+                                .then(() => {
+                                    resolve({status: true})
+                                })
+                                .catch((error) => {
+                                    reject(error)
+                                });
+                            }
+                        })
+                    })
+                }
+                else resolve({status: false});
+            })
+            .catch((error) => {
+                reject(error)
+            });
+        })
+    }
+    
+    updatePayment = async (body) => {
+        const { orderId, status } = body
+        return new Promise((resolve, reject) => {
+            const Ref = ref(db, "orders")
+            get(Ref)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((users) => {
+                        users.forEach((orders) => {
+                            if (orders.key == orderId) {
+                                const userId = users.key
+                                const paymentRef = ref(db, `orders/${userId}/${orderId}/payment`)
+                                update(paymentRef, {
+                                    status: status
                                 })
                                 .then(() => {
                                     resolve({status: true})
