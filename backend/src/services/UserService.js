@@ -253,12 +253,12 @@ class UserService {
                             .catch((error) => {
                                 reject(error);
                             });
+                            resolve({ status: true, orderId });
                         })
                         .catch((error) => {
                             reject(error);
                         });
                     })
-                    resolve({ status: true, order });
                 } catch (error) {
                     reject(error);
                 }
