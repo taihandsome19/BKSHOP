@@ -19,20 +19,29 @@ class UserService {
         });
     }
 
-    order_overview = async () => { //Chưa làm xog
+    order_overview = async () => {
         const uid = await auth.currentUser.uid;
-        // console.log(index)
+        const dbRef = ref(db, `orders/${uid}`);
         return new Promise((resolve, reject) => {
-            get(child(ref(db), `users/${uid}/orderlist`))
+            get(child(dbRef))
             .then((snapshot) => {
                 if(snapshot.exists()) {
-                    const orderlist = Object.values(snapshot.val());
-                    // const data = orderlist.map(orderId => ())
+                    const orders = snapshot.val();
+                    const orderInfo = Object.keys(orders).map(orderId => ({
+                        orderId: orderId,
+                        name: orders[orderId].name,
+                        price: orders[orderId].price,
+                        image: orders[orderId].image,
+                        color: orders[orderId].color,
+                        memorySize: orders[orderId].memorySize
+                    }));
+                    var totalPrice = 0;
+                    for (var order of orderInfo) {
+                        totalPrice += order.price;
+                    }
+                    resolve({orderInfo: orderInfo, totalPrice: totalPrice})
                 }
-                const data = snapshot.val();
-                // console.log(data)
-                set(ref(db, `carts/${uid}/${index}/quantity`), data - 1);
-                resolve({status: true})
+                else resolve({status: false})
             })
             .catch((error) => {
                 reject(error);
@@ -40,19 +49,21 @@ class UserService {
         })
     }
 
-    order_detail = async (orderId) => { //Chưa làm xog
+    order_detail = async (orderId) => {
         const uid = await auth.currentUser.uid;
-        const dbRef = ref(db, `orders/${orderId}`);
+        const dbRef = ref(db, `orders/${uid}/${orderId}`);
         return new Promise((resolve, reject) => {
-            onValue(dbRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    // console.log(data)
-                    resolve(data);
-                } else {
-                    resolve(null);
+            get(child(dbRef))
+            .then((snapshot) => {
+                if(snapshot.exists()) {
+                    const orderDetail = Object.values(snapshot.val());
+                    resolve({status: true, orderDetail: orderDetail});
                 }
-            }, (error) => reject(error))
+                else resolve({status: false})
+            })
+            .catch((error) => {
+                reject(error);
+            });
         });
     }
 
@@ -113,7 +124,8 @@ class UserService {
                                     memorySize: productSnapshot.child('memorysize').val(),
                                     name: productSnapshot.child('name').val(),
                                     price: productSnapshot.child('price').val(),
-                                    quantity: productSnapshot.child('quantity').val()
+                                    quantity: productSnapshot.child('quantity').val(),
+                                    image: productSnapshot.child('image').val(),
                                 }
                             } 
                             else reject(new Error('Product does not exist'))
