@@ -43,6 +43,28 @@ class AdminController {
         }
     }
 
+    updateOrder = async (req, res) => {
+        try {
+            const result = await AdminService.updateOrder(req.body);
+            // console.log(result);
+            return res.status(200).send(result);
+        }
+        catch(err) {
+            return res.status(404).json({status: false, error: err});
+        }
+    }
+
+    updateProduct = async (req, res) => {
+        try {
+            const result = await AdminService.updateProduct(req.body);
+            // console.log(result);
+            return res.status(200).send(result);
+        }
+        catch(err) {
+            return res.status(404).json({status: false, error: err});
+        }
+    }
+
 }
 
 module.exports = new AdminController
