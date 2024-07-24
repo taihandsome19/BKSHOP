@@ -198,82 +198,19 @@ class AdminService {
         })
     }
 
-    updateProduct = async (body) => {
-        const { productId, price, brand, name, description, color, memorySize, quantity } = body
+    updateProduct = async (body) => { //chua test
+        const { productId, info } = body
         const productRef = ref(db, `products/${productId}`)
-        const descriptionRef = ref(db, `products/${productId}/description`)
-        const inventoryRef = ref(db, `products/${productId}/inventory`)
+        
         return new Promise((resolve, reject) => {
-            update(productRef, {
-                name: name,
-                brand: brand,
-                price: price
-            })
-            .then(() => {
-                update(descriptionRef, {
-                    detail: description
-                })
-                .then(() => {
-                    get(inventoryRef)
-                    .then((snapshot) => {
-                        var flagcolor = false
-                        snapshot.forEach((products) => {
-                            if (products.key == color) {
-                                flagcolor = true
-                                const Ref = ref(db, `products/${productId}/inventory/${color}`)
-                                var flagMemorySize = true
-                                products.forEach((product) => {
-                                    if (product.key == memorySize) {
-                                        flagMemorySize = false
-                                        const rac = {}
-                                        rac[memorySize] = quantity
-                                        update(Ref, rac)
-                                        .then(() => {
-                                            resolve({status: true})
-                                        })
-                                        .catch((error) => {
-                                            reject(error)
-                                        });
-                                    }
-                                });
-                                if (flagMemorySize) {
-                                    const newMemorySizeRef = ref(db, `products/${productId}/inventory/${color}/${memorySize}`);
-                                    set(newMemorySizeRef, quantity)
-                                    .then(() => {
-                                        resolve({status: true});
-                                    })
-                                    .catch((error) => {
-                                        reject(error);
-                                    });
-                                }
-                            }
-                        });
-                        if (flagcolor === false) {
-                            const newColorRef = ref(db, `products/${productId}/inventory/${color}`);
-                            const rac = {}
-                            const tmp = rac[color] = {}
-                            tmp[memorySize] = quantity
-                            set(newColorRef, tmp)
-                            .then(() => {
-                                resolve({status: true})
-                            })
-                            .catch((error) => {
-                                reject(error)
-                            })
-                        }
-                    })
-                    .catch((error) => {
-                        reject(error)
-                    })
-                })
-                .catch((error) => {
-                    reject(error)
-                })
-            })
-            .catch((error) => {
-                reject(error)
-            })
-        })
+            try {
+                set(productRef, info);
+                resolve({status: true});
+            }
+            catch(err) {
+                reject(err);
+            };
+        });
     }
 }
 
