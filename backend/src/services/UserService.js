@@ -90,7 +90,7 @@ class UserService {
     }
 
     addToOrder = async (body) => {
-        const { payment, address, phonenum, indexs } = body
+        const { payment, address, phonenum, method } = body
         const userRef = ref(db, "users")
         const userId = await auth.currentUser.uid;
 
@@ -103,7 +103,7 @@ class UserService {
                 const order = {
                     orderdate: `${time.getUTCDate()}/${time.getUTCMonth() + 1}/${time.getUTCFullYear()}`,
                     payment: {
-                        method: payment,
+                        method: method,
                         status: false
                     },
                     status: false,
