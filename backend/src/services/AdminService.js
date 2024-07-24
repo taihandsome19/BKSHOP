@@ -57,18 +57,19 @@ class AdminService {
                 if (snapshot.exists()) {
                     snapshot.forEach((orders) => {
                         var uid = orders.key
-                        var user_name, email, phonenum
+                        var user_name, email, phonenum, address
                         const userRef = ref(db, "users");
                         get(userRef)
                         .then((snapshot) => {
                             if (snapshot.exists()) {
-                                if (snapshot.key === uid) {
+                                if (snapshot.key == uid) {
                                     const users = snapshot.val();
                                     users.forEach((user) => {
                                         const infor = user.child('infor')
                                         user_name = infor.child('name')
                                         email = infor.child('email')
                                         phonenum = infor.child('phonenum')
+                                        address = infor.child('address')
                                     })
                                 }
                             }
@@ -80,25 +81,33 @@ class AdminService {
                             reject(error)
                         })
                         orders.forEach((order) => {
+                            var products = []
                             order.child('items').forEach((item) => {
-                                var temp = {
+                                var product = {
                                     productId: item.key,
-                                    user_name: user_name,
                                     name_product: item.child('name'),
-                                    quantity: item.child('quantity'),
-                                    status: order.child('status'),
-                                    email: email,
-                                    phonenum: phonenum
+                                    color: item.child('color'),
+                                    memorySize: item.child('memorySize'),
+                                    price: item.child('price'),
+                                    quantity: item.child('quantity')
                                 }
-                                result.push(temp)
+                                products.push(product)
                             })
+                            var temp = {
+                                orderId: order.key,
+                                user_name: user_name,
+                                email: email,
+                                phonenum: phonenum,
+                                address: address,
+                                productList: products,
+                                status: order.child('status')
+                            }
+                            result.push(temp)
                         })
                     });
                     resolve(result)
                 }
-                else {
-                    resolve({status: false});
-                }
+                else resolve({status: false});
             })
             .catch((error) => {
                 reject(error);
@@ -112,13 +121,27 @@ class AdminService {
             get(productRef)
             .then((snapshot) => {
                 if (snapshot.exists()) {
-                    const products = snapshot.val()
-                    const result = Object.keys(products).map(uid => ({
-                        id: uid,
-                        name: products[uid].name,
-                        brand: products[uid].brand,
-                        price: products[uid].price
-                    }));
+                    var result = []
+                    snapshot.forEach((productSnapshot) => {
+                        const products = productSnapshot.val()
+                        productSnapshot.child('inventory').forEach((product) => {
+                            product.forEach((number) => {
+                                if (number.val() > 0) {
+                                    var rac = {
+                                        id: productSnapshot.key,
+                                        name: products.name,
+                                        brand: products.brand,
+                                        price: products.price,
+                                        description: products.description.detail,
+                                        color: product.key,
+                                        memorySize: number.key,
+                                        quantity: number.val()
+                                    }
+                                    result.push(rac)
+                                }
+                            })
+                        })
+                    })
                     resolve(result)
                 } else {
                     resolve({status: false});
