@@ -1,5 +1,6 @@
 const { db, ref, set, get, onValue, child } = require('../models/database');
 const { auth } = require('../models/auth');
+const supportFunction = require('../services/support')
 
 class UserService {
     info = async () => {
@@ -90,94 +91,98 @@ class UserService {
     }
 
     addToOrder = async (body) => {
-        const { payment, address, phonenum, indexs } = body
-        const userRef = ref(db, "users")
-        const userId = await auth.currentUser.uid;
-
-        return new Promise((resolve, reject) => {
-            get(userRef)
-            .then((snapshot) => {
-                if (!snapshot.exists()) resolve({ status: false })
-                if (!userId) reject(new Error('user does not exist'))
-                const time = new Date()
-                const order = {
-                    orderdate: `${time.getUTCDate()}/${time.getUTCMonth() + 1}/${time.getUTCFullYear()}`,
-                    payment: {
-                        method: payment,
-                        status: false
-                    },
-                    status: false,
-                    items: {},
-                    address: address,
-                    phonenum: phonenum
+        const { payment, address, phonenum, indexs, status } = body
+        const userId = await auth.currentUser.uid
+        const order = await supportFunction.createOrder({ payment, address, phonenum, status })
+        return new Promise(async (resolve, reject) => {
+            const originalValues = []
+            let allProductsAvailable = true
+            for (var index of indexs) {
+                const cartRef = ref(db, `carts/${userId}/${index}`)
+                try {
+                    const productSnapshot = await get(cartRef);
+                    if (productSnapshot.exists()) {
+                        const quantity = productSnapshot.child('quantity').val()
+                        const productId = productSnapshot.child('productId').val()
+                        const color = productSnapshot.child('color').val()
+                        const memorysize = productSnapshot.child('memorysize').val()
+                        const name = productSnapshot.child('name').val()
+                        const price = productSnapshot.child('price').val()
+                        const productRef = ref(db, `products/${productId}/inventory/${color}/${memorysize}`)
+                        const snapshot = await get(productRef)
+                        if (snapshot.val() < quantity) {
+                            allProductsAvailable = false
+                            reject(`${name} is not enough!`);
+                            break
+                        } else {
+                            originalValues.push({ 
+                                ref: productRef, 
+                                value: snapshot.val(), 
+                                quantity: quantity,
+                                productId: productId,
+                                color: color,
+                                memorysize: memorysize,
+                                name: name,
+                                price: price
+                            })
+                        }
+                    } else {
+                        reject("Product has not been added to the cart")
+                    }
+                } catch (error) {
+                    reject(error)
                 }
-                const promises = [];
-                for (var index of indexs) {
-                    const cartRef = ref(db, `carts/${userId}/${index}`)
-                    promises.push(
-                        get(cartRef)
-                        .then((productSnapshot) => {
-                            if (productSnapshot.exists()) {
-                                const productId = productSnapshot.child('productId').val();
-                                order.items[productId] = {
-                                    color: productSnapshot.child('color').val(),
-                                    memorySize: productSnapshot.child('memorysize').val(),
-                                    name: productSnapshot.child('name').val(),
-                                    price: productSnapshot.child('price').val(),
-                                    quantity: productSnapshot.child('quantity').val(),
-                                    image: productSnapshot.child('image').val(),
+            }
+            if (allProductsAvailable) {
+                try {
+                    for (let item of originalValues) {
+                        await set(item.ref, item.value - item.quantity)
+                        order.items[item.productId] = {
+                            color: item.color,
+                            memorySize: item.memorysize,
+                            name: item.name,
+                            price: item.price,
+                            quantity: item.quantity
+                        }
+                    }
+                    // remove product from cart
+                    const removeRef = ref(db, `carts/${userId}`)
+                    get(removeRef)
+                    .then((removeSnapshot) => {
+                        var data = removeSnapshot.val() || []
+                        indexs.sort((a, b) => b - a)
+                        for (var index of indexs) data.splice(index, 1)
+                        set(ref(db, `carts/${userId}`), data)
+                        const orderId = Date.now()
+                        const orderRef = ref(db, `orders/${userId}/${orderId}`)
+                        // add product to order
+                        set(orderRef, order)
+                        .then(() => {
+                            const orderListRef = ref(db, `users/${userId}/orderlist`)
+                            // update user orderlist
+                            get(orderListRef)
+                            .then((orderListSnapshot) => {
+                                if (orderListSnapshot.exists() && orderListSnapshot.val() != "") {
+                                    const orderList = orderListSnapshot.val()
+                                    orderList.push(orderId)
+                                    set(orderListRef, orderList)
                                 }
-                            } 
-                            else reject(new Error('Product does not exist'))
-                        })
-                        .catch((error) => {
-                            reject(error)
-                        })
-                    );
-                }
-                const removeRef = ref(db, `carts/${userId}`)
-                get(removeRef)
-                .then((snapshot) => {
-                    var data = Object.values(snapshot.val());
-                    indexs.sort((a, b) => b - a)
-                    for (var index of indexs) data.splice(index, 1);
-                    set(ref(db, `carts/${userId}`), data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-                Promise.all(promises)
-                .then(() => {
-                    const orderId = Date.now()
-                    const orderRef = ref(db, `orders/${userId}/${orderId}`);
-                    set(orderRef, order)
-                    .then(() => {
-                        const orderListRef = ref(db, `users/${userId}/orderlist`)
-                        get(orderListRef)
-                        .then((snapshot) => {
-                            if (snapshot.exists() && snapshot.val() != "") {
-                                const orderList = snapshot.val()
-                                orderList.push(orderId)
-                                set(orderListRef, orderList)
-                            }
-                            else set(orderListRef, [orderId])
-                            resolve({ status: true, order });
+                                else set(orderListRef, [orderId])
+                            })
+                            .catch((error) => {
+                                reject(error);
+                            });
+                            resolve({ status: true, orderId });
                         })
                         .catch((error) => {
                             reject(error);
                         });
                     })
-                    .catch((error) => {
-                        reject(error);
-                    });
-                })
-                .catch((error) => {
-                    reject(error)
-                });
-            })
-            .catch((error) => {
-                reject(error)
-            });
+                } catch (error) {
+                    reject(error);
+                }
+            } 
+            else reject("Not enough product");
         })
     }
 }

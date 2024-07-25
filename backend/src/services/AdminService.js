@@ -1,3 +1,4 @@
+const { update } = require('firebase/database');
 const { auth } = require('../models/auth');
 const { db, ref, set, child, get, onValue } = require('../models/database');
 
@@ -121,28 +122,7 @@ class AdminService {
             get(productRef)
             .then((snapshot) => {
                 if (snapshot.exists()) {
-                    var result = []
-                    snapshot.forEach((productSnapshot) => {
-                        const products = productSnapshot.val()
-                        productSnapshot.child('inventory').forEach((product) => {
-                            product.forEach((number) => {
-                                if (number.val() > 0) {
-                                    var rac = {
-                                        id: productSnapshot.key,
-                                        name: products.name,
-                                        brand: products.brand,
-                                        price: products.price,
-                                        description: products.description.detail,
-                                        color: product.key,
-                                        memorySize: number.key,
-                                        quantity: number.val()
-                                    }
-                                    result.push(rac)
-                                }
-                            })
-                        })
-                    })
-                    resolve(result)
+                    resolve(snapshot)
                 } else {
                     resolve({status: false});
                 }})
@@ -151,9 +131,9 @@ class AdminService {
             });
         });
     }
-    
+        
     updateOrder = async (body) => {
-        const { orderId } = body
+        const { orderId, status } = body
         return new Promise((resolve, reject) => {
             const Ref = ref(db, "orders")
             get(Ref)
@@ -165,7 +145,40 @@ class AdminService {
                                 const userId = users.key
                                 const orderRef = ref(db, `orders/${userId}/${orderId}`)
                                 update(orderRef, {
-                                    status: true
+                                    status: status
+                                })
+                                .then(() => {
+                                    resolve({status: true})
+                                })
+                                .catch((error) => {
+                                    reject(error)
+                                });
+                            }
+                        })
+                    })
+                }
+                else resolve({status: false});
+            })
+            .catch((error) => {
+                reject(error)
+            });
+        })
+    }
+    
+    updatePayment = async (body) => {
+        const { orderId, status } = body
+        return new Promise((resolve, reject) => {
+            const Ref = ref(db, "orders")
+            get(Ref)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((users) => {
+                        users.forEach((orders) => {
+                            if (orders.key == orderId) {
+                                const userId = users.key
+                                const paymentRef = ref(db, `orders/${userId}/${orderId}/payment`)
+                                update(paymentRef, {
+                                    status: status
                                 })
                                 .then(() => {
                                     resolve({status: true})
@@ -185,82 +198,19 @@ class AdminService {
         })
     }
 
-    updateProduct = async (body) => {
-        const { productId, price, brand, name, description, color, memorySize, quantity } = body
+    updateProduct = async (body) => { //chua test
+        const { productId, info } = body
         const productRef = ref(db, `products/${productId}`)
-        const descriptionRef = ref(db, `products/${productId}/description`)
-        const inventoryRef = ref(db, `products/${productId}/inventory`)
+        
         return new Promise((resolve, reject) => {
-            update(productRef, {
-                name: name,
-                brand: brand,
-                price: price
-            })
-            .then(() => {
-                update(descriptionRef, {
-                    detail: description
-                })
-                .then(() => {
-                    get(inventoryRef)
-                    .then((snapshot) => {
-                        var flagcolor = false
-                        snapshot.forEach((products) => {
-                            if (products.key == color) {
-                                flagcolor = true
-                                const Ref = ref(db, `products/${productId}/inventory/${color}`)
-                                var flagMemorySize = true
-                                products.forEach((product) => {
-                                    if (product.key == memorySize) {
-                                        flagMemorySize = false
-                                        const rac = {}
-                                        rac[memorySize] = quantity
-                                        update(Ref, rac)
-                                        .then(() => {
-                                            resolve({status: true})
-                                        })
-                                        .catch((error) => {
-                                            reject(error)
-                                        });
-                                    }
-                                });
-                                if (flagMemorySize) {
-                                    const newMemorySizeRef = ref(db, `products/${productId}/inventory/${color}/${memorySize}`);
-                                    set(newMemorySizeRef, quantity)
-                                    .then(() => {
-                                        resolve({status: true});
-                                    })
-                                    .catch((error) => {
-                                        reject(error);
-                                    });
-                                }
-                            }
-                        });
-                        if (flagcolor === false) {
-                            const newColorRef = ref(db, `products/${productId}/inventory/${color}`);
-                            const rac = {}
-                            const tmp = rac[color] = {}
-                            tmp[memorySize] = quantity
-                            set(newColorRef, tmp)
-                            .then(() => {
-                                resolve({status: true})
-                            })
-                            .catch((error) => {
-                                reject(error)
-                            })
-                        }
-                    })
-                    .catch((error) => {
-                        reject(error)
-                    })
-                })
-                .catch((error) => {
-                    reject(error)
-                })
-            })
-            .catch((error) => {
-                reject(error)
-            })
-        })
+            try {
+                set(productRef, info);
+                resolve({status: true});
+            }
+            catch(err) {
+                reject(err);
+            };
+        });
     }
 }
 
