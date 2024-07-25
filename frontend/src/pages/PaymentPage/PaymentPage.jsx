@@ -7,11 +7,10 @@ import {
     HeaderAreaCart,
     IconWrapper,
     CardBuy,
-    BuyButton,
     WrappCard,
 } from "./style";
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Input, Checkbox, message } from 'antd';
+import { Input, Checkbox, message, Button } from 'antd';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import card from '../../assets/images/card.png';
@@ -23,6 +22,7 @@ const PaymentPage = () => {
     const [dataPayment, setDataPayment] = useState(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cod');
     const { setUserCart } = useContext(UserCartContext);
+    const [loadingbutton, setLoadingButton] = useState(false);
 
     useEffect(() => {
         const retrievedDataInfo = localStorage.getItem('dataInfo');
@@ -61,26 +61,30 @@ const PaymentPage = () => {
         }
 
         const payload = {
+            status: "Chờ xác nhận",
             payment: selectedPaymentMethod.toUpperCase(),
             address,
             phonenum: phone,
             indexs: savedIndexes
         };
-
+        setLoadingButton(true);
         try {
             const response = await axios.post('http://localhost:3001/user/order', payload);
             if (response.data.status === true) {
-                localStorage.clear('dataPayment');
-                localStorage.clear('dataPaymentIndex');
+                localStorage.removeItem('dataPayment');
+                localStorage.removeItem('dataPaymentIndex');
                 setUserCart(prevUserCart => prevUserCart - savedIndexes.length);
-                window.location.href = '/payment/status?status=success&orderId=100'
+                const { orderId } = response.data;
+                setLoadingButton(false);
+                window.location.href = `/payment/status?status=success&orderId=${orderId}`
             } else {
                 console.log('Payment failed', response.data);
                 message.error("Đã xảy ra lỗi khi đặt hàng!");
+                setLoadingButton(false);
             }
         } catch (error) {
-            console.error('Payment failed', error);
             message.error("Đã xảy ra lỗi khi đặt hàng!");
+            setLoadingButton(false);
         }
     };
 
@@ -211,9 +215,9 @@ const PaymentPage = () => {
                                             Mua với giá ưu đãi nhất
                                         </div>
                                     </div>
-                                    <BuyButton onClick={handlePayment}>
-                                        Thanh toán
-                                    </BuyButton>
+                                    <Button loading={loadingbutton} type="primary" style={{height: '40px', backgroundColor: '#0688B4',  padding: "10px 20px", fontWeight: 'bold', fontSize: '16px' }} onClick={handlePayment}>
+                                       Thanh toán
+                                    </Button>
                                 </div>
                             </div>
                         </CardBuy>
