@@ -194,6 +194,7 @@ class UserService {
                         const snapshot = await get(productRef)
                         if (snapshot.val() < quantity) {
                             allProductsAvailable = false
+                            reject(`${name} is not enough!`);
                             break
                         } else {
                             originalValues.push({ 
@@ -207,9 +208,8 @@ class UserService {
                                 price: price
                             })
                         }
-                    } else {
-                        reject("Product has not been added to the cart")
-                    }
+                    } 
+                    else reject("Product has not been added to the cart")
                 } catch (error) {
                     reject(error)
                 }
