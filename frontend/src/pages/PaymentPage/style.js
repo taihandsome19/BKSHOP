@@ -110,3 +110,28 @@ export const ButtonProduct = styled.button`
     font-size: 16px;
     cursor: pointer;
 `;
+
+export const Buttonleft = styled.div`
+    width: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    border: 1px solid #6B6B6B;
+    color: #6B6B6B;
+    border-radius: 4px;
+    padding: 6px;
+    cursor: pointer;
+`;
+export const Buttonright = styled.div`
+    background-color: #0688B4;
+    width: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    color: #fff;
+`;

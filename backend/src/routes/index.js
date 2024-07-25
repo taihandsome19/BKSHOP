@@ -3,6 +3,7 @@ const AuthRouter = require('./AuthRouter');
 const ProductRouter = require('./ProductRouter');
 const AdminRouter = require('./AdminRouter');
 const UploadRouter = require('./UploadRouter');
+const PaymentRouter = require('./PaymentRouter');
 
 const routes = (app) => {
     app.use('/user', UserRouter);
@@ -11,6 +12,7 @@ const routes = (app) => {
     app.use('/home', ProductRouter);
     app.use('/admin', AdminRouter);
     app.use('/upload', UploadRouter);
+    app.use('/payment', PaymentRouter);
 }
 
 module.exports = routes;

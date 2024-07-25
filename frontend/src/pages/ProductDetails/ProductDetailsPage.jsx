@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import SwiperCore from 'swiper';
+import { UserCartContext } from '../../components/UserCartContext/UserCartContext';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -41,7 +42,7 @@ SwiperCore.use([Navigation, Pagination]);
 const ProductDetailsPage = () => {
   const searchParams = new URLSearchParams(window.location.search);
   const productId = searchParams.get('product_id');
-
+  const { setUserCart } = useContext(UserCartContext);
   const [infoDetail, setInfoDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCapacity, setSelectedCapacity] = useState(null);
@@ -131,19 +132,34 @@ const ProductDetailsPage = () => {
       productId: productId,
       quantity: 1
     };
-
+  
     try {
       await axios.post('http://localhost:3001/user/cart', payload);
       message.success('Sản phẩm đã được thêm vào giỏ hàng');
       
-      const count = await axios.get('http://localhost:3001/user/cart');
-      localStorage.setItem('User_cart',count.data.length)
+
+      // ĐỢI API
+      setUserCart(prevUserCart => prevUserCart + 1);
     } catch (error) {
       message.error('Vui lòng đăng nhập để mua hàng');
       setTimeout(() => {
         window.location.href = '/auth/log_in';
       }, 3000);
     }
+  };  
+
+  const handleBuyNow = () => {
+    const selectedProducts = [{
+      color: colorList[selectedColor],
+      image: listImage[selectedColor],
+      memorysize: memorysizeList[selectedCapacity],
+      name: infoDetail.name,
+      price: infoDetail.price,
+      productId: productId,
+      quantity: 1
+    }];
+    localStorage.setItem('dataPayment', JSON.stringify(selectedProducts));
+    window.location.href = '/cart/payment_info';
   };
 
 
@@ -210,7 +226,7 @@ const ProductDetailsPage = () => {
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-                        <img src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${listImage[parseInt(index)]}?alt=media`} alt="icon" preview="false" height={"30px"}></img>
+                        <img src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${listImage[parseInt(index)]}?alt=media`} alt="icon" preview={false} height={"30px"}></img>
                         <WrapperTextSelect style={{ color: "#111" }}>{color}</WrapperTextSelect>
                       </div>
                     </WrapSelect>
@@ -228,7 +244,7 @@ const ProductDetailsPage = () => {
             <WrapperContainerBuy>
               {!isOutOfStock ? (
                 <>
-                  <ButtonBuyNow>
+                  <ButtonBuyNow onClick={handleBuyNow}>
                     <div style={{ color: "#fff", fontSize: "18px", fontWeight: "bold" }}>MUA NGAY</div>
                     <div style={{ color: "#fff", fontSize: "13px", fontWeight: "200px" }}>&#40;Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng&#41;</div>
                   </ButtonBuyNow>
