@@ -1,0 +1,476 @@
+{
+  "carts": {
+    "6tR5nb8DU0cp4neBypcMp6wiGNy1": [
+      {
+        "color": "Đỏ",
+        "image": "172126821987062797.png",
+        "memorysize": "256GB",
+        "name": "Xiaomi Mi 11 | Chính hãng",
+        "price": "18990000",
+        "productId": "1721122450658",
+        "quantity": 1
+      },
+      {
+        "color": "Trắng",
+        "image": "172126799032652717.webp",
+        "memorysize": "256GB",
+        "name": "Samsung Galaxy S21 Ultra | Chính hãng",
+        "price": "29990000",
+        "productId": "1721122450660",
+        "quantity": 1
+      }
+    ],
+    "FM44LNTVV9ZXBjTGwdjnBjXIoJP2": [
+      {
+        "color": "Trắng",
+        "memorysize": "128GB",
+        "name": "iPhone13 | Chính hãng VN/A",
+        "price": 14190000,
+        "productId": 1721122450656,
+        "quantity": 4
+      },
+      {
+        "color": "Xanh",
+        "memorysize": "128GB",
+        "name": "Samsung Galaxy S21 | Chính hãng",
+        "price": 20990000,
+        "productId": 1721122450657,
+        "quantity": 1
+      }
+    ],
+    "UjCtlZJkx9UbcWeFV8NKwma6ojf2": [
+      {
+        "color": "black",
+        "image": "link",
+        "memorysize": "128GB",
+        "name": "Xiaomi",
+        "price": 1000,
+        "productId": "<product1_id>",
+        "quantity": 1
+      },
+      {
+        "color": "Hồng",
+        "image": "link",
+        "memorysize": "128GB",
+        "name": "iPhone13 | Chính hãng VN/A",
+        "price": 14190000,
+        "productId": 1721122450656,
+        "quantity": 1
+      }
+    ],
+    "Z9wsiYfZWXVG7q94wiZKWCwmPI33": [
+      {
+        "color": "Xanh",
+        "image": "172126750576476267.webp",
+        "memorysize": "128GB",
+        "name": "iPhone 12 Pro | Chính hãng VN/A",
+        "price": "19990000",
+        "productId": "1721122450659",
+        "quantity": 1
+      }
+    ],
+    "zUONVPnA8Sf4wNck8BrjSm8GUyi2": [
+      {
+        "color": "Red",
+        "image": "link2",
+        "memorysize": "128GB",
+        "name": "",
+        "price": 100,
+        "productId": 333,
+        "quantity": 4
+      }
+    ]
+  },
+  "orders": {
+    "<uid1_test>": {
+      "<order1_id>": {
+        "address": "",
+        "items": {
+          "<product1_id>": {
+            "color": "",
+            "memorySize": "",
+            "name": "iPhone 7",
+            "price": 200,
+            "quantity": 3
+          },
+          "<product2_id>": {
+            "color": "",
+            "memorySize": "",
+            "name": "iPhone 8",
+            "price": 300,
+            "quantity": 3
+          }
+        },
+        "orderdate": "01/01/2024",
+        "payment": {
+          "method": "COD",
+          "status": false
+        },
+        "phonenum": "",
+        "status": false
+      },
+      "<order2_id>": {
+        "address": "",
+        "items": {
+          "<product2_id>": {
+            "color": "",
+            "memorySize": "",
+            "name": "iPhone 8",
+            "price": 300,
+            "quantity": 3
+          }
+        },
+        "orderdate": "10/10/2024",
+        "payment": {
+          "method": "Banking",
+          "status": true
+        },
+        "phonenum": "",
+        "status": false
+      }
+    }
+  },
+  "products": {
+    "1721122450656": {
+      "brand": "Apple",
+      "description": {
+        "color": [
+          "Trắng",
+          "Hồng"
+        ],
+        "detail": "<b style=\"color: black;\">Thiết kế với nhiều đột phá</b><p>Về kích thước, iPhone 13 sẽ có 4 phiên bản khác nhau và kích thước không đổi so với series iPhone 12 hiện tại. Nếu iPhone 12 có sự thay đổi trong thiết kế từ góc cạnh bo tròn (Thiết kế được duy trì từ thời iPhone 6 đến iPhone 11 Pro Max) sang thiết kế vuông vắn (đã từng có mặt trên iPhone 4 đến iPhone 5S, SE).</p><p>Thì trên điện thoại iPhone 13 vẫn được duy trì một thiết kế tương tự. Máy vẫn có phiên bản khung viền thép, một số phiên bản khung nhôm cùng mặt lưng kính. Tương tự năm ngoái, Apple cũng sẽ cho ra mắt 4 phiên bản là iPhone 13, 13 mini, 13 Pro và 13 Pro Max.</p><p>Phần tai thỏ trên iPhone 13 cũng có thay đổi so với thế hệ trước, cụ thể tai thỏ này được làm nhỏ hơn so với 20%, trong khi đó độ dày của máy vẫn được giữ nguyên. Điểm khác biệt nhất về thiết kế trên thế hệ iPhone 2021 này đó là camera chéo.</p><p>Màu sắc trên mẫu iPhone mới này cũng đa dạng hơn, trong đó nổi bật là iPhone 13 màu hồng. Các màu sắc còn lại đề đã từng được xuất hiện trên các phiên bản trước đó như trắng, đen, đỏ, xanh blue.</p><b style=\"color: black;\">Màn hình màn hình Super Retina XDR độ sáng cao</b><p>Điện thoại iPhone 13 sẽ được sử dụng tấm nền OLED chất lượng cao và có kích thước 6.1 inch, lớn hơn iPhone 13 mini (5.4 inch). Với tấm nền này với công nghệ ProMotion giúp iPhone 13 tiết kiệm pin đến tối đa khi sử dụng. Người dùng cũng có thể dễ dàng điều chỉnh tốc độ làm tươi tùy theo ý thích.</p><p>Về khả năng hiển thị, mang đến chất lượng hiển thị vượt trội với màn hình OLED độ phân giải cao, độ sáng lớn. Nhờ đó người dùng có thể nhìn rõ trong nhiều điều kiện sáng khác nhau, kể cả ngoài trời.  Cụ thể, màn hình Super Retina XDR với độ sáng cao lên đên 800 nits, và tối đa có thể lên tới 1200 nits cùng dải màu rộng P3, tỉ lệ tương phản lớn. Phía bên ngoài màn hình được phủ lớp oleophobic giúp chống bám vân tay. Nhờ đó hạn chế được các tình trạng bám bụi bẩn và mồ hôi trong quá trình sử dụng.</p>",
+        "memorysize": [
+          "128GB",
+          "256GB"
+        ]
+      },
+      "image": [
+        "172122988044638371.webp",
+        "172122988183113852.webp"
+      ],
+      "inventory": {
+        "Hồng": {
+          "128GB": 2,
+          "256GB": 0
+        },
+        "Trắng": {
+          "128GB": 5,
+          "256GB": 0
+        }
+      },
+      "name": "iPhone13 | Chính hãng VN/A",
+      "price": "14190000"
+    },
+    "1721122450657": {
+      "brand": "Samsung",
+      "description": {
+        "color": [
+          "Đen",
+          "Xanh"
+        ],
+        "detail": "<b style=\"color: black;\">Thiết kế sang trọng và hiện đại</b><p>Galaxy S21 có thiết kế đột phá với màn hình tràn viền và viền mỏng. Sản phẩm có khung kim loại chắc chắn và mặt lưng kính cường lực.</p><p>Máy có nhiều phiên bản màu sắc phong phú, bao gồm đen, trắng, xám, xanh và hồng. Phần camera sau được thiết kế gọn gàng và tinh tế.</p><b style=\"color: black;\">Màn hình Dynamic AMOLED 2X</b><p>Galaxy S21 trang bị màn hình Dynamic AMOLED 2X 6.2 inch với độ phân giải Full HD+. Màn hình hỗ trợ HDR10+ và có tần số quét 120Hz, mang lại trải nghiệm xem phim và chơi game mượt mà.</p>",
+        "memorysize": [
+          "128GB",
+          "256GB"
+        ]
+      },
+      "image": [
+        "172126761878055481.webp",
+        "17212676183156105.webp"
+      ],
+      "inventory": {
+        "Xanh": {
+          "128GB": 6,
+          "256GB": 3
+        },
+        "Đen": {
+          "128GB": 10,
+          "256GB": 5
+        }
+      },
+      "name": "Samsung Galaxy S21 | Chính hãng",
+      "price": "20990000"
+    },
+    "1721122450658": {
+      "brand": "Xiaomi",
+      "description": {
+        "color": [
+          "Đỏ",
+          "Bạc"
+        ],
+        "detail": "<b style=\"color: black;\">Thiết kế nổi bật và tinh tế</b><p>Xiaomi Mi 11 sở hữu thiết kế sang trọng với khung kim loại và mặt lưng kính. Điện thoại có độ dày 7.8mm và nặng 196g, dễ dàng cầm nắm và sử dụng.</p><p>Máy có nhiều tùy chọn màu sắc như đen, trắng, xanh, đỏ và bạc. Phần camera được thiết kế theo cụm hình vuông với các góc bo tròn mềm mại.</p><b style=\"color: black;\">Màn hình AMOLED 6.81 inch</b><p>Xiaomi Mi 11 được trang bị màn hình AMOLED 6.81 inch với độ phân giải 3200 x 1440 pixel. Màn hình có tần số quét 120Hz và độ sáng tối đa 1500 nits, mang lại trải nghiệm hình ảnh sống động và sắc nét.</p>",
+        "memorysize": [
+          "256GB",
+          "512GB"
+        ]
+      },
+      "image": [
+        "172126821987062797.png",
+        "17212682205823229.png"
+      ],
+      "inventory": {
+        "Bạc": {
+          "256GB": 12,
+          "512GB": 8
+        },
+        "Đỏ": {
+          "256GB": 13,
+          "512GB": 10
+        }
+      },
+      "name": "Xiaomi Mi 11 | Chính hãng",
+      "price": "18990000"
+    },
+    "1721122450659": {
+      "brand": "Apple",
+      "description": {
+        "color": [
+          "Đen",
+          "Xanh"
+        ],
+        "detail": "<b style=\"color: black;\">Thiết kế sang trọng và tinh tế</b><p>iPhone 12 Pro sở hữu thiết kế vuông vắn với khung viền thép không gỉ và mặt lưng kính cường lực.</p><p>Sản phẩm có nhiều phiên bản màu sắc phong phú, bao gồm đen, trắng, xanh, và vàng. Camera sau được thiết kế gọn gàng và tinh tế.</p><b style=\"color: black;\">Màn hình Super Retina XDR</b><p>iPhone 12 Pro trang bị màn hình Super Retina XDR 6.1 inch với độ phân giải cao. Màn hình hỗ trợ HDR10 và có độ sáng tối đa 1200 nits, mang lại trải nghiệm xem phim và chơi game mượt mà.</p>",
+        "memorysize": [
+          "128GB",
+          "256GB"
+        ]
+      },
+      "image": [
+        "17212675043428322.webp",
+        "172126750576476267.webp"
+      ],
+      "inventory": {
+        "Xanh": {
+          "128GB": 4,
+          "256GB": 2
+        },
+        "Đen": {
+          "128GB": 4,
+          "256GB": 3
+        }
+      },
+      "name": "iPhone 12 Pro | Chính hãng VN/A",
+      "price": "19990000"
+    },
+    "1721122450660": {
+      "brand": "Samsung",
+      "description": {
+        "color": [
+          "Trắng",
+          "Tím"
+        ],
+        "detail": "<b style=\"color: black;\">Thiết kế đột phá và hiện đại</b><p>Galaxy S21 Ultra có thiết kế hiện đại với màn hình tràn viền và viền siêu mỏng. Sản phẩm có khung kim loại chắc chắn và mặt lưng kính cường lực.</p><p>Máy có nhiều phiên bản màu sắc, bao gồm trắng, đen, xám, và tím. Camera sau được thiết kế tinh tế và gọn gàng.</p><b style=\"color: black;\">Màn hình Dynamic AMOLED 2X</b><p>Galaxy S21 Ultra trang bị màn hình Dynamic AMOLED 2X 6.8 inch với độ phân giải QHD+. Màn hình hỗ trợ HDR10+ và có tần số quét 120Hz, mang lại trải nghiệm xem phim và chơi game mượt mà.</p>",
+        "memorysize": [
+          "256GB",
+          "512GB"
+        ]
+      },
+      "image": [
+        "172126799032652717.webp",
+        "172126799071428616.webp"
+      ],
+      "inventory": {
+        "Trắng": {
+          "256GB": 5,
+          "512GB": 4
+        },
+        "Tím": {
+          "256GB": 5,
+          "512GB": 3
+        }
+      },
+      "name": "Samsung Galaxy S21 Ultra | Chính hãng",
+      "price": "29990000"
+    },
+    "1721122450661": {
+      "brand": "Xiaomi",
+      "description": {
+        "color": [
+          "Xanh",
+          "Bạc"
+        ],
+        "detail": "<b style=\"color: black;\">Thiết kế nổi bật và tinh tế</b><p>Xiaomi Mi 11 Ultra sở hữu thiết kế sang trọng với khung kim loại và mặt lưng kính. Điện thoại có độ dày 8.4mm và nặng 234g, dễ dàng cầm nắm và sử dụng.</p><p>Máy có nhiều tùy chọn màu sắc như đen, trắng, xanh, đỏ và bạc. Phần camera được thiết kế theo cụm hình vuông với các góc bo tròn mềm mại.</p><b style=\"color: black;\">Màn hình AMOLED 6.81 inch</b><p>Xiaomi Mi 11 Ultra được trang bị màn hình AMOLED 6.81 inch với độ phân giải 3200 x 1440 pixel. Màn hình có tần số quét 120Hz và độ sáng tối đa 1500 nits, mang lại trải nghiệm hình ảnh sống động và sắc nét.</p>",
+        "memorysize": [
+          "256GB",
+          "512GB"
+        ]
+      },
+      "image": [
+        "172126821987062797.png",
+        "17212682205823229.png"
+      ],
+      "inventory": {
+        "Bạc": {
+          "256GB": 7,
+          "512GB": 5
+        },
+        "Xanh": {
+          "256GB": 7,
+          "512GB": 6
+        }
+      },
+      "name": "Xiaomi Mi 11 Ultra | Chính hãng",
+      "price": "24990000"
+    },
+    "1721122450662": {
+      "brand": "Oppo",
+      "description": {
+        "color": [
+          "Trắng",
+          "Đen"
+        ],
+        "detail": "<b style=\"color: black;\">Thiết kế hiện đại và thanh lịch</b><p>Oppo Find X3 Pro có thiết kế hiện đại với màn hình cong tràn viền và viền mỏng. Sản phẩm có khung kim loại chắc chắn và mặt lưng kính cường lực.</p><p>Máy có nhiều phiên bản màu sắc, bao gồm trắng, đen, xanh, và đỏ. Camera sau được thiết kế tinh tế và gọn gàng.</p><b style=\"color: black;\">Màn hình AMOLED</b><p>Oppo Find X3 Pro trang bị màn hình AMOLED 6.7 inch với độ phân giải QHD+. Màn hình hỗ trợ HDR10+ và có tần số quét 120Hz, mang lại trải nghiệm xem phim và chơi game mượt mà.</p>",
+        "memorysize": [
+          "256GB",
+          "512GB"
+        ]
+      },
+      "image": [
+        "172126832239713291.webp",
+        "172126832271579249.webp"
+      ],
+      "inventory": {
+        "Trắng": {
+          "256GB": 10,
+          "512GB": 8
+        },
+        "Đen": {
+          "256GB": 9,
+          "512GB": 7
+        }
+      },
+      "name": "Oppo Find X3 Pro | Chính hãng",
+      "price": "23990000"
+    },
+    "1721122450663": {
+      "brand": "Vivo",
+      "description": {
+        "color": [
+          "Đỏ",
+          "Tím"
+        ],
+        "detail": "<b style=\"color: black;\">Thiết kế trẻ trung và năng động</b><p>Vivo X60 Pro có thiết kế trẻ trung với màn hình tràn viền và viền siêu mỏng. Sản phẩm có khung kim loại chắc chắn và mặt lưng kính cường lực.</p><p>Máy có nhiều phiên bản màu sắc, bao gồm đỏ, tím, xanh, và đen. Camera sau được thiết kế tinh tế và gọn gàng.</p><b style=\"color: black;\">Màn hình AMOLED</b><p>Vivo X60 Pro trang bị màn hình AMOLED 6.56 inch với độ phân giải Full HD+. Màn hình hỗ trợ HDR10+ và có tần số quét 120Hz, mang lại trải nghiệm xem phim và chơi game mượt mà.</p>",
+        "memorysize": [
+          "128GB",
+          "256GB"
+        ]
+      },
+      "image": [
+        "172126840638421423.webp",
+        "172126840675421776.webp"
+      ],
+      "inventory": {
+        "Tím": {
+          "128GB": 9,
+          "256GB": 9
+        },
+        "Đỏ": {
+          "128GB": 11,
+          "256GB": 10
+        }
+      },
+      "name": "Vivo X60 Pro | Chính hãng",
+      "price": "18990000"
+    },
+    "1721122450664": {
+      "brand": "OnePlus",
+      "description": {
+        "color": [
+          "Xanh",
+          "Đen"
+        ],
+        "detail": "<b style=\"color: black;\">Thiết kế tinh tế và hiện đại</b><p>OnePlus 9 Pro có thiết kế hiện đại với màn hình cong tràn viền và viền siêu mỏng. Sản phẩm có khung kim loại chắc chắn và mặt lưng kính cường lực.</p><p>Máy có nhiều phiên bản màu sắc, bao gồm xanh, đen, bạc, và đỏ. Camera sau được thiết kế tinh tế và gọn gàng.</p><b style=\"color: black;\">Màn hình Fluid AMOLED</b><p>OnePlus 9 Pro trang bị màn hình Fluid AMOLED 6.7 inch với độ phân giải QHD+. Màn hình hỗ trợ HDR10+ và có tần số quét 120Hz, mang lại trải nghiệm xem phim và chơi game mượt mà.</p>",
+        "memorysize": [
+          "256GB",
+          "512GB"
+        ]
+      },
+      "image": [
+        "17212685727856765.jpg",
+        "172126856920714845.webp"
+      ],
+      "inventory": {
+        "Xanh": {
+          "256GB": 4,
+          "512GB": 3
+        },
+        "Đen": {
+          "256GB": 6,
+          "512GB": 4
+        }
+      },
+      "name": "OnePlus 9 Pro | Chính hãng",
+      "price": "26990000"
+    }
+  },
+  "users": {
+    "6tR5nb8DU0cp4neBypcMp6wiGNy1": {
+      "infor": {
+        "address": "",
+        "date_of_birth": "",
+        "email": "tai@hcmut.edu.vn",
+        "name": "Trần Thành Tài",
+        "phonenum": "999",
+        "sex": "male"
+      },
+      "role": "admin"
+    },
+    "FM44LNTVV9ZXBjTGwdjnBjXIoJP2": {
+      "infor": {
+        "address": "",
+        "date_of_birth": "10/10/2004",
+        "email": "thinh.nguyen04@hcmut.edu.vn",
+        "name": "Cauchy",
+        "phonenum": "888",
+        "sex": "male"
+      },
+      "orderlist": [
+        1721896428803
+      ],
+      "role": "user"
+    },
+    "KvyEVJaB6fQq3NwBeqG7mypmyLA2": {
+      "infor": {
+        "email": "admin@gmail.com",
+        "name": "Admin",
+        "phonenum": "100"
+      },
+      "orderList": "",
+      "role": "admin"
+    },
+    "UjCtlZJkx9UbcWeFV8NKwma6ojf2": {
+      "infor": {
+        "address": "",
+        "date_of_birth": "30/02/2004",
+        "email": "emailaa@gmail.com",
+        "name": "randomname",
+        "phonenum": "113",
+        "sex": "female"
+      },
+      "orderlist": "",
+      "role": "user"
+    },
+    "Z9wsiYfZWXVG7q94wiZKWCwmPI33": {
+      "infor": {
+        "address": "",
+        "date_of_birth": "",
+        "email": "test@gmail.com",
+        "name": "TEST",
+        "phonenum": "",
+        "sex": ""
+      },
+      "role": "user"
+    },
+    "zUONVPnA8Sf4wNck8BrjSm8GUyi2": {
+      "infor": {
+        "address": "",
+        "date_of_birth": "00/00/0000",
+        "email": "t@gmail.com",
+        "name": "Thành Tài",
+        "phonenum": "",
+        "sex": "male"
+      },
+      "orderlist": "",
+      "role": "user"
+    }
+  }
+}

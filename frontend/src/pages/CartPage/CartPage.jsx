@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Checkbox, message, Spin } from 'antd';
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 import {
@@ -17,24 +17,33 @@ import {
 import {
     ArrowLeftOutlined,
     DeleteOutlined,
-    CloseCircleOutlined
+    FrownOutlined
 } from '@ant-design/icons';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { UserCartContext } from '../../components/UserCartContext/UserCartContext';
 
 const CartPage = () => {
+    const { User_cart, setUserCart } = useContext(UserCartContext);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         axios.get('http://localhost:3001/user/cart')
             .then(response => {
-                const updatedProducts = response.data.map(product => ({
-                    ...product,
-                    checked: false
-                }));
-                setProducts(updatedProducts);
+               try{
+                    if(response.data.length !== User_cart){
+                        setUserCart(response.data.length);
+                    }
+                    const updatedProducts = response.data.map(product => ({
+                        ...product,
+                        checked: false
+                    }));
+                    setProducts(updatedProducts);
+               }catch{
+                    console.log("Không có dữ liệu");
+               }
                 setLoading(false);
             })
             .catch(error => {
@@ -42,7 +51,7 @@ const CartPage = () => {
                 message.error("Lỗi khi lấy thông tin giỏ hàng");
                 setLoading(false);
             });
-    }, []);
+    }, [User_cart,setUserCart]);
 
     const [checkedAll, setCheckedAll] = useState(false);
 
@@ -90,6 +99,7 @@ const CartPage = () => {
         axios.post('http://localhost:3001/user/remove', {
             index: index,
         }).then(response => {
+            setUserCart(prevUserCart => prevUserCart - 1);
             if(flag){
                 setProducts(products.filter((_, idx) => idx !== index));
             }
@@ -106,9 +116,13 @@ const CartPage = () => {
     };
 
     const handleProductCheck = (index) => {
-        setProducts(products.map((product, idx) =>
+        const updatedProducts = products.map((product, idx) =>
             idx === index ? { ...product, checked: !product.checked } : product
-        ));
+        );
+        setProducts(updatedProducts);
+    
+        const allSelected = updatedProducts.every(product => product.checked);
+        setCheckedAll(allSelected);
     };
 
     const handleDeleteSelected = async () => {
@@ -145,6 +159,12 @@ const CartPage = () => {
     const handleBuyNow = () => {
         const selectedProducts = products.filter(product => product.checked);
         localStorage.setItem('dataPayment', JSON.stringify(selectedProducts));
+        
+        const selectedIndexes = products
+            .map((product, index) => product.checked ? index : null)
+            .filter(index => index !== null);
+        localStorage.setItem('dataPaymentIndex', JSON.stringify(selectedIndexes));
+
         window.location.href = '/cart/payment_info';
     };
 
@@ -218,15 +238,10 @@ const CartPage = () => {
                         </HeaderAreaCart>
                         {products.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '100px', fontSize: '16px', color: "#6f6f6f" }}>
-                                <CloseCircleOutlined style={{ fontSize: "40px", paddingBottom: "5px" }} />
+                                <FrownOutlined style={{ fontSize: "40px", paddingBottom: "10px" }} />
                                 <div style={{ paddingBottom: "5px" }}>
                                     Không có sản phẩm nào trong giỏ hàng của bạn
                                 </div>
-                                <Link to="/">
-                                    <div style={{ color: "#6f6f6f" }}>
-                                        Quay lại trang chủ tại đây.
-                                    </div>
-                                </Link>
                             </div>
                         ) : (
                             <SelectAll>

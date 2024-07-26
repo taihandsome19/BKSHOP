@@ -14,16 +14,17 @@ class AuthService {
                     .then((userCredential) => {
                         const uid = userCredential.user.uid;
                         const userRef = child(ref(db, "users"), `${uid}`);
-                        const orderRef = child(ref(db, "orders"), `${uid}`);
-                        const cartRef = child(ref(db, "carts"), `${uid}`);
+                        // const orderRef = child(ref(db, "orders"), `${uid}`);
+                        // const cartRef = child(ref(db, "carts"), `${uid}`);
                         set(userRef, {
                             infor: {
                                 name: name,
                                 phonenum: "",
                                 email: email,
-                                address: ""
+                                address: "",
+                                sex: "",
+                                date_of_birth: ""
                             },
-                            orderlist: "",
                             role: "user"
                         });
                         // set(orderRef, "");
@@ -90,7 +91,7 @@ class AuthService {
     }
 
     changePassword = async (data) => {
-        const { currentPassword, newPassword } = data;
+        const { currentPassword,newPassword } = data;
         return new Promise((resolve, reject) => {
             var user = auth.currentUser;
             if (user) {

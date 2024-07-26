@@ -1,6 +1,16 @@
-import { Row } from "antd";
+import { Row, Badge } from "antd";
 import styled from "styled-components";
 
+export const RingingBadge = styled(Badge)`
+.ant-badge-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #17b271;
+}
+
+`;
 
 export const WrapperPage = styled(Row)`
     background-color: #0688B4;

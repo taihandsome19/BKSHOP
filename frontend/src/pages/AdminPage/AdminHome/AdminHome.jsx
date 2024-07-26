@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
@@ -9,8 +9,31 @@ import coin from '../../../assets/images/admin/finance.png';
 import order from '../../../assets/images/admin/order.png';
 import delivered from '../../../assets/images/admin/delivered.png';
 import ApexChart from './ApexChart';
+import CheckAdmin from '../AdminProtect/AdminProtect';
+import { useNavigate } from 'react-router-dom';
+
 
 const AdminHome = () => {
+  const [isAd, setisAd] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+      const checkAdmin = async () => {
+          const isAdmin = await CheckAdmin.isAdmin();
+          if (isAdmin) {;
+              setisAd(true);
+          } else {
+              navigate('/404');
+          }
+      };
+      checkAdmin();
+  }, [navigate]);
+
+  if(!isAd){
+    return;
+  }
+
+
   return (
     <HelmetProvider>
       <Helmet>

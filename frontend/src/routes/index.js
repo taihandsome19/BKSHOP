@@ -17,6 +17,8 @@ import Payment from '../pages/PaymentPage/PaymentPage'
 import AdminUser from '../pages/AdminPage/AdminUser/AdminUser'
 import AdminProduct from '../pages/AdminPage/AdminProduct/AdminProduct'
 import AdminOrder from '../pages/AdminPage/AdminOrder/AdminOrder'
+import PaymentStatusPage from '../pages/PaymentPage/PaymentStatusPage'
+import OrderDetailPage from '../pages/UserPanelPage/OrderDetailPage/OrderDetailPage'
 import { Navigate } from 'react-router-dom';
 
   
@@ -72,6 +74,13 @@ export const routes = [
     redirectTo: '/auth/log_in',
   },
   {
+    path: '/user/order/detail',
+    page: OrderDetailPage,
+    isShowHeader: true,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
     path: '/user/change_pass',
     page: ChangePassPage,
     isShowHeader: true,
@@ -105,6 +114,13 @@ export const routes = [
   {
     path: '/cart/payment',
     page: Payment,
+    isProtected: true,
+    redirectTo: '/auth/log_in',
+  },
+  {
+    path: '/payment/status',
+    page: PaymentStatusPage,
+    isShowHeader: true,
     isProtected: true,
     redirectTo: '/auth/log_in',
   },

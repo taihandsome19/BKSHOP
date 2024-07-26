@@ -1,4 +1,4 @@
-const { update } = require('firebase/database');
+const { update, remove } = require('firebase/database');
 const { auth } = require('../models/auth');
 const { db, ref, set, child, get, onValue } = require('../models/database');
 
@@ -74,9 +74,7 @@ class AdminService {
                                     })
                                 }
                             }
-                            else {
-                                resolve({status: false}); // Nếu đúng thì sẽ ko chạy vào case này
-                            }
+                            else resolve({status: false});
                         })
                         .catch((error) => {
                             reject(error)
@@ -131,7 +129,7 @@ class AdminService {
             });
         });
     }
-    
+        
     updateOrder = async (body) => {
         const { orderId, status } = body
         return new Promise((resolve, reject) => {
@@ -265,6 +263,86 @@ class AdminService {
                     .catch((error) => {
                         reject(error)
                     })
+                })
+                .catch((error) => {
+                    reject(error)
+                })
+            })
+            .catch((error) => {
+                reject(error)
+            })
+        })
+    }
+
+    // removeProduct = async(body) => {
+    //     const { productId } = body
+    //     const productRef = ref(db, `products/${productId}`)
+    //     const users = await get(productRef);
+    //     return new Promise(async (resolve, reject) => {
+    //         remove(productRef)
+    //         .then(() => {
+    //             for (let user of users) {
+    //                 const cartRef = ref(db, `carts/${user}`)
+    //                 get(cartRef)
+    //                 .then((productSnapshot) => {
+    //                     productSnapshot.forEach((product) => {
+    //                         if (product.child('productId').val() === productId) {
+    //                             const removeRef = ref(db, `carts/${user}/${product.key}`)
+    //                             remove(removeRef)
+    //                             .then(() => {
+    //                                 resolve({status: true})
+    //                             })
+    //                             .catch((error) => {
+    //                                 reject(error)
+    //                             });
+    //                         }
+    //                     })
+    //                 })
+    //                 .catch((error) => {
+    //                     reject(error)
+    //                 });
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             reject(error)
+    //         });
+    //     })
+    // }
+
+    removeProduct = async(body) => {
+        const { productId } = body
+        const productRef = ref(db, `products/${productId}`)
+        const cartRef = ref(db, "carts")
+        return new Promise(async (resolve, reject) => {
+            remove(productRef)
+            .then((snapshot) => {
+                get(cartRef)
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const cart = snapshot.val()
+                        Object.keys(cart).forEach((user) => {
+                            const cartRef = ref(db, `carts/${user}`)
+                            get(cartRef)
+                            .then((productSnapshot) => {
+                                productSnapshot.forEach((product) => {
+                                    if (product.child('productId').val() === productId) {
+                                        const removeRef = ref(db, `carts/${user}/${product.key}`)
+                                        remove(removeRef)
+                                        .then(() => {
+                                            resolve({status: true})
+                                        })
+                                        .catch((error) => {
+                                            reject(error)
+                                        });
+                                    }
+                                })
+                            })
+                            .catch((error) => {
+                                reject(error)
+                            });
+                        })
+                    }
+                    else resolve({status: false})
                 })
                 .catch((error) => {
                     reject(error)

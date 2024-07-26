@@ -75,7 +75,7 @@ const AdminUser = () => {
             type="primary"
             onClick={() => showModal(tableMeta.rowData)}
           >
-            Xem đơn hàng
+            Chi tiết
           </Button>
         ),
       },

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Modal, Button, Input, Form, Select, Upload, message, Spin } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, EditOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
 import TableComponent from '../../../components/TableComponent/TableComponent';
-import { ButtonComfirm } from './style';
+import { ButtonComfirm, EditButton, WrapperRow, StyledInput, StyledInputArea, Deletebutton } from './style';
 import axios from 'axios';
 import TextArea from 'antd/es/input/TextArea';
 
@@ -17,26 +17,37 @@ const AdminProduct = () => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [productData, setProductData] = useState([]);
-  const [brands, setBrands] = useState(["Apple", "Vivo", "Oppo", "Xiaomi", "Samsung", "OnePlus"]); // hard code
-  const [newBrand, setNewBrand] = useState('');
+  const brands = ["Apple", "Vivo", "Oppo", "Xiaomi", "Samsung", "OnePlus"]; // hard code
   const [colors, setColors] = useState([]);
   const [storages, setStorages] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [form] = Form.useForm();
-
   const [loading, setLoading] = useState(true);
+  const [fullProductData, setFullProductData] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [rowProductData, setRowProductData] = useState({});
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [loadingbutton, setLoadingButton] = useState(false);
+  
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    axios.get('http://localhost:3001/admin/manage_user')
+    axios.get('http://localhost:3001/admin/manage_product')
       .then(response => {
-        const formattedData = response.data.map((item, index) => [
-          (index + 1).toString(),
-          item.name,
-          item.email,
-          item.phone
-        ]);
+        const rawData = response.data;
+        const formattedData = Object.keys(response.data).map((key) => {
+          const item = response.data[key];
+          const priceFormatted = parseInt(item.price).toLocaleString('vi-VN') + 'đ';
+          return [
+            key,
+            item.name,
+            item.brand,
+            priceFormatted
+          ];
+        });
         setProductData(formattedData);
+        setFullProductData(rawData);
         setLoading(false);
       })
       .catch(error => {
@@ -45,17 +56,19 @@ const AdminProduct = () => {
       });
   }, []);
 
-
-
-
   const showModal = (rowData) => {
     setSelectedRowData(rowData);
+    setRowProductData(fullProductData[rowData[0]]);
     setIsModalVisible(true);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedRowData(null);
+    setRowProductData(null);
+    setIsEditing(false);
+    setSelectedColor(null);
+    setSelectedSize(null);
   };
 
   const showAddModal = () => {
@@ -64,12 +77,77 @@ const AdminProduct = () => {
 
   const handleAddCancel = () => {
     setIsAddModalVisible(false);
+    form.resetFields();
+    setFileList([]);
+    setColors([]);
+    setStorages([]);
   };
 
+  const handleEditProduct = () => {
+    console.log(selectedRowData);
+  
+    setIsEditing(!isEditing);
+    if (isEditing) {
+      // Format the inventory data based on selected values
+      const updatedProductData = { ...rowProductData };
+      const inventory = {};
+  
+      if (selectedColor && selectedSize) {
+        // Assuming you have the logic to get the quantity from input fields.
+        const quantity = document.querySelector(`input[name='${selectedColor}-${selectedSize}']`).value;
+        
+        if (!inventory[selectedColor]) {
+          inventory[selectedColor] = {};
+        }
+        
+        inventory[selectedColor][selectedSize] = parseInt(quantity, 10) || 0;
+  
+        // Update the rowProductData
+        updatedProductData.inventory = inventory;
+  
+        // Update the state or send a request to update the data
+        setRowProductData(updatedProductData);
+        console.log('Updated Product Data:', updatedProductData);
+  
+        // Example API call (assuming you have an endpoint to handle product updates)
+        axios.put(`http://localhost:3001/admin/product/update/${rowProductData.id}`, updatedProductData)
+          .then(response => {
+            message.success('Sản phẩm đã được cập nhật thành công!');
+            setProductData(prevData => prevData.map(item =>
+              item[0] === rowProductData.id ? updatedProductData : item
+            ));
+          })
+          .catch(error => {
+            message.error('Cập nhật sản phẩm thất bại!');
+          });
+  
+        setSelectedColor(null);
+        setSelectedSize(null);
+      } else {
+        message.error('Vui lòng chọn màu sắc và dung lượng trước khi lưu.');
+      }
+    } else {
+      console.log('Editing mode...');
+    }
+  };
+  
+
   const handleAddProduct = async (values) => {
+    setLoadingButton(true);
+    const commaCount = (values.color.match(/,/g) || []).length + 1;
+    if(fileList.length !== commaCount){
+      message.error("Vui lòng tải lên số lượng hình ảnh bằng số lượng màu")
+      setLoadingButton(false);
+      return;
+    }
+    if((values.name).length > 50){
+      message.error("Tên sản phẩm không được dài quá 50 ký tự")
+      setLoadingButton(false);
+      return;
+    }
     const formData = new FormData();
     fileList.forEach(file => {
-      formData.append('imgs', file.originFileObj);
+      formData.append('images', file.originFileObj);
     });
 
     try {
@@ -78,10 +156,10 @@ const AdminProduct = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      const imageUrls = uploadResponse.data.fileUrls;
+      const imageUrls = uploadResponse.data.images;
 
       const variants = values.variants || [];
-  
+
       const quantities = {};
       colors.forEach(color => {
         quantities[color] = {};
@@ -99,37 +177,38 @@ const AdminProduct = () => {
       });
 
       const newProduct = {
-        id: Date.now(),
+        description: {
+            colors: colors,
+            memorysize: storages,
+            detail: values.decription            
+        },
+        images: imageUrls,
+        inventory: quantities,
         name: values.name,
         brand: values.brand,
-        description: values.description,
         price: values.price,
-        colors,
-        storages,
-        images: imageUrls,
-        quantities,
       };
 
-      const response = await axios.post('/api/admin/product/add', newProduct);
-      console.log('Response:', response.data);
+      const response = await axios.post('http://localhost:3001/admin/create_product', newProduct);
+      if(response.data.status === true){
+        message.success("Thêm sản phẩm thành công")
+      }else{
+        message.error("Thêm sản phẩm thất bại")
+        setLoadingButton(false);
+        return;
+      }
       setProductData([...productData, newProduct]);
-      setIsAddModalVisible(false);
       form.resetFields();
       setFileList([]);
+      setColors([]);
+      setStorages([]);
     } catch (error) {
+      message.error("Thêm sản phẩm thất bại")
       console.error('Error:', error);
     }
+    setLoadingButton(false);
   };
 
-
-
-  const handleAddBrand = () => {
-    if (newBrand && !brands.includes(newBrand)) {
-      setBrands([...brands, newBrand]);
-      form.setFieldsValue({ brand: newBrand });
-      setNewBrand('');
-    }
-  };
 
   const handleColorChange = (value) => {
     setColors(value.split(',').map(item => item.trim()));
@@ -205,18 +284,93 @@ const AdminProduct = () => {
                 visible={isModalVisible}
                 onCancel={handleCancel}
                 footer={[
-                  <Button key="close" onClick={handleCancel}>
-                    Close
-                  </Button>,
+                  <div>
+                  <Deletebutton>
+                      <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
+                        <DeleteOutlined /> Xoá
+                      </div>
+                  </Deletebutton>
+                  <EditButton isEditing={isEditing} onClick={handleEditProduct}>
+                    {isEditing ?
+                      <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
+                        <SaveOutlined /> Lưu
+                      </div> :
+                      <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
+                        <EditOutlined /> Chỉnh sửa
+                      </div>
+                    }
+                  </EditButton>
+                  </div>
                 ]}
               >
                 {selectedRowData && (
                   <div>
-                    <p><strong>Mã sản phẩm:</strong> {selectedRowData[0]}</p>
-                    <p><strong>Tên sản phẩm:</strong> {selectedRowData[1]}</p>
-                    <p><strong>Hãng</strong> {selectedRowData[2]}</p>
-                    <p><strong>Giá</strong> {selectedRowData[3]}</p>
-                    <p><strong>Số điện thoại:</strong> {selectedRowData[4]}</p>
+                    <WrapperRow>
+                      <strong style={{ width: '125px' }}>Mã sản phẩm:</strong>
+                      <StyledInput value={selectedRowData[0]} disabled={true} />
+                    </WrapperRow>
+                    <WrapperRow>
+                      <strong style={{ width: '125px' }}>Tên sản phẩm:</strong>
+                      <StyledInput value={selectedRowData[1]} disabled={!isEditing} />
+                    </WrapperRow>
+                    <WrapperRow>
+                      <strong style={{ width: '125px' }}>Hãng điện thoại:</strong>
+                      <StyledInput defaultValue={selectedRowData[2]} disabled={!isEditing} />
+                    </WrapperRow>
+                    <WrapperRow>
+                      <strong style={{ width: '125px' }}>Giá sản phẩm:</strong>
+                      <StyledInput defaultValue={selectedRowData[3]} disabled={!isEditing} />
+                    </WrapperRow>
+                    <WrapperRow>
+                      <strong style={{ width: '125px' }}>Số lượng:</strong>
+                      <div style={{ flex: '1' }}>
+                      {Object.values(rowProductData.description.color || {}).map(color => (
+                        Object.values(rowProductData.description.memorysize || {}).map(storage => (
+                          <div style={{ display: 'flex', flex: '1', gap: '10px', padding: '7px 0' }}>
+                            <StyledInput
+                              style={{ width: '33.3%' }}
+                              value={color}
+                              disabled={true}
+                            />
+                            <StyledInput
+                              style={{ width: '33.3%' }}
+                              value={storage}
+                              disabled={true}
+                            />
+                            <StyledInput
+                              style={{ width: '33.3%' }}
+                              defaultValue={rowProductData.inventory[color][storage]}
+                              disabled={!isEditing}
+                            />
+                          </div>
+                        ))
+                      ))}
+                      </div>
+                    </WrapperRow>
+                    <WrapperRow>
+                      <strong style={{ width: '125px' }}>Mô tả:</strong>
+                      <StyledInputArea defaultValue={rowProductData.description.detail} disabled={!isEditing} />
+                    </WrapperRow>
+                    <WrapperRow>
+                      <strong style={{ width: '125px' }}>Hình ảnh:</strong>
+                      <div style={{display: 'flex', gap: "5px"}}>
+                        {Object.values(rowProductData.image || {}).map(img => (
+                          <div style={{
+                            width: '50px',
+                            height: '50px',
+                            border: '1px solid #d9d9d9', 
+                            borderRadius: '8px',
+                            overflow: 'hidden'
+                          }}>
+                            <img 
+                              src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${img}?alt=media`} 
+                              alt="icon" 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </WrapperRow>
                   </div>
                 )}
               </Modal>
@@ -252,17 +406,6 @@ const AdminProduct = () => {
                       dropdownRender={(menu) => (
                         <>
                           {menu}
-                          <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
-                            <Input
-                              style={{ flex: 'auto' }}
-                              value={newBrand}
-                              placeholder='Thêm hãng mới'
-                              onChange={(e) => setNewBrand(e.target.value)}
-                            />
-                            <Button type="link" onClick={handleAddBrand}>
-                              Thêm
-                            </Button>
-                          </div>
                         </>
                       )}
                     >
@@ -284,7 +427,13 @@ const AdminProduct = () => {
                   <Form.Item
                     name="price"
                     label="Giá tiền"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá sản phẩm' }]}
+                    rules={[
+                      { required: true, message: 'Vui lòng nhập giá sản phẩm' },
+                      {
+                        validator: (_, value) =>
+                          value >= 0 ? Promise.resolve() : Promise.reject(new Error('Giá sản phẩm phải lớn hơn hoặc bằng 0')),
+                      },
+                    ]}
                     labelAlign="left"
                   >
                     <Input />
@@ -317,13 +466,14 @@ const AdminProduct = () => {
                     name="images"
                     label="Hình ảnh"
                     labelAlign="left"
+                    rules={[{ required: true, message: 'Chọn hình ảnh' }]}
                   >
                     <Upload
                       multiple
                       listType="picture"
                       fileList={fileList}
                       onChange={({ fileList }) => setFileList(fileList)}
-                      beforeUpload={() => false}  // Prevent automatic upload
+                      beforeUpload={() => false} 
                     >
                       <Button icon={<UploadOutlined />}>Tải lên hình ảnh</Button>
                     </Upload>
@@ -350,7 +500,13 @@ const AdminProduct = () => {
                               </Form.Item>
                               <Form.Item
                                 name={[`${color}-${storage}`, 'quantity']}
-                                rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]}
+                                rules={[
+                                  { required: true, message: 'Nhập số lượng' },
+                                  {
+                                    validator: (_, value) =>
+                                      value >= 0 ? Promise.resolve() : Promise.reject(new Error('Không hợp lệ')),
+                                  },
+                                ]}
                                 style={{ flex: 1, marginRight: 8 }}
                               >
                                 <Input placeholder="Số lượng" style={{ width: '151.8px' }} />
@@ -362,7 +518,7 @@ const AdminProduct = () => {
                     )}
                   </Form.List>
                   <Form.Item wrapperCol={{ span: 24 }}>
-                    <Button type="primary" htmlType="submit" block>
+                    <Button type="primary" loading={loadingbutton} htmlType="submit" block>
                       Thêm
                     </Button>
                   </Form.Item>

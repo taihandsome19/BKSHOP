@@ -1,7 +1,5 @@
 const { db, ref, set, get, onValue, child } = require('../models/database');
 const { auth } = require('../models/auth');
-const { resolvePath } = require('react-router-dom');
-const { cart } = require('../controllers/UserController');
 const supportFunction = require('../services/support')
 
 class UserService {
@@ -22,90 +20,29 @@ class UserService {
         });
     }
 
-    order = async () => { //Chưa làm xog
+    order_overview = async () => {
         const uid = await auth.currentUser.uid;
         const dbRef = ref(db, `orders/${uid}`);
         return new Promise((resolve, reject) => {
-            onValue(dbRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    // console.log(data)
-                    resolve(data);
-                } else {
-                    resolve(null);
-                }
-            }, (error) => reject(error))
-        });
-    }
-
-    cart = async () => {
-        const uid = await auth.currentUser.uid;
-        // console.log(uid)
-        const dbRef = ref(db, `carts/${uid}`);
-        return new Promise((resolve, reject) => {
-            onValue(dbRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    // console.log(snapshot.size)
-                    resolve(data);
-                } else {
-                    resolve(null);
-                }
-            }, (error) => reject(error))
-        });
-    }
-
-    addToCart = async (productInfo) => {
-        const uid = await auth.currentUser.uid;
-        const { productId, quantity, color, memorysize } = productInfo;
-        var data = [];
-        var found = false;
-        
-        return new Promise((resolve, reject) => {
-            try {
-                get(child(ref(db), `carts/${uid}`))
-                .then((snapshot) => {
-                    if(snapshot.exists() && snapshot.val() != "") {
-                        const obj = Object.values(snapshot.val());
-                        data = obj.map((item) => {
-                            if(item.productId === productId && item.color === color && item.memorysize === memorysize) {
-                                found = true;
-                                item.quantity += quantity;
-                                return item;
-                            }
-                            return item;
-                        });
-                        if(!found) data.push(productInfo);
-                        set(ref(db, `/carts/${uid}`), data);
-                        resolve({status: true})
+            get(child(dbRef))
+            .then((snapshot) => {
+                if(snapshot.exists()) {
+                    const orders = snapshot.val();
+                    const orderInfo = Object.keys(orders).map(orderId => ({
+                        orderId: orderId,
+                        name: orders[orderId].name,
+                        price: orders[orderId].price,
+                        image: orders[orderId].image,
+                        color: orders[orderId].color,
+                        memorySize: orders[orderId].memorySize
+                    }));
+                    var totalPrice = 0;
+                    for (var order of orderInfo) {
+                        totalPrice += order.price;
                     }
-                    else {
-                        set(ref(db, `/carts/${uid}`), [productInfo]);
-                        resolve({status: true})
-                    }
-                })
-                .catch((error) => {
-                    // resolve({status: false, error: error});
-                    reject(error);
-                });
-            }
-            catch (error) { 
-                reject(error);
-            }
-        })
-    }
-    
-    increaseQuantity = async (body) => {
-        const uid = await auth.currentUser.uid;
-        const { index } = body;
-        // console.log(index)
-        return new Promise((resolve, reject) => {
-            get(child(ref(db), `carts/${uid}/${index}/quantity`))
-            .then((snapshot) => {
-                const data = snapshot.val();
-                // console.log(data)
-                set(ref(db, `carts/${uid}/${index}/quantity`), data + 1);
-                resolve({status: true})
+                    resolve({orderInfo: orderInfo, totalPrice: totalPrice})
+                }
+                else resolve({status: false})
             })
             .catch((error) => {
                 reject(error);
@@ -113,41 +50,22 @@ class UserService {
         })
     }
 
-    decreaseQuantity = async (body) => {
+    order_detail = async (orderId) => {
         const uid = await auth.currentUser.uid;
-        const { index } = body;
-        // console.log(index)
+        const dbRef = ref(db, `orders/${uid}/${orderId}`);
         return new Promise((resolve, reject) => {
-            get(child(ref(db), `carts/${uid}/${index}/quantity`))
+            get(child(dbRef))
             .then((snapshot) => {
-                const data = snapshot.val();
-                // console.log(data)
-                set(ref(db, `carts/${uid}/${index}/quantity`), data - 1);
-                resolve({status: true})
+                if(snapshot.exists()) {
+                    const orderDetail = Object.values(snapshot.val());
+                    resolve({status: true, orderDetail: orderDetail});
+                }
+                else resolve({status: false})
             })
             .catch((error) => {
                 reject(error);
             });
-        })
-    }
-
-    remove = async (body) => {
-        const uid = await auth.currentUser.uid;
-        const { index } = body;
-        // console.log(index)
-        return new Promise((resolve, reject) => {
-            get(child(ref(db), `carts/${uid}`))
-            .then((snapshot) => {
-                var data = Object.values(snapshot.val());
-                // console.log(data)
-                data.splice(index, 1);
-                set(ref(db, `carts/${uid}`), data);
-                resolve({status: true})
-            })
-            .catch((error) => {
-                reject(error);
-            });
-        })
+        });
     }
 
     updateInfo = async (info) => {
@@ -175,7 +93,6 @@ class UserService {
     addToOrder = async (body) => {
         const { payment, address, phonenum, indexs, status } = body
         const userId = await auth.currentUser.uid
-        const order = await supportFunction.createOrder({ payment, address, phonenum, status })
         return new Promise(async (resolve, reject) => {
             const originalValues = []
             let allProductsAvailable = true
@@ -215,6 +132,7 @@ class UserService {
                 }
             }
             if (allProductsAvailable) {
+                const order = await supportFunction.createOrder({ payment, address, phonenum, status })
                 try {
                     for (let item of originalValues) {
                         await set(item.ref, item.value - item.quantity)

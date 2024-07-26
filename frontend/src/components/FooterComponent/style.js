@@ -31,8 +31,5 @@ export const RightContent = styled.div`
 
 export const FooterItem = styled.div`
     margin-left: 20px;
-    cursor: pointer;
-    &:hover {
-        text-decoration: underline;
-    }
+    font-weight: bold;
 `;
