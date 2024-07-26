@@ -112,7 +112,10 @@ class UserService {
                         const snapshot = await get(productRef)
                         if (snapshot.val() < quantity) {
                             allProductsAvailable = false
-                            reject(`${name} is not enough!`);
+                            resolve({
+                                status: false, 
+                                error:  `${name} không đủ số lượng trong kho!`
+                            });
                             break
                         } else {
                             originalValues.push({ 
@@ -127,7 +130,10 @@ class UserService {
                             })
                         }
                     } else {
-                        reject("Product has not been added to the cart")
+                        resolve({
+                            status: false, 
+                            error: "Sản phẩm chưa được thêm vào giỏ hàng!"
+                        })
                     }
                 } catch (error) {
                     reject(error)
@@ -186,7 +192,10 @@ class UserService {
                     reject(error);
                 }
             } 
-            else reject("Not enough product");
+            else resolve({
+                status: false, 
+                error: "Không đủ số lượng trong kho!"
+            })
         })
     }
 }
