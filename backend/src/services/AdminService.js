@@ -33,11 +33,12 @@ class AdminService {
             .then((snapshot) => {
                 if (snapshot.exists()) {
                     const users = snapshot.val();
-                    const userInfo = Object.keys(users).map(uid => ({
-                        name: users[uid].infor.name,
-                        email: users[uid].infor.email,
-                        phone: users[uid].infor.phonenum
-                    }));
+                    // const userInfo = Object.keys(users).map(uid => ({
+                    //     name: users[uid].infor.name,
+                    //     email: users[uid].infor.email,
+                    //     phone: users[uid].infor.phonenum,
+                    // }));
+                    const userInfo = Object.keys(users).map(uid => (users[uid].infor));
                     resolve(userInfo);
                 } else {
                     resolve({status: false});
@@ -73,9 +74,7 @@ class AdminService {
                                     })
                                 }
                             }
-                            else {
-                                resolve({status: false}); // Nếu đúng thì sẽ ko chạy vào case này
-                            }
+                            else resolve({status: false});
                         })
                         .catch((error) => {
                             reject(error)
@@ -89,8 +88,7 @@ class AdminService {
                                     color: item.child('color'),
                                     memorySize: item.child('memorySize'),
                                     price: item.child('price'),
-                                    quantity: item.child('quantity'),
-                                    image: item.child('image')
+                                    quantity: item.child('quantity')
                                 }
                                 products.push(product)
                             })
@@ -101,7 +99,8 @@ class AdminService {
                                 phonenum: phonenum,
                                 address: address,
                                 productList: products,
-                                status: order.child('status')
+                                status: order.child('status'),
+                                totalPrice: order.child('totalPrice')
                             }
                             result.push(temp)
                         })
