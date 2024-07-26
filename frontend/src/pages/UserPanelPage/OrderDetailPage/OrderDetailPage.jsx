@@ -20,18 +20,10 @@ import {
     WrapperTextNavMain,
     WrapperBoxText,
     WrapperTextNav,
-    WrapperAvatar,
-    WrapperName,
-    WrapperText,
-    WrapperTextAvt,
-    WrapperCardHome,
-    CardSection,
-    ButtonGroup,
     CardOrder,
     WrapperImg,
     ButtonClose
 } from "./style";
-import avt from "../../../assets/images/avt.png";
 import { Link } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 import ip13 from '../../../assets/images/ip13/ip13.webp';
