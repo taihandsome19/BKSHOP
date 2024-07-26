@@ -117,7 +117,10 @@ class UserService {
                         const snapshot = await get(productRef)
                         if (snapshot.val() < quantity) {
                             allProductsAvailable = false
-                            reject(`${name} is not enough!`);
+                            resolve({
+                                status: false, 
+                                error:  `${name} không đủ số lượng trong kho!`
+                            });
                             break
                         } else {
                             originalValues.push({ 
@@ -132,8 +135,12 @@ class UserService {
                                 image: image
                             })
                         }
-                    } 
-                    else reject("Product has not been added to the cart")
+                    } else {
+                        resolve({
+                            status: false, 
+                            error: "Sản phẩm chưa được thêm vào giỏ hàng!"
+                        })
+                    }
                 } catch (error) {
                     reject(error)
                 }
@@ -164,6 +171,7 @@ class UserService {
                         set(ref(db, `carts/${userId}`), data)
                         const orderId = Date.now()
                         const orderRef = ref(db, `orders/${userId}/${orderId}`)
+
                         // add product to order
                         set(orderRef, order)
                         .then(() => {
@@ -191,7 +199,10 @@ class UserService {
                     reject(error);
                 }
             } 
-            else reject("Not enough product");
+            else resolve({
+                status: false, 
+                error: "Không đủ số lượng trong kho!"
+            })
         })
     }
 }
