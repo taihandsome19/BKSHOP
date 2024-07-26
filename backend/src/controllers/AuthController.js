@@ -42,7 +42,7 @@ class AuthController {
     changePassword = async (req, res) => {
         try {
             const newUser = await AuthService.changePassword(req.body);
-            return res.status(200).send(newUser);
+            return res.status(200).send({status: true});
         }
         catch(err) {
             return res.status(404).json({status: false, error: err});

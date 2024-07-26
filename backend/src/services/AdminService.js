@@ -88,7 +88,8 @@ class AdminService {
                                     color: item.child('color'),
                                     memorySize: item.child('memorySize'),
                                     price: item.child('price'),
-                                    quantity: item.child('quantity')
+                                    quantity: item.child('quantity'),
+                                    image: item.child('image')
                                 }
                                 products.push(product)
                             })
