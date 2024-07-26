@@ -75,7 +75,8 @@ class UserService {
     }
 
     updateInfo = async (info) => {
-        const { name, email, sex, address, date_of_birth, phonenum } = info
+        const { name, sex, address, date_of_birth, phonenum } = info;
+        const email = await auth.currentUser.email;
         const uid = await auth.currentUser.uid;
         const userRef = ref(db, `users/${uid}/infor`)
         return new Promise((resolve, reject) => {
@@ -161,7 +162,7 @@ class UserService {
                         }
                         order['totalPrice'] += item.price * item.quantity
                     }
-                    resolve(order)
+                    // resolve(order)
                     // remove product from cart
                     const removeRef = ref(db, `carts/${userId}`)
                     get(removeRef)

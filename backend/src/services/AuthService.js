@@ -1,5 +1,6 @@
 const { db, ref, set, child, onValue } = require('../models/database');
 const { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, sendPasswordResetEmail, EmailAuthProvider, reauthenticateWithCredential, updatePassword } = require('../models/auth');
+const { message } = require('antd');
 
 class AuthService {
     createUser = async (data) => {
@@ -71,7 +72,7 @@ class AuthService {
                 }, (error) => reject(error));
             })
             .catch((error) => {
-                resolve({status: false, error: error});
+                resolve({status: false, message: "Đăng nhập không thành công!", error: error});
             })
         })
     }
@@ -91,7 +92,7 @@ class AuthService {
     }
 
     changePassword = async (data) => {
-        const { currentPassword,newPassword } = data;
+        const { currentPassword, newPassword } = data;
         return new Promise((resolve, reject) => {
             var user = auth.currentUser;
             if (user) {
@@ -107,11 +108,11 @@ class AuthService {
                         })
                     })
                     .catch((error) => {
-                        reject(error);
+                        reject("Weak password");
                     });
                 })
                 .catch((error) => {
-                    reject(error);
+                    reject("Wrong password");
                 });
             }
             else {
