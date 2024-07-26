@@ -21,7 +21,10 @@ const AdminUser = () => {
           (index + 1).toString(),
           item.name,
           item.email,
-          item.phone
+          item.sex,
+          item.date_of_birth,
+          item.phonenum,
+          item.address
         ]);
         setData(formattedData);
         setLoading(false);
@@ -65,7 +68,10 @@ const AdminUser = () => {
     },
     { name: 'name', label: 'Họ và tên' },
     { name: 'email', label: 'Địa chỉ mail' },
+    { name: 'sex', label: 'Giới tính' },
+    { name: 'birthday', label: 'Ngày sinh' },
     { name: 'phone', label: 'Số điện thoại' },
+   
     {
       name: 'action',
       label: 'Hành động',
@@ -104,7 +110,7 @@ const AdminUser = () => {
             <div style={{ flex: '1', padding: '20px 30px' }}>
               <TableComponent columns={columns} data={data} title="Danh sách khách hàng" />
               <Modal
-                title="Danh sách đơn hàng"
+                title="Thông tin khách hàng"
                 visible={isModalVisible}
                 onCancel={handleCancel}
                 footer={[
@@ -117,6 +123,10 @@ const AdminUser = () => {
                   <div>
                     <p><strong>Họ và tên:</strong> {selectedRowData[1]}</p>
                     <p><strong>Địa chỉ mail:</strong> {selectedRowData[2]}</p>
+                    <p><strong>Giới tính:</strong> {selectedRowData[3]}</p>
+                    <p><strong>Ngày sinh:</strong> {selectedRowData[4]}</p>
+                    <p><strong>Số điện thoại:</strong> {selectedRowData[5]}</p>
+                    <p><strong>Địa chỉ:</strong> {selectedRowData[6]}</p>
                   </div>
                 )}
               </Modal>
