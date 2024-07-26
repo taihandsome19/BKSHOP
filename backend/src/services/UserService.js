@@ -24,23 +24,29 @@ class UserService {
         const uid = await auth.currentUser.uid;
         const dbRef = ref(db, `orders/${uid}`);
         return new Promise((resolve, reject) => {
-            get(child(dbRef))
+            get(dbRef)  
             .then((snapshot) => {
                 if(snapshot.exists()) {
                     const orders = snapshot.val();
-                    const orderInfo = Object.keys(orders).map(orderId => ({
+                    const Ids = Object.keys(orders);
+                
+                    const orderInfo = Ids.map(orderId => ({
                         orderId: orderId,
-                        name: orders[orderId].name,
-                        price: orders[orderId].price,
-                        image: orders[orderId].image,
-                        color: orders[orderId].color,
-                        memorySize: orders[orderId].memorySize
+                        items: orders[orderId].items,
+                        status: orders[orderId].status,
+                        totalPrice: orders[orderId].totalPrice
                     }));
-                    var totalPrice = 0;
-                    for (var order of orderInfo) {
-                        totalPrice += order.price;
-                    }
-                    resolve({orderInfo: orderInfo, totalPrice: totalPrice})
+
+                    // let totalPrice = 0;
+                    // orders.forEach(order => {
+                    //     const items = order.items;
+                    //     Object.keys(items).forEach(itemId => {
+                    //         const item = items[itemId];
+                    //         totalPrice += item.price * item.quantity;
+                    //     });
+                    // });
+                    
+                    resolve({ststus: true, orderInfo: orderInfo})
                 }
                 else resolve({status: false})
             })
@@ -54,10 +60,10 @@ class UserService {
         const uid = await auth.currentUser.uid;
         const dbRef = ref(db, `orders/${uid}/${orderId}`);
         return new Promise((resolve, reject) => {
-            get(child(dbRef))
+            get(dbRef)
             .then((snapshot) => {
                 if(snapshot.exists()) {
-                    const orderDetail = Object.values(snapshot.val());
+                    const orderDetail = snapshot.val();
                     resolve({status: true, orderDetail: orderDetail});
                 }
                 else resolve({status: false})
@@ -69,13 +75,12 @@ class UserService {
     }
 
     updateInfo = async (info) => {
-        const { name, email, sex, address, date_of_birth, phonenum } = info
+        const { name, sex, address, date_of_birth, phonenum } = info
         const uid = await auth.currentUser.uid;
         const userRef = ref(db, `users/${uid}/infor`)
         return new Promise((resolve, reject) => {
             set(userRef, {
                 name: name,
-                email: email,
                 sex: sex,
                 address: address,
                 date_of_birth: date_of_birth,
@@ -93,7 +98,6 @@ class UserService {
     addToOrder = async (body) => {
         const { payment, address, phonenum, indexs, status } = body
         const userId = await auth.currentUser.uid
-        const order = await supportFunction.createOrder({ payment, address, phonenum, status })
         return new Promise(async (resolve, reject) => {
             const originalValues = []
             let allProductsAvailable = true
@@ -108,6 +112,7 @@ class UserService {
                         const memorysize = productSnapshot.child('memorysize').val()
                         const name = productSnapshot.child('name').val()
                         const price = productSnapshot.child('price').val()
+                        const image = productSnapshot.child('image').val()
                         const productRef = ref(db, `products/${productId}/inventory/${color}/${memorysize}`)
                         const snapshot = await get(productRef)
                         if (snapshot.val() < quantity) {
@@ -126,7 +131,8 @@ class UserService {
                                 color: color,
                                 memorysize: memorysize,
                                 name: name,
-                                price: price
+                                price: price,
+                                image: image
                             })
                         }
                     } else {
@@ -140,17 +146,21 @@ class UserService {
                 }
             }
             if (allProductsAvailable) {
+                const order = await supportFunction.createOrder({ payment, address, phonenum, status })
                 try {
                     for (let item of originalValues) {
-                        await set(item.ref, item.value - item.quantity)
+                        // await set(item.ref, item.value - item.quantity)
                         order.items[item.productId] = {
                             color: item.color,
                             memorySize: item.memorysize,
                             name: item.name,
                             price: item.price,
-                            quantity: item.quantity
+                            quantity: item.quantity,
+                            image: item.image
                         }
+                        order['totalPrice'] += item.price * item.quantity
                     }
+                    resolve(order)
                     // remove product from cart
                     const removeRef = ref(db, `carts/${userId}`)
                     get(removeRef)
@@ -161,10 +171,7 @@ class UserService {
                         set(ref(db, `carts/${userId}`), data)
                         const orderId = Date.now()
                         const orderRef = ref(db, `orders/${userId}/${orderId}`)
-                        console.log(order)
-                        // const orderRef = child(ref(db, "orders"), `${uid}`);
-                        // const cartRef = child(ref(db, "carts"), `${uid}`);
-                        // const orderRef = ref(db, `orders/${userId}/${orderId}`)
+
                         // add product to order
                         set(orderRef, order)
                         .then(() => {
@@ -174,7 +181,7 @@ class UserService {
                             .then((orderListSnapshot) => {
                                 if (orderListSnapshot.exists() && orderListSnapshot.val() != "") {
                                     const orderList = orderListSnapshot.val()
-                                    orderLisxt.push(orderId)
+                                    orderList.push(orderId)
                                     set(orderListRef, orderList)
                                 }
                                 else set(orderListRef, [orderId])

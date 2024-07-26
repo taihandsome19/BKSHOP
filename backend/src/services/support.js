@@ -11,7 +11,8 @@ class Support {
             },
             phonenum: phonenum,
             status: status,
-            items: {}
+            items: {},
+            totalPrice: 0
         }
     }
 };

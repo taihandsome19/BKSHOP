@@ -91,7 +91,7 @@ class AuthService {
     }
 
     changePassword = async (data) => {
-        const { currentPassword,newPassword  } = data;
+        const { currentPassword,newPassword } = data;
         return new Promise((resolve, reject) => {
             var user = auth.currentUser;
             if (user) {
