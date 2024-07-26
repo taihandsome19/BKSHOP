@@ -101,18 +101,18 @@ class AuthService {
                 .then(() => {
                     updatePassword(user, newPassword)
                     .then(() => {
-                        console.log("Password updated successfully.");
+                        // console.log("Password updated successfully.");
                         resolve({
                             email: user.email,
                             password: newPassword
                         })
                     })
                     .catch((error) => {
-                        reject("Weak password");
+                        reject("Mật khẩu yếu xìu");
                     });
                 })
                 .catch((error) => {
-                    reject("Wrong password");
+                    reject("Sai mật khẩu");
                 });
             }
             else {
