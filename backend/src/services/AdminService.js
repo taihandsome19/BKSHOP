@@ -49,73 +49,65 @@ class AdminService {
         });
     }
 
-    manageOrder = async () => {
+    manageOrder = () => {
         const orderRef = ref(db, "orders");
-        var result = []
         return new Promise((resolve, reject) => {
             get(orderRef)
             .then((snapshot) => {
                 if (snapshot.exists()) {
+                    const result = [];
                     snapshot.forEach((orders) => {
-                        var uid = orders.key
-                        var user_name, email, phonenum, address
-                        const userRef = ref(db, "users");
+                        const uid = orders.key;
+                        let user_name, email, phonenum, address;
+                        const userRef = ref(db, `users/${uid}/infor`);
                         get(userRef)
-                        .then((snapshot) => {
-                            if (snapshot.exists()) {
-                                if (snapshot.key == uid) {
-                                    const users = snapshot.val();
-                                    users.forEach((user) => {
-                                        const infor = user.child('infor')
-                                        user_name = infor.child('name')
-                                        email = infor.child('email')
-                                        phonenum = infor.child('phonenum')
-                                        address = infor.child('address')
-                                    })
-                                }
+                        .then((userSnapshot) => {
+                            if (userSnapshot.exists()) {
+                                user_name = userSnapshot.child('name').val();
+                                email = userSnapshot.child('email').val();
+                                phonenum = userSnapshot.child('phonenum').val();
+                                address = userSnapshot.child('address').val();
                             }
-                            else resolve({status: false});
-                        })
-                        .catch((error) => {
-                            reject(error)
-                        })
-                        orders.forEach((order) => {
-                            var products = []
-                            order.child('items').forEach((item) => {
-                                var product = {
-                                    productId: item.key,
-                                    name_product: item.child('name'),
-                                    color: item.child('color'),
-                                    memorySize: item.child('memorySize'),
-                                    price: item.child('price'),
-                                    quantity: item.child('quantity'),
-                                    image: item.child('image')
-                                }
-                                products.push(product)
-                            })
-                            var temp = {
-                                orderId: order.key,
-                                user_name: user_name,
-                                email: email,
-                                phonenum: phonenum,
-                                address: address,
-                                productList: products,
-                                status: order.child('status'),
-                                totalPrice: order.child('totalPrice')
-                            }
-                            result.push(temp)
-                        })
+                            orders.forEach((order) => {
+                                const items = order.child('items');
+                                const products = [];
+                                items.forEach((item) => {
+                                    const product = {
+                                        productId: item.key,
+                                        name_product: item.child('name').val(),
+                                        color: item.child('color').val(),
+                                        memorySize: item.child('memorySize').val(),
+                                        price: item.child('price').val(),
+                                        quantity: item.child('quantity').val(),
+                                        image: item.child('image').val()
+                                    };
+                                    products.push(product);
+                                });
+                                const temp = {
+                                    orderId: order.key,
+                                    user_name,
+                                    email,
+                                    phonenum,
+                                    address,
+                                    productList: products,
+                                    status: order.child('status').val(),
+                                    totalPrice: order.child('totalPrice').val()
+                                };
+                                result.push(temp);
+                            });
+                        }).then(() => {
+                            resolve(result);
+                        }).catch((error) => {
+                            reject(error);
+                        });
                     });
-                    resolve(result)
-                }
-                else resolve({status: false});
-            })
-            .catch((error) => {
+                } else resolve({ status: false});
+            }).catch((error) => {
                 reject(error);
             });
         });
-    }
-
+    };
+    
     manageProduct = async () => {
         const productRef = ref(db, "products")
         return new Promise ((resolve, reject) => {
