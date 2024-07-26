@@ -50,6 +50,14 @@ const PaymentPage = () => {
         setSelectedPaymentMethod(method);
     };
 
+
+    if (dataPayment === null || dataInfo === null) {
+        return null; 
+    }
+
+    const totalAmount = dataPayment.reduce((total, product) => total + product.price * product.quantity, 0);
+
+
     const handlePayment = async () => {
         const phone = document.getElementById('phone-input').value;
         const address = document.getElementById('address-input').value;
@@ -75,11 +83,46 @@ const PaymentPage = () => {
                 localStorage.removeItem('dataPaymentIndex');
                 setUserCart(prevUserCart => prevUserCart - savedIndexes.length);
                 const { orderId } = response.data;
-                setLoadingButton(false);
-                window.location.href = `/payment/status?status=success&orderId=${orderId}`
+                
+                //Check thanh toán ngân hàng
+                if(selectedPaymentMethod === 'banking'){
+                    const load = {
+                        orderCode: parseInt(orderId),
+                        amount: totalAmount,
+                        description: "Thanh toán BKSHOP",
+                        buyerName: localStorage.getItem('User_name'),
+                        buyerEmail: dataInfo.email,
+                        buyerPhone: phone,
+                        buyerAddress: address,
+                        cancelUrl: `http://localhost:3000/payment/status`,
+                        returnUrl: `http://localhost:3000/payment/status`,
+                    };
+                    
+                    try {
+                        const res = await axios.post('http://localhost:3001/payment/create_payment', load);
+                        setLoadingButton(false);
+                        if (res.data && res.data.checkoutUrl) {
+                            window.location.href = res.data.checkoutUrl;
+                        } else {
+                            message.error("Thanh toán hiện không khả dụng, vui lòng thanh toán sau!");
+                            setLoadingButton(false);
+                            setTimeout(() => {
+                                window.location.href = `/payment/status?status=success_banking&orderId=${orderId}`
+                            }, 2000);
+                        }
+                    } catch (error) {
+                        message.error("Thanh toán hiện không khả dụng, vui lòng thanh toán sau!");
+                        setLoadingButton(false);
+                        setTimeout(() => {
+                            window.location.href = `/payment/status?status=success_banking&orderCode=${orderId}`
+                        }, 2000);
+                    }
+                }else{
+                    setLoadingButton(false);
+                    window.location.href = `/payment/status?status=success_cod&orderCode=${orderId}`
+                }
             } else {
-                console.log('Payment failed', response.data);
-                message.error("Đã xảy ra lỗi khi đặt hàng!");
+                message.error(response.data.error);
                 setLoadingButton(false);
             }
         } catch (error) {
@@ -87,12 +130,6 @@ const PaymentPage = () => {
             setLoadingButton(false);
         }
     };
-
-    if (dataPayment === null || dataInfo === null) {
-        return null; 
-    }
-
-    const totalAmount = dataPayment.reduce((total, product) => total + product.price * product.quantity, 0);
 
     return (
         <HelmetProvider>
@@ -152,12 +189,12 @@ const PaymentPage = () => {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '15px', padding: '10px' }}>
                                 <div
                                     style={{ fontSize: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-                                    onClick={() => handlePaymentMethodChange('bank')}
+                                    onClick={() => handlePaymentMethodChange('banking')}
                                 >
                                     <div style={{ fontSize: '15px', display: 'flex', gap: '10px', alignItems: 'center' }}>
                                         <Checkbox
-                                            checked={selectedPaymentMethod === 'bank'}
-                                            onChange={() => handlePaymentMethodChange('bank')}
+                                            checked={selectedPaymentMethod === 'banking'}
+                                            onChange={() => handlePaymentMethodChange('banking')}
                                         />
                                         <div>Chuyển khoản ngân hàng</div>
                                     </div>
@@ -183,7 +220,7 @@ const PaymentPage = () => {
                         </div>
                         <WrappCard>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontSize: '13px', padding: '10px' }}>
-                                <div style={{ fontSize: '14px', fontWeight: '600', textTransform: 'uppercase' }}>TRẦN THÀNH TÀI</div>
+                                <div style={{ fontSize: '14px', fontWeight: '600', textTransform: 'uppercase' }}>{localStorage.getItem('User_name')}</div>
                                 <div>
                                     <div style={{ color: '#909EAB', paddingBottom: '10px' }}>Email</div>
                                     <Input id="email-input" placeholder="Địa chỉ mail" defaultValue={dataInfo ? dataInfo.email : ''} disabled={true} />
