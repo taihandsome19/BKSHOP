@@ -1,5 +1,4 @@
 const { update } = require('firebase/database');
-const { auth } = require('../models/auth');
 const { db, ref, set, child, get, onValue } = require('../models/database');
 
 class AdminService {
@@ -90,7 +89,8 @@ class AdminService {
                                     color: item.child('color'),
                                     memorySize: item.child('memorySize'),
                                     price: item.child('price'),
-                                    quantity: item.child('quantity')
+                                    quantity: item.child('quantity'),
+                                    image: item.child('image')
                                 }
                                 products.push(product)
                             })
