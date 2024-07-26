@@ -45,7 +45,7 @@ class AuthController {
             return res.status(200).send({status: true});
         }
         catch(err) {
-            return res.status(404).json({status: false, error: err});
+            return res.status(404).json({status: false, message: err});
         }
     }
 

@@ -112,12 +112,10 @@ class AuthService {
                     });
                 })
                 .catch((error) => {
-                    reject("Sai mật khẩu");
+                    reject("Sai mật khẩu nha");
                 });
             }
-            else {
-                resolve({status: false});
-            }
+            else reject("Chưa đăng nhập kìa");
         })
     }
 
