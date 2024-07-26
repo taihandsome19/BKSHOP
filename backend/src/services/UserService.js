@@ -46,7 +46,7 @@ class UserService {
                     //     });
                     // });
                     
-                    resolve({ststus: true, orderInfo: orderInfo})
+                    resolve({status: true, orderInfo: orderInfo})
                 }
                 else resolve({status: false})
             })

@@ -24,6 +24,19 @@ import img1 from '../../../assets/images/headphone.png';
 import img2 from '../../../assets/images/time.png';
 import img3 from '../../../assets/images/baohanh.png';
 import img4 from '../../../assets/images/email.png';
+import axios from 'axios';
+
+const handleLogout = async () => {
+  try {
+      await axios.post('http://localhost:3001/auth/log_out');
+
+      localStorage.clear();
+
+      window.location.href = '/';
+  } catch (error) {
+      console.error('Logout failed:', error);
+  }
+};
 
 const SupportPage = () => {
   return (
@@ -62,7 +75,7 @@ const SupportPage = () => {
               <QuestionCircleOutlined style={{ fontSize: "20px", color: "#0688B4" }} />
               <WrapperTextNavMain>Hỗ trợ</WrapperTextNavMain>
             </WrapperBoxTextMain>
-            <WrapperBoxText>
+            <WrapperBoxText style={{cursor: 'pointer'}} onClick={handleLogout}>
               <LogoutOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
               <WrapperTextNav>Thoát tài khoản</WrapperTextNav>
             </WrapperBoxText>

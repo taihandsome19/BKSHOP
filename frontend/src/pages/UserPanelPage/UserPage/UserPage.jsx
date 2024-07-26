@@ -34,6 +34,19 @@ import bg1 from "../../../assets/images/banner4.jpg";
 import bg2 from "../../../assets/images/banner2.jpg";
 import { Link } from 'react-router-dom';
 import { Helmet } from "react-helmet";
+import axios from 'axios';
+
+const handleLogout = async () => {
+  try {
+      await axios.post('http://localhost:3001/auth/log_out');
+
+      localStorage.clear();
+
+      window.location.href = '/';
+  } catch (error) {
+      console.error('Logout failed:', error);
+  }
+};
 
 const UserPage = () => {
   return (
@@ -73,7 +86,7 @@ const UserPage = () => {
                 <WrapperTextNav>Hỗ trợ</WrapperTextNav>
               </WrapperBoxText>
             </Link>
-            <WrapperBoxText>
+            <WrapperBoxText style={{cursor: 'pointer'}} onClick={handleLogout}>
               <LogoutOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
               <WrapperTextNav>Thoát tài khoản</WrapperTextNav>
             </WrapperBoxText>
@@ -84,8 +97,8 @@ const UserPage = () => {
                 <WrapperAvatar src={avt} alt="User Avatar" preview={false} />
               </div>
               <WrapperTextAvt >
-                <WrapperName>Trần Thành Tài</WrapperName>
-                <WrapperText>tai.tranthanh@hcmut.edu.vn</WrapperText>
+                <WrapperName>{localStorage.getItem('User_name')}</WrapperName>
+                <WrapperText>{localStorage.getItem('User_email')}</WrapperText>
               </WrapperTextAvt>
             </div>
             <WrapperCardHome>

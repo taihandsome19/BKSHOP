@@ -82,7 +82,7 @@ const menu = (
 );
 
 const notice = (
-    <Menu style={{ width: '300px', maxHeight: '300px', overflow: 'auto' }}>
+    <Menu style={{ width: '350px', maxHeight: '300px', overflow: 'auto' }}>
         <h3 style={{ marginLeft: '15px' }}>
             Thông báo
         </h3>
@@ -100,8 +100,8 @@ const notice = (
                 }}>
                     <ShoppingOutlined style={{ fontSize: '20px', color: '#fff' }} />
                 </div>
-                <Link to="/user" style={{ color: '#444', textAlign: 'left' }}>
-                    Đơn hàng #10002837 đang được vận chuyển
+                <Link to="/user" style={{ color: '#444', textAlign: 'left', wordWrap: 'break-word', whiteSpace: 'normal' }}>
+                    Đơn hàng #10002837 đang được vận chuyển hehe
                 </Link>
             </div>
         </Menu.Item>
@@ -122,7 +122,7 @@ const HeaderComponent = () => {
                     <Col span={12}>
                         <Search
                             placeholder="Tìm kiếm..."
-                            onSearch={handleSearch} 
+                            onSearch={handleSearch}
                             //enterButton
                             allowClear
                         />
@@ -139,9 +139,9 @@ const HeaderComponent = () => {
                         {isLogged === 'true' ? (
                             <WrapperAccountHeader>
                                 <Dropdown overlay={notice} trigger={['click']}>
-                                <RingingBadge dot>
-                                    <BellOutlined style={{ fontSize: '22px', color: '#fff' }} />
-                                </RingingBadge>
+                                    <RingingBadge dot>
+                                        <BellOutlined style={{ fontSize: '22px', color: '#fff' }} />
+                                    </RingingBadge>
                                 </Dropdown>
                                 <Dropdown overlay={menu} trigger={['click']}>
                                     <img src={`https://ui-avatars.com/api/?background=random&name=${User_name.replace(" ", "+")}`} alt="avt" style={{ width: '30px', height: '30px', borderRadius: '50%', marginLeft: '20px' }} />
