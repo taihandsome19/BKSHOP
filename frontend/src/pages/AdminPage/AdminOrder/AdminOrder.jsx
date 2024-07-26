@@ -25,7 +25,7 @@ const AdminOrder = () => {
 
         const formattedData = response.data.map((item) => [
           item.orderId,
-          item.name,
+          item.user_name,
           item.email,
           item.productList.reduce((total, product) => total + product.quantity, 0),
           parseInt(item.totalPrice).toLocaleString('vi-VN') + 'đ',
