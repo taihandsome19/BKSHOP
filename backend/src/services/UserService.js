@@ -75,11 +75,12 @@ class UserService {
     }
 
     updateInfo = async (info) => {
-        const { name, sex, address, date_of_birth, phonenum } = info
+        const { name, email, sex, address, date_of_birth, phonenum } = info
         const uid = await auth.currentUser.uid;
         const userRef = ref(db, `users/${uid}/infor`)
         return new Promise((resolve, reject) => {
             set(userRef, {
+                email: email,
                 name: name,
                 sex: sex,
                 address: address,
