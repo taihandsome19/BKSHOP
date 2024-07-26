@@ -153,8 +153,12 @@ class UserService {
                         indexs.sort((a, b) => b - a)
                         for (var index of indexs) data.splice(index, 1)
                         set(ref(db, `carts/${userId}`), data)
-                        const orderId = Date.now()
-                        const orderRef = ref(db, `orders/${userId}/${orderId}`)
+                        const orderId = Date.now();
+                        const orderRef = child(ref(db, "orders"), `${userId}/a`);
+                        console.log(order)
+                        // const orderRef = child(ref(db, "orders"), `${uid}`);
+                        // const cartRef = child(ref(db, "carts"), `${uid}`);
+                        // const orderRef = ref(db, `orders/${userId}/${orderId}`)
                         // add product to order
                         set(orderRef, order)
                         .then(() => {
@@ -164,7 +168,7 @@ class UserService {
                             .then((orderListSnapshot) => {
                                 if (orderListSnapshot.exists() && orderListSnapshot.val() != "") {
                                     const orderList = orderListSnapshot.val()
-                                    orderList.push(orderId)
+                                    orderLisxt.push(orderId)
                                     set(orderListRef, orderList)
                                 }
                                 else set(orderListRef, [orderId])

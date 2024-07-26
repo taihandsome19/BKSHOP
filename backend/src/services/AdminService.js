@@ -212,6 +212,51 @@ class AdminService {
             };
         });
     }
+
+    removeProduct = async(body) => {
+        const { productId } = body
+        const productRef = ref(db, `products/${productId}`)
+        const cartRef = ref(db, "carts")
+        return new Promise(async (resolve, reject) => {
+            remove(productRef)
+            .then((snapshot) => {
+                get(cartRef)
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const cart = snapshot.val()
+                        Object.keys(cart).forEach((user) => {
+                            const cartRef = ref(db, `carts/${user}`)
+                            get(cartRef)
+                            .then((productSnapshot) => {
+                                productSnapshot.forEach((product) => {
+                                    if (product.child('productId').val() === productId) {
+                                        const removeRef = ref(db, `carts/${user}/${product.key}`)
+                                        remove(removeRef)
+                                        .then(() => {
+                                            resolve({status: true})
+                                        })
+                                        .catch((error) => {
+                                            reject(error)
+                                        });
+                                    }
+                                })
+                            })
+                            .catch((error) => {
+                                reject(error)
+                            });
+                        })
+                    }
+                    else resolve({status: false})
+                })
+                .catch((error) => {
+                    reject(error)
+                })
+            })
+            .catch((error) => {
+                reject(error)
+            })
+        })
+    }
 }
 
 module.exports = new AdminService

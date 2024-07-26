@@ -76,6 +76,17 @@ class AdminController {
         }
     }
 
+    removeProduct = async (req, res) => {
+        try {
+            const result = await AdminService.removeProduct(req.body);
+            // console.log(result);
+            return res.status(200).send(result);
+        }
+        catch(err) {
+            return res.status(404).json({status: false, error: err});
+        }
+    }
+
 }
 
 module.exports = new AdminController
