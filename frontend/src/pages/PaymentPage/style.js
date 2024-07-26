@@ -122,6 +122,7 @@ export const Buttonleft = styled.div`
     border-radius: 4px;
     padding: 6px;
     cursor: pointer;
+    height: 21px;
 `;
 export const Buttonright = styled.div`
     background-color: #0688B4;

@@ -1,5 +1,6 @@
 const PayOS = require('@payos/node');
 const { default: axios } = require('axios');
+const AdminService = require('./AdminService')
 
 const payos = new PayOS(
     'cc91c9ef-41c0-48a3-a319-1046d6c04a0e', 
@@ -45,6 +46,11 @@ class PaymentService {
         return new Promise((resolve, reject) => {
             payos.getPaymentLinkInformation(id) 
                 .then(response => {
+                    // Update status nếu thành công
+                    if(response && response.status === 'PAID'){
+                        AdminService.updateOrder({orderId: id, status: 'Đã xác nhận'});
+                        AdminService.updatePayment({orderId: id, status: true})
+                    }   
                     resolve(response);
                 })
                 .catch(error => {

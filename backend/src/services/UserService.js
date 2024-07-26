@@ -159,8 +159,8 @@ class UserService {
                         indexs.sort((a, b) => b - a)
                         for (var index of indexs) data.splice(index, 1)
                         set(ref(db, `carts/${userId}`), data)
-                        const orderId = Date.now();
-                        const orderRef = child(ref(db, "orders"), `${userId}/a`);
+                        const orderId = Date.now()
+                        const orderRef = ref(db, `orders/${userId}/${orderId}`)
                         console.log(order)
                         // const orderRef = child(ref(db, "orders"), `${uid}`);
                         // const cartRef = child(ref(db, "carts"), `${uid}`);

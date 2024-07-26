@@ -40,9 +40,6 @@ const PaymentStatusPage = () => {
                         window.location.href = `/payment/status?status=success_banking&orderCode=${orderId}`
                         return;
                     }
-
-                    // Update trạng thái thanh toán
-                    await axios.post('http://localhost:3001/admin/update_payment', { orderId: parseInt(orderId), status: true });
                     setLoading(false);
                 } catch (error) {
                     // Chuyển hướng đến trang lỗi hiếm gặp
