@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
@@ -9,31 +9,9 @@ import coin from '../../../assets/images/admin/finance.png';
 import order from '../../../assets/images/admin/order.png';
 import delivered from '../../../assets/images/admin/delivered.png';
 import ApexChart from './ApexChart';
-import CheckAdmin from '../AdminProtect/AdminProtect';
-import { useNavigate } from 'react-router-dom';
-
+import Number from './Number';
 
 const AdminHome = () => {
-  const [isAd, setisAd] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-      const checkAdmin = async () => {
-          const isAdmin = await CheckAdmin.isAdmin();
-          if (isAdmin) {;
-              setisAd(true);
-          } else {
-              navigate('/404');
-          }
-      };
-      checkAdmin();
-  }, [navigate]);
-
-  if(!isAd){
-    return;
-  }
-
-
   return (
     <HelmetProvider>
       <Helmet>
@@ -48,31 +26,19 @@ const AdminHome = () => {
               <div style={{ display: 'flex', gap: '20px' }}>
                 <CardInfo>
                   <img src={member} alt='member' width="80px" />
-                  <div>
-                    <div style={{ fontSize: '19px', color: '#2A3546', fontWeight: 'bold' }}>Khách hàng</div>
-                    <div style={{ fontSize: '13px', color: '#444', paddingTop: '10px' }}>1234 khách hàng</div>
-                  </div>
+                  <Number title="Khách hàng" value={10} duration={1000} />
                 </CardInfo>
                 <CardInfo>
                   <img src={coin} alt='member' width="80px" />
-                  <div>
-                    <div style={{ fontSize: '19px', color: '#2A3546', fontWeight: 'bold' }}>Doanh thu</div>
-                    <div style={{ fontSize: '13px', color: '#444', paddingTop: '10px' }}>8.000.000đ</div>
-                  </div>
+                  <Number title="Doanh thu" value={90000000} duration={1000}/>
                 </CardInfo>
                 <CardInfo>
                   <img src={order} alt='member' width="80px" />
-                  <div>
-                    <div style={{ fontSize: '19px', color: '#2A3546', fontWeight: 'bold' }}>Đơn hàng</div>
-                    <div style={{ fontSize: '13px', color: '#444', paddingTop: '10px' }}>1000 đơn hàng</div>
-                  </div>
+                  <Number title="Đơn hàng" value={20} duration={1000} />
                 </CardInfo>
                 <CardInfo>
                   <img src={delivered} alt='member' width="80px" />
-                  <div>
-                    <div style={{ fontSize: '19px', color: '#2A3546', fontWeight: 'bold' }}>Đã giao</div>
-                    <div style={{ fontSize: '13px', color: '#444', paddingTop: '10px' }}>980 đơn hàng</div>
-                  </div>
+                  <Number title="Đã giao" value={18} duration={1000} />
                 </CardInfo>
               </div>
               <div style={{ padding: '20px 0' }}>

@@ -17,12 +17,12 @@ const AdminOrder = () => {
   const selectdata = ["Chờ xác nhận", "Đã xác nhận", "Đang vận chuyển", "Đã giao hàng", "Đã huỷ"];
   const [selectedValue, setSelectedValue] = useState('');
   const [btloading, setbtLoading] = useState(false);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
+
+  const fetchData = () => {
     axios.get('http://localhost:3001/admin/manage_order')
       .then(response => {
-
         const formattedData = response.data.map((item) => [
           item.orderId,
           item.user_name,
@@ -36,47 +36,67 @@ const AdminOrder = () => {
         setLoading(false);
       })
       .catch(error => {
+        console.log(error)
         message.error('Lỗi không lấy được dữ liệu!');
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchData();
   }, []);
 
   const showModal = (rowData) => {
     setSelectedRowData(rowData);
+    setSelectedValue(rowData[5]);
     setIsModalVisible(true);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedRowData(null);
+    setSelectedValue('');
   };
 
   const handleChange = (value) => {
     setSelectedValue(value);
   };
 
-  const handleUpdate = async(orderId) => {
+  const handleUpdate = async (orderId) => {
     setbtLoading(true);
-    if(selectedValue === ""){
-      setTimeout(() => {
+    try {
+      const res = await axios.post('http://localhost:3001/admin/update_order', { orderId, status: selectedValue });
+      if (res.data && res.data.status === true) {
+        fetchData();
+        message.success("Cập nhật trạng thái thành công");
         setbtLoading(false);
-      }, 500);
-    }else{
-      try {
-        const res = await axios.post('http://localhost:3001/admin/update_order', { orderId, status: selectedValue });
-        if (res.data && res.data.status === true) {
-          message.success("Cập nhật trạng thái thành công")
-          setbtLoading(false);
-        } else {
-          message.error("Cập nhật trạng thái thất bại")
-          setbtLoading(false);
-        }
-      } catch (error) {
+      } else {
         message.error("Cập nhật trạng thái thất bại")
         setbtLoading(false);
       }
+    } catch (error) {
+      message.error("Cập nhật trạng thái thất bại")
+      setbtLoading(false);
     }
   }
+
+  const showConfirmModal = () => {
+    if (selectdata.indexOf(selectedValue) === selectdata.indexOf(selectedRowData[5])) {
+      message.error("Bạn chưa thay đổi trạng thái khác!");
+      return;
+    }
+    setIsConfirmModalVisible(true);
+  };
+
+  const handleConfirmOk = () => {
+    handleUpdate(selectedRowData[0]);
+    setIsConfirmModalVisible(false);
+  };
+
+  const handleConfirmCancel = () => {
+    setIsConfirmModalVisible(false);
+  };
 
   const columns = [
     {
@@ -101,7 +121,7 @@ const AdminOrder = () => {
     },
     { name: 'name', label: 'Tên người mua' },
     { name: 'email', label: 'Địa chỉ mail ' },
-    { name: 'count', label: 'Tổng số lượng' },
+    { name: 'count', label: 'Sản phẩm' },
     { name: 'price', label: 'Tổng tiền' },
     { name: 'state', label: 'Trạng thái' },
     {
@@ -139,18 +159,38 @@ const AdminOrder = () => {
         <RightContainer>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#FBFCFC', paddingTop: '70px' }}>
             <HeaderComponent />
+            <Modal
+              centered
+              title="Xác nhận cập nhật"
+              visible={isConfirmModalVisible}
+              onCancel={handleConfirmCancel}
+              onOk={handleConfirmOk}
+              okText="Xác nhận"
+              cancelText="Hủy bỏ"
+              width={400}
+            >
+              <p>
+                {`Bạn có muốn cập nhật trạng thái đơn hàng từ `}
+                <strong>{selectedRowData? selectedRowData[5]: 0}</strong>
+                {` thành `}
+                <strong>{selectedValue}</strong>
+                {` không?`}
+              </p>
+
+            </Modal>
             <div style={{ flex: '1', padding: '20px 30px' }}>
               <TableComponent columns={columns} data={data} title="Danh sách đơn hàng" />
               <Modal
+                centered
                 title="Thông tin chi tiết"
                 visible={isModalVisible}
                 onCancel={handleCancel}
                 footer={[
-                  <Button loading={btloading} type='primary' key="update" onClick={() => handleUpdate(selectedRowData[0])}>
+                  <Button loading={btloading} type='primary' key="update" onClick={showConfirmModal}>
                     Cập nhật
                   </Button>,
                   <Button key="close" onClick={handleCancel}>
-                    Close
+                    Đóng
                   </Button>,
                 ]}
               >
@@ -161,11 +201,23 @@ const AdminOrder = () => {
                     <p><strong>Địa chỉ mail:</strong> {selectedRowData[2]}</p>
                     <p><strong>Tổng số lượng:</strong> {selectedRowData[3]}</p>
                     <p><strong>Tổng tiền:</strong> {selectedRowData[4]}</p>
+                    <p style={{ display: 'flex', gap: '5px' }}>
+                      <strong>Đã Thanh toán:</strong>
+                      <div style={{ color: '#54D62B' }}>
+                        {selectedRowData[4]}
+                      </div>
+                      <div> (BANKING)</div>
+                    </p>
                     <p>
                       <strong>Trạng thái:</strong>
-                      <Select defaultValue={selectedRowData[5]} style={{ paddingLeft: '10px', width: '180px' }} onChange={handleChange}>
-                        {selectdata.map(status => (
-                          <Option key={status} value={status}>
+                      <Select value={selectedValue} style={{ paddingLeft: '10px', width: '180px' }} onChange={handleChange}>
+                        {selectdata.map((status, index) => (
+                          <Option key={status} value={status}
+                            disabled={
+                              (index < selectdata.indexOf(selectedRowData[5])) ||
+                              (status === "Đã huỷ" && !["Chờ xác nhận", "Đã xác nhận", "Đã huỷ"].includes(selectedRowData[5]))
+                            }
+                          >
                             {status}
                           </Option>
                         ))}
@@ -174,6 +226,35 @@ const AdminOrder = () => {
                     <p>
                       <strong>Danh sách sản phẩm:</strong>
                     </p>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      {selectedRowData[6].map(item => {
+                        return (
+                          <div style={{ height: '80px', border: '1px solid #d9d9d9', borderRadius: '8px', margin: '10px', display: 'flex', alignContent: 'center', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '80px', height: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <img
+                                src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${item.image}?alt=media`}
+                                alt="icon"
+                                style={{ width: '80%', height: '80%', objectFit: 'cover' }}
+                              />
+                            </div>
+                            <div style={{ flex: '1', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                              <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#444' }}>
+                                {item.name_product}
+                              </div>
+                              <div style={{ fontSize: '10px' }}>
+                                Màu sắc: {item.color}, Dung lượng: {item.memorySize}
+                              </div>
+                              <div style={{ fontSize: '10px' }}>
+                                Số lượng: {item.quantity}
+                              </div>
+                              <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#0688B4' }}>
+                                {parseInt(item.price).toLocaleString('vi-VN')}đ
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
                 )}
               </Modal>
