@@ -1,6 +1,5 @@
 const { db, ref, set, child, onValue } = require('../models/database');
 const { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, sendPasswordResetEmail, EmailAuthProvider, reauthenticateWithCredential, updatePassword } = require('../models/auth');
-const { message } = require('antd');
 
 class AuthService {
     createUser = async (data) => {

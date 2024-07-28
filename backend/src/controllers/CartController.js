@@ -19,18 +19,9 @@ class CartController {
         }
     }
 
-    increaseQuantity = async (req, res) => {
+    updateQuantity = async (req, res) => {
         try {
-            const result = await CartService.increaseQuantity(req.body);
-            return res.status(200).send(result);
-        } catch(err) {
-            return res.status(404).json({status: false, error: err});
-        }
-    }
-
-    decreaseQuantity = async (req, res) => {
-        try {
-            const result = await CartService.decreaseQuantity(req.body);
+            const result = await CartService.updateQuantity(req.body);
             return res.status(200).send(result);
         } catch(err) {
             return res.status(404).json({status: false, error: err});

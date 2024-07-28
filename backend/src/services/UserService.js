@@ -207,6 +207,52 @@ class UserService {
             })
         })
     }
+
+    notification = async () => {
+        const uid = await auth.currentUser.uid;
+        return new Promise((resolve, reject) => {
+            var userRef = ref(db, `users/${uid}/notificationList`)
+            get(userRef)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    var notificationList = snapshot.val()
+                    const notificationArray = Object.entries(notificationList);
+                    notificationArray.sort(supportFunction.compareNotifications);
+                    notificationList = Object.fromEntries(notificationArray);
+                    resolve({status: true, notificationList: notificationList})
+                }
+                else resolve({status: false, message: "no notification"})
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        })
+    }
+
+    updateNotification = async (body) => {
+        const uid = await auth.currentUser.uid;
+        const { notificationId, status } = body
+        return new Promise((resolve, reject) => {
+            const notificationRef = ref(db, `users/${uid}/notificationList/${notificationId}`)
+            get(notificationRef)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    var statusRef = ref(db, `users/${uid}/notificationList/${notificationId}/status`)
+                    set(statusRef, status)
+                    .then((snapshot) => {
+                        resolve({status: true})
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+                }
+                else resolve({status: false, message: "non-existent notice"})
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        })
+    }
 }
 
 module.exports = new UserService

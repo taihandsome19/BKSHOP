@@ -10,5 +10,8 @@ router.post('/update_order', AdminController.updateOrder);
 router.post('/update_product', AdminController.updateProduct);
 router.post('/update_payment', AdminController.updatePayment);
 router.post('/remove_product', AdminController.removeProduct);
+router.post('/ban_user', AdminController.banUser);
+router.post('/add_notice', AdminController.add_notification);
+router.get('/report', AdminController.report);
 
 module.exports = router

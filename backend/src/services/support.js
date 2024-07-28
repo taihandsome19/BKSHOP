@@ -1,3 +1,5 @@
+const { db, ref, get } = require('../models/database');
+
 class Support {
     createOrder = async (body) => {
         const time = new Date()
@@ -15,6 +17,13 @@ class Support {
             totalPrice: 0
         }
     }
+
+    compareNotifications = (a, b) => {
+        if (a[1].status === true && b[1].status === false) return 1;
+        if (a[1].status === false && b[1].status === true) return -1;
+        return parseInt(b[0], 10) - parseInt(a[0], 10);
+    };
+    
 };
 
 module.exports = new Support
