@@ -17,12 +17,8 @@ class CartService {
                         if(snapshot.exists()) {
                             const name = await snapshot.child('name').val();
                             const price = await snapshot.child('price').val();
-                            const tmp = await snapshot.child('inventory').val();
-                            const inventory = tmp[color][memorysize];
-                            let total = 0;
-                            for (const size in tmp[color]) {
-                                total += tmp[color][size];
-                            }
+                            const total = await snapshot.child('inventory').val();
+                            const inventory = total[color][memorysize];
                             result.push({
                                 status: true,
                                 ...product,
