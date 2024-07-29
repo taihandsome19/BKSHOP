@@ -213,7 +213,7 @@ const ProductDetailsPage = () => {
             <div style={{ minHeight: '120px' }}>
               <WrapperStore>
                 {colorList.map((color, index) => {
-                  const isColorInStock = memorysizeList.some((capacity) => inventory[color] && inventory[color][capacity] > 0);
+                  const isColorInStock = inventory[color] && inventory[color][memorysizeList[selectedCapacity]] > 0;
                   return (
                     <WrapSelect
                       key={index}

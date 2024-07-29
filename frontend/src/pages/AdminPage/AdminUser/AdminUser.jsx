@@ -2,19 +2,24 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { Modal, Button, message, Spin } from 'antd';
+import { Modal, Button, message, Spin, Select } from 'antd';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
 import TableComponent from '../../../components/TableComponent/TableComponent';
 
+const { Option } = Select;
+
 const AdminUser = () => {
+  const selectdata = ["Cấm tài khoản", "Hoạt động"];
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedValue, setSelectedValue] = useState('');
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+  const [btloading, setbtLoading] = useState(false);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
+  const fetchData = () => {
     axios.get('http://localhost:3001/admin/manage_user')
       .then(response => {
         const formattedData = response.data.map((item, index) => [
@@ -24,7 +29,8 @@ const AdminUser = () => {
           item.sex,
           item.date_of_birth,
           item.phonenum,
-          item.address
+          item.address,
+          true
         ]);
         setData(formattedData);
         setLoading(false);
@@ -33,16 +39,60 @@ const AdminUser = () => {
         message.error('Lỗi không lấy được dữ liệu!');
         setLoading(false);
       });
+  }
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchData();
   }, []);
 
   const showModal = (rowData) => {
     setSelectedRowData(rowData);
     setIsModalVisible(true);
+    setSelectedValue('hihi');
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedRowData(null);
+    setSelectedValue('');
+  };
+
+  const handleChange = (value) => {
+    setSelectedValue(value);
+  };
+
+  const showConfirmModal = () => {
+    
+    setIsConfirmModalVisible(true);
+  };
+
+  const handleUpdate = async (orderId) => {
+    return;
+    setbtLoading(true);
+    try {
+      const res = await axios.post('http://localhost:3001/admin/update_order', { orderId, status: selectedValue });
+      if (res.data && res.data.status === true) {
+        fetchData();
+        message.success("Cập nhật trạng thái thành công");
+        setbtLoading(false);
+      } else {
+        message.error("Cập nhật trạng thái thất bại")
+        setbtLoading(false);
+      }
+    } catch (error) {
+      message.error("Cập nhật trạng thái thất bại")
+      setbtLoading(false);
+    }
+  }
+
+  const handleConfirmOk = () => {
+    handleUpdate(selectedRowData[0]);
+    setIsConfirmModalVisible(false);
+  };
+
+  const handleConfirmCancel = () => {
+    setIsConfirmModalVisible(false);
   };
 
   const columns = [
@@ -71,7 +121,7 @@ const AdminUser = () => {
     { name: 'sex', label: 'Giới tính' },
     { name: 'birthday', label: 'Ngày sinh' },
     { name: 'phone', label: 'Số điện thoại' },
-   
+
     {
       name: 'action',
       label: 'Hành động',
@@ -102,6 +152,25 @@ const AdminUser = () => {
       <Helmet>
         <title>Khách hàng - BKShopMyAdmin</title>
       </Helmet>
+      <Modal
+        centered
+        title="Xác nhận cập nhật"
+        visible={isConfirmModalVisible}
+        onCancel={handleConfirmCancel}
+        onOk={handleConfirmOk}
+        okText="Xác nhận"
+        cancelText="Hủy bỏ"
+        width={400}
+      >
+        <p>
+          {`Bạn có muốn cập nhật trạng thái đơn hàng từ `}
+          <strong>{selectedRowData ? selectedRowData[5] : 0}</strong>
+          {` thành `}
+          <strong>{selectedValue}</strong>
+          {` không?`}
+        </p>
+
+      </Modal>
       <Container>
         <SlideBarComponent statenow="khachhang" />
         <RightContainer>
@@ -110,12 +179,16 @@ const AdminUser = () => {
             <div style={{ flex: '1', padding: '20px 30px' }}>
               <TableComponent columns={columns} data={data} title="Danh sách khách hàng" />
               <Modal
+                centered
                 title="Thông tin khách hàng"
                 visible={isModalVisible}
                 onCancel={handleCancel}
                 footer={[
+                  <Button loading={btloading} type='primary' key="update" onClick={showConfirmModal}>
+                    Cập nhật
+                  </Button>,
                   <Button key="close" onClick={handleCancel}>
-                    Close
+                    Đóng
                   </Button>,
                 ]}
               >
@@ -127,6 +200,21 @@ const AdminUser = () => {
                     <p><strong>Ngày sinh:</strong> {selectedRowData[4]}</p>
                     <p><strong>Số điện thoại:</strong> {selectedRowData[5]}</p>
                     <p><strong>Địa chỉ:</strong> {selectedRowData[6]}</p>
+                    <p>
+                      <strong>Trạng thái:</strong>
+                      <Select value={selectedValue} style={{ paddingLeft: '10px', width: '180px' }} onChange={handleChange}>
+                        {selectdata.map((status, index) => (
+                          <Option key={status} value={status}
+                            disabled={
+                              (index < selectdata.indexOf(selectedRowData[5])) ||
+                              (status === "Đã huỷ" && !["Chờ xác nhận", "Đã xác nhận", "Đã huỷ"].includes(selectedRowData[5]))
+                            }
+                          >
+                            {status}
+                          </Option>
+                        ))}
+                      </Select>
+                    </p>
                   </div>
                 )}
               </Modal>
@@ -142,3 +230,5 @@ const AdminUser = () => {
 };
 
 export default AdminUser;
+
+// ĐỢI API SỬA BAND ACC

@@ -64,7 +64,7 @@ const SigninPage = () => {
           window.location.href = '/';
         }, 2000);
       } else {
-        message.error('Sai tài khoản hoặc mật khẩu');
+        message.error(response.data.message);
       }
     } catch (error) {
       message.error('Có lỗi xảy ra khi đăng nhập');
