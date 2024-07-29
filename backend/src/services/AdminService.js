@@ -1,5 +1,5 @@
 const { update } = require('firebase/database');
-const { db, ref, set, child, get, onValue } = require('../models/database');
+const { db, ref, set, child, get } = require('../models/database');
 
 class AdminService {
     createProduct = (data) => {
@@ -33,23 +33,28 @@ class AdminService {
             .then((snapshot) => {
                 if (snapshot.exists()) {
                     const users = snapshot.val();
-                    // const userInfo = Object.keys(users).map(uid => ({
-                    //     name: users[uid].infor.name,
-                    //     email: users[uid].infor.email,
-                    //     phone: users[uid].infor.phonenum,
-                    // }));
-                    const userInfo = Object.keys(users).map(uid => (users[uid].infor));
-                    resolve(userInfo);
-                } else {
-                    resolve({status: false});
-                }})
+                    const userInfo = Object.keys(users).map(uid => ({
+                        userId: uid,
+                        name: users[uid].infor.name,
+                        email: users[uid].infor.email,
+                        phone: users[uid].infor.phonenum,
+                        sex: users[uid].infor.sex,
+                        address: users[uid].infor.address,
+                        date_of_birth: users[uid].infor.date_of_birth,
+                        status: users[uid].status,
+                        notificationList: users[uid].notificationList
+                    }));
+                    resolve({status: true, userInfo: userInfo.reverse()});
+                } 
+                else resolve({status: false, message: "non-existent user"});
+            })
             .catch((error) => {
                 reject(error);
             });
         });
     }
 
-    manageOrder = () => {
+    manageOrder = async () => {
         const orderRef = ref(db, "orders");
         return new Promise((resolve, reject) => {
             get(orderRef)
@@ -58,15 +63,13 @@ class AdminService {
                     const result = [];
                     snapshot.forEach((orders) => {
                         const uid = orders.key;
-                        let user_name, email, phonenum, address;
+                        let user_name, email;
                         const userRef = ref(db, `users/${uid}/infor`);
                         get(userRef)
                         .then((userSnapshot) => {
                             if (userSnapshot.exists()) {
                                 user_name = userSnapshot.child('name').val();
                                 email = userSnapshot.child('email').val();
-                                phonenum = userSnapshot.child('phonenum').val();
-                                address = userSnapshot.child('address').val();
                             }
                             orders.forEach((order) => {
                                 const items = order.child('items');
@@ -83,30 +86,44 @@ class AdminService {
                                     };
                                     products.push(product);
                                 });
+                                var paymentSnapshot = order.child('payment')
                                 const temp = {
                                     orderId: order.key,
                                     user_name,
                                     email,
-                                    phonenum,
-                                    address,
+                                    phonenum: order.child('phonenum').val(),
+                                    address: order.child('address').val(),
+                                    orderDate: order.child('orderdate').val(),
                                     productList: products,
-                                    status: order.child('status').val(),
+                                    payment_method: paymentSnapshot.child('method').val(),
+                                    payment_status: paymentSnapshot.child('status').val(),
+                                    order_status: order.child('status').val(),
                                     totalPrice: order.child('totalPrice').val()
                                 };
                                 result.push(temp);
                             });
-                        }).then(() => {
-                            resolve(result);
-                        }).catch((error) => {
+                        })
+                        .then(() => {
+                            result.sort((a, b) => {
+                                return parseInt(b.orderId) - parseInt(a.orderId);
+                            })
+                            resolve({status: true, result: result});
+                        })
+                        .catch((error) => {
                             reject(error);
                         });
                     });
-                } else resolve({ status: false});
-            }).catch((error) => {
+                } 
+                else resolve({ 
+                    status: false, 
+                    message: "non-existent order"
+                });
+            })
+            .catch((error) => {
                 reject(error);
             });
         });
-    };
+    };  
     
     manageProduct = async () => {
         const productRef = ref(db, "products")
@@ -114,7 +131,15 @@ class AdminService {
             get(productRef)
             .then((snapshot) => {
                 if (snapshot.exists()) {
-                    resolve(snapshot)
+                    const products = snapshot.val();
+                    const Ids = Object.keys(products);
+                
+                    const productInfo = Ids.map(productId => ({
+                        [productId]: {
+                        ...products[productId]
+                        }
+                    }));
+                    resolve(productInfo.reverse());
                 } else {
                     resolve({status: false});
                 }})
@@ -190,7 +215,7 @@ class AdminService {
         })
     }
 
-    updateProduct = async (body) => { //chua test
+    updateProduct = async (body) => {
         const { productId, info } = body
         const productRef = ref(db, `products/${productId}`)
         
@@ -206,48 +231,134 @@ class AdminService {
     }
 
     removeProduct = async(body) => {
-        const { productId } = body
-        const productRef = ref(db, `products/${productId}`)
-        const cartRef = ref(db, "carts")
-        return new Promise(async (resolve, reject) => {
+        const { productId }= body
+        return new Promise((resolve, reject) => {
+            const productRef = ref(db, `products/${productId}`)
             remove(productRef)
-            .then((snapshot) => {
-                get(cartRef)
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const cart = snapshot.val()
-                        Object.keys(cart).forEach((user) => {
-                            const cartRef = ref(db, `carts/${user}`)
-                            get(cartRef)
-                            .then((productSnapshot) => {
-                                productSnapshot.forEach((product) => {
-                                    if (product.child('productId').val() === productId) {
-                                        const removeRef = ref(db, `carts/${user}/${product.key}`)
-                                        remove(removeRef)
-                                        .then(() => {
-                                            resolve({status: true})
-                                        })
-                                        .catch((error) => {
-                                            reject(error)
-                                        });
-                                    }
-                                })
-                            })
-                            .catch((error) => {
-                                reject(error)
-                            });
-                        })
-                    }
-                    else resolve({status: false})
-                })
-                .catch((error) => {
-                    reject(error)
-                })
+            .then(() => {
+                resolve({status: true})
             })
             .catch((error) => {
                 reject(error)
-            })
+            });
         })
+        
+    }
+
+    banUser = async (body) => {
+        const { userId, status } = body
+        return new Promise((resolve, reject) => {
+            const userRef = ref(db, `users/${userId}`)
+            get(userRef)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    const statusRef = ref(db, `users/${userId}/status`)
+                    set(statusRef, status)
+                    .then(() => {
+                        resolve({status: true})
+                    })
+                    .catch((error) => {
+                        reject(error)
+                    });
+                }
+                else resolve({status: false, message: "non-existent user"})
+            })
+            .catch((error) => {
+                reject(error)
+            });
+        })
+    }
+
+    add_notification = async (body) => {
+        const { userId, notice } = body
+        const notification = {
+            notice: notice,
+            status: false
+        }
+        const userRef = ref(db, `users/${userId}`)
+        return new Promise((resolve, reject) => {
+            get(userRef)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    const notificationId = Date.now()
+                    const notificationRef = ref(db, `users/${userId}/notificationList/${notificationId}`)
+                    set(notificationRef, notification)
+                    .then(() => {
+                        resolve({status: true})
+                    })
+                    .catch((error) => {
+                        reject(error)
+                    });
+                }
+                else resolve({status: false, message: "non-existent user"})
+            })
+            .catch((error) => {
+                reject(error)
+            });
+        })
+    }
+
+    countUser = async () => {
+        const userRef = ref(db, "users");
+        return new Promise((resolve, reject) => {
+            get(userRef)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    let result = 0;
+                    const users = snapshot.val();
+                    Object.keys(users).forEach((key) => {
+                        const user = users[key];
+                        if (user.role === "user") result += 1;
+                    });
+                    resolve(result.toString());
+                }
+                else resolve("0");
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        });
+    };
+    
+    countOrder = async () => {
+        const orderRef = ref(db, "orders");
+        return new Promise((resolve, reject) => {
+            get(orderRef)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    let order = 0;
+                    let delivery = 0;
+                    let revenue = 0;
+                    const users = snapshot.val();
+                    Object.keys(users).forEach((userkey) => {
+                        const user = users[userkey];
+                        Object.keys(user).forEach((orderkey) => {
+                            order += 1;
+                            const orders = user[orderkey]
+                            if (orders.status === "Đã giao hàng") { 
+                                delivery += 1;
+                                if (orders['payment'].status === true) {
+                                    revenue += orders.totalPrice
+                                }
+                            }
+                        })
+                    });
+                    resolve({
+                        order,
+                        delivery,
+                        revenue
+                    });
+                } 
+                else resolve({
+                    order: 0,
+                    delivery: 0,
+                    revenue: 0
+                });
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        });
     }
 }
 

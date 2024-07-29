@@ -91,6 +91,24 @@ class UserController {
         }
     }
 
+    notification = async (req, res) => {
+        try {
+            const result = await UserService.notification();
+            return res.status(200).send(result);
+        } catch(err) {
+            return res.status(404).json({status: false, error: err});
+        }
+    }
+
+    updateNotification = async (req, res) => {
+        try {
+            const result = await UserService.updateNotification(req.body);
+            return res.status(200).send(result);
+        } catch(err) {
+            return res.status(404).json({status: false, error: err});
+        }
+    }
+
 }
 
 module.exports = new UserController

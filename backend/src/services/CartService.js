@@ -1,21 +1,43 @@
-const { db, ref, set, get, onValue, child } = require('../models/database');
+const { db, ref, set, get, child } = require('../models/database');
 const { auth } = require('../models/auth');
 
 class CartService {
-    cart = async () => {
+    cart = async () => { //Đã sửa xong sau khi update carts
         const uid = await auth.currentUser.uid;
-        // console.log(uid)
         const dbRef = ref(db, `carts/${uid}`);
         return new Promise((resolve, reject) => {
-            onValue(dbRef, (snapshot) => {
+            get(dbRef)
+            .then(async (snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    // console.log(snapshot.size)
-                    resolve(data);
+                    const products = snapshot.val()
+                    var result = [];
+                    for (let product of products) {
+                        const { color, memorysize } = product;
+                        const snapshot = await get(ref(db, `products/${product.productId}`))
+                        if(snapshot.exists()) {
+                            const name = await snapshot.child('name').val();
+                            const price = await snapshot.child('price').val();
+                            const total = await snapshot.child('inventory').val();
+                            const inventory = total[color][memorysize];
+                            result.push({
+                                status: true,
+                                ...product,
+                                name: name,
+                                price: price,
+                                inventory: inventory,
+                                total: total
+                            })
+                        }
+                        else {
+                            result.push({ status: false, message: "Sản phẩm không tồn tại" });
+                        }
+                    }
+                    resolve(result);
                 } else {
                     resolve(null);
                 }
-            }, (error) => reject(error))
+            })
+            .catch((error) => reject(error));
         });
     }
 
@@ -59,35 +81,23 @@ class CartService {
         })
     }
     
-    increaseQuantity = async (body) => {
+    updateQuantity = async (body) => {
         const uid = await auth.currentUser.uid;
-        const { index } = body;
-        // console.log(index)
+        const { index, newQuantity } = body;
         return new Promise((resolve, reject) => {
-            get(child(ref(db), `carts/${uid}/${index}/quantity`))
-            .then((snapshot) => {
+            get(ref(db, `carts/${uid}/${index}`))
+            .then(async (snapshot) => {
                 const data = snapshot.val();
-                // console.log(data)
-                set(ref(db, `carts/${uid}/${index}/quantity`), data + 1);
-                resolve({status: true})
-            })
-            .catch((error) => {
-                reject(error);
-            });
-        })
-    }
-
-    decreaseQuantity = async (body) => {
-        const uid = await auth.currentUser.uid;
-        const { index } = body;
-        // console.log(index)
-        return new Promise((resolve, reject) => {
-            get(child(ref(db), `carts/${uid}/${index}/quantity`))
-            .then((snapshot) => {
-                const data = snapshot.val();
-                // console.log(data)
-                set(ref(db, `carts/${uid}/${index}/quantity`), data - 1);
-                resolve({status: true})
+                const productRef = ref(db, `products/${data.productId}/inventory/${data.color}/${data.memorysize}`)
+                const inventory = (await get(productRef)).val();
+                if(newQuantity <= 0) {
+                    resolve({status: false, message: "Số lượng không hợp lệ"});
+                }
+                else if(newQuantity <= inventory) {
+                    set(ref(db, `carts/${uid}/${index}/quantity`), newQuantity);
+                    resolve({status: true, message: "Đã cập nhật số lượng"});
+                }
+                else resolve({status: false, message: "Quá số lượng tồn kho"});
             })
             .catch((error) => {
                 reject(error);

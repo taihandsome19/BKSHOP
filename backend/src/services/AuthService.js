@@ -6,17 +6,15 @@ class AuthService {
     createUser = async (data) => {
         const { email, password, name } = data;
         return new Promise((resolve, reject) => {
-            fetchSignInMethodsForEmail(auth, email)//Check email đã đk hay ch?
+            fetchSignInMethodsForEmail(auth, email)
             .then((signInMethods) => {
-                if(signInMethods.length > 0) { //Email đã đăng ký
+                if(signInMethods.length > 0) {
                     resolve({status: false});
                 } else {
                     createUserWithEmailAndPassword(auth, email, password)
                     .then((userCredential) => {
                         const uid = userCredential.user.uid;
                         const userRef = child(ref(db, "users"), `${uid}`);
-                        // const orderRef = child(ref(db, "orders"), `${uid}`);
-                        // const cartRef = child(ref(db, "carts"), `${uid}`);
                         set(userRef, {
                             infor: {
                                 name: name,
@@ -26,15 +24,19 @@ class AuthService {
                                 sex: "",
                                 date_of_birth: ""
                             },
-                            role: "user"
+                            role: "user",
+                            status: true
                         });
-                        // set(orderRef, "");
-                        // set(cartRef, "");
-                        // console.log(`Đăng ký thành công. UID: ${uid}`);
-                        resolve({status: true});
+                        resolve({
+                            status: true,
+                            name: name,
+                            email: email,
+                            role: "user",
+                            user_status: true
+                        });
                     })
                     .catch((error) => {
-                        resolve({status: false, error: error});
+                        resolve({status: false, message: error.code});
                     })
                 }
             })
@@ -60,32 +62,34 @@ class AuthService {
                 const dbRef = ref(db, `users/${userCredential.user.uid}`);
                 onValue(dbRef, (snapshot) => {
                     if (snapshot.exists()) {
-                        const products = snapshot.val();
-                        resolve({
-                            status: true,
-                            name: products.infor.name,
-                            email: products.infor.email
-                        });
-                    } else {
-                        resolve({status: false});
-                    }
+                        const user = snapshot.val();
+                        if (user.status === true) {
+                            resolve({
+                                status: true,
+                                name: user.infor.name,
+                                email: user.infor.email,
+                                role: user.role,
+                                user_status: user.status
+                            });
+                        }
+                        else resolve({status: false, message: "User has been banned"})
+                    } else resolve({status: false});
                 }, (error) => reject(error));
             })
             .catch((error) => {
-                resolve({status: false, message: "Đăng nhập không thành công!", error: error});
+                resolve({status: false, message: "Wrong password or Invalid account"});
             })
         })
     }
 
-    forgotPassword = async (email) => {
+    forgotPassword = async () => {
         return new Promise ((resolve, reject) => {
-            sendPasswordResetEmail(auth, email)
+            var user = auth.currentUser;
+            sendPasswordResetEmail(auth, user.email)
             .then(() => {
-                // alert("An email has been sent to you with instructions to reset your password.");
                 resolve({status: true});
             })
             .catch((error) => {
-                // alert("An error occurred while sending the password reset email");
                 reject(error);
             });
         })
