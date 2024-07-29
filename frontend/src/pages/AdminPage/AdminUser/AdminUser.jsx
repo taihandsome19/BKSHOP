@@ -230,5 +230,3 @@ const AdminUser = () => {
 };
 
 export default AdminUser;
-
-// ĐỢI API SỬA BAND ACC
