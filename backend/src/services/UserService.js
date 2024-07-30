@@ -105,7 +105,7 @@ class UserService {
             const originalValues = []
             let allProductsAvailable = true
             for (var index of indexs) {
-                const cartRef = ref(db, `carts/${userId}/${indexs.length - index - 1}`)
+                const cartRef = ref(db, `carts/${userId}/${index}`)
                 try {
                     const productSnapshot = await get(cartRef);
                     if (productSnapshot.exists()) {

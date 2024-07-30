@@ -1,5 +1,5 @@
 const { update } = require('firebase/database');
-const { db, ref, set, child, get } = require('../models/database');
+const { db, ref, set, child, get, remove } = require('../models/database');
 const supportFunction = require('../services/support');
 
 class AdminService {
@@ -34,7 +34,9 @@ class AdminService {
             .then((snapshot) => {
                 if (snapshot.exists()) {
                     const users = snapshot.val();
-                    const userInfo = Object.keys(users).map(uid => ({
+                    const userInfo = Object.keys(users)
+                    .filter(uid => users[uid].role === "user")
+                    .map(uid => ({
                         userId: uid,
                         name: users[uid].infor.name,
                         email: users[uid].infor.email,
