@@ -101,10 +101,11 @@ class UserService {
         const { payment, address, phonenum, indexs, status } = body
         const userId = await auth.currentUser.uid
         return new Promise(async (resolve, reject) => {
+            const order = supportFunction.createOrder({ payment, address, phonenum, status })
             const originalValues = []
             let allProductsAvailable = true
             for (var index of indexs) {
-                const cartRef = ref(db, `carts/${userId}/${index}`)
+                const cartRef = ref(db, `carts/${userId}/${indexs.length - index - 1}`)
                 try {
                     const productSnapshot = await get(cartRef);
                     if (productSnapshot.exists()) {
@@ -119,10 +120,7 @@ class UserService {
                         const snapshot = await get(productRef)
                         if (snapshot.val() < quantity) {
                             allProductsAvailable = false
-                            resolve({
-                                status: false, 
-                                error:  `${name} không đủ số lượng trong kho!`
-                            });
+                            reject(`${name} is not enough!`);
                             break
                         } else {
                             originalValues.push({ 
@@ -137,7 +135,8 @@ class UserService {
                                 image: image
                             })
                         }
-                    } else {
+                    } 
+                    else {
                         resolve({
                             status: false, 
                             error: "Sản phẩm chưa được thêm vào giỏ hàng!"
@@ -162,7 +161,6 @@ class UserService {
                         }
                         order['totalPrice'] += item.price * item.quantity
                     }
-                    // resolve(order)
                     // remove product from cart
                     const removeRef = ref(db, `carts/${userId}`)
                     get(removeRef)
@@ -173,7 +171,6 @@ class UserService {
                         set(ref(db, `carts/${userId}`), data)
                         const orderId = Date.now()
                         const orderRef = ref(db, `orders/${userId}/${orderId}`)
-
                         // add product to order
                         set(orderRef, order)
                         .then(() => {

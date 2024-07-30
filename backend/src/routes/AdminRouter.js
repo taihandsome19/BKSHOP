@@ -13,5 +13,6 @@ router.post('/remove_product', AdminController.removeProduct);
 router.post('/ban_user', AdminController.banUser);
 router.post('/add_notice', AdminController.add_notification);
 router.get('/report', AdminController.report);
+router.get('/report_order', AdminController.reportOrder);
 
 module.exports = router

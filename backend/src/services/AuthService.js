@@ -135,7 +135,8 @@ class AuthService {
                 resolve({status: false, error: error});
             });
         });
-    };
+    }
+    
 }
 
 module.exports = new AuthService
