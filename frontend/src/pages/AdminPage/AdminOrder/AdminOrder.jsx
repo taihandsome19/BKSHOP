@@ -91,7 +91,14 @@ const AdminOrder = () => {
 
   const updatepay = async (orderId) => {
     try {
-      const res = await axios.post('http://localhost:3001/admin/update_payment', { orderId, status: true });
+      await axios.post('http://localhost:3001/admin/update_payment', { orderId, status: true });
+    } catch (error) {
+    }
+  }
+
+  const addnotice = async (uid, mess) => {
+    try {
+      await axios.post('http://localhost:3001/admin/add_notice', { userId: uid, notice: mess});
     } catch (error) {
     }
   }
@@ -107,6 +114,8 @@ const AdminOrder = () => {
   const handleConfirmOk = () => {
     handleUpdate(selectedRowData[0]);
     selectedRowData[5] = selectedValue;
+    const mess = `Đơn hàng #${selectedRowData[0]} của bạn đã chuyển sang trạng thái ${selectedValue.toLowerCase()}`;
+    addnotice(rowdata.userId, mess);
     if (selectedValue === "Đã giao hàng") {
       updatepay(selectedRowData[0]);
       rowdata.payment_status = true;

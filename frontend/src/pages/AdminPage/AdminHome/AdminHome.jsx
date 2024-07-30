@@ -22,7 +22,7 @@ const AdminHome = () => {
     setLoading(true);
     Promise.all([
       axios.get('http://localhost:3001/admin/report'),
-      axios.get('http://localhost:3001/admin/manage_order')
+      axios.get('http://localhost:3001/admin/report_order')
     ])
       .then(([reportResponse, orderResponse]) => {
         if (reportResponse.data && reportResponse.data.status === true) {
@@ -46,7 +46,7 @@ const AdminHome = () => {
     window.scrollTo(0, 0);
     fetchAllData();
   }, []);
-  
+
 
 
   return (
@@ -88,7 +88,11 @@ const AdminHome = () => {
                   <div style={{ padding: '20px 0' }}>
                     <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px' }}>
                       <div style={{ fontSize: '20px', color: '#2A3546', fontWeight: 'bold', paddingLeft: '20px', paddingBottom: '20px' }}>Tổng quan bán hàng</div>
-                      <ApexChart />
+                      <ApexChart
+                        order={dataorder.status === true ? dataorder.reportOrder.order : []}
+                        revenue={dataorder.status === true ? dataorder.reportOrder.revenue : []}
+                        date={dataorder.status === true ? dataorder.reportOrder.date : []}
+                      />
                     </div>
                   </div>
                 </div>
