@@ -32,7 +32,7 @@ class CartService {
                             result.push({ status: false, message: "Sản phẩm không tồn tại" });
                         }
                     }
-                    resolve(result.reverse());
+                    resolve(result);
                 } else {
                     resolve(null);
                 }
@@ -61,7 +61,7 @@ class CartService {
                             }
                             return item;
                         });
-                        if(!found) data.push(productInfo);
+                        if(!found) data.unshift(productInfo);
                         set(ref(db, `/carts/${uid}`), data);
                         resolve({status: true, size: data.length})
                     }
