@@ -1,4 +1,3 @@
-// ApexChart.js
 import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
@@ -6,15 +5,18 @@ class ApexChart extends React.Component {
   constructor(props) {
     super(props);
 
+    const convertDateArray = (dates) => dates.map(dateStr => new Date(dateStr.split('/').reverse().join('-')).getTime());
+
+    // Initialize state with props
     this.state = {
       series: [
         {
           name: 'Đơn hàng',
-          data: [10, 8, 21, 50, 42, 20, 25]
+          data: props.order || [], // Default to empty array if not provided
         },
         {
           name: 'Doanh thu (M)',
-          data: [19, 10, 8, 32, 16, 12, 8]
+          data: props.revenue || [], // Default to empty array if not provided
         }
       ],
       options: {
@@ -30,15 +32,7 @@ class ApexChart extends React.Component {
         },
         xaxis: {
           type: 'datetime',
-          categories: [
-            "2024-07-01",
-            "2024-07-02",
-            "2024-07-03",
-            "2024-07-04",
-            "2024-07-05",
-            "2024-07-06",
-            "2024-07-07"
-          ]
+          categories: convertDateArray(props.date), // Default to empty array if not provided
         },
         tooltip: {
           x: {

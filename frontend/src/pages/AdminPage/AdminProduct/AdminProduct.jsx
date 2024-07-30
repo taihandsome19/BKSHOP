@@ -42,9 +42,13 @@ const AdminProduct = () => {
   const fetchData = () => {
     axios.get('http://localhost:3001/admin/manage_product')
       .then(response => {
+
+        //const rawData = response.data.reduce((acc, curr) => {
+        //  return { ...acc, ...curr };
+        //}, {});
         const rawData = response.data;
-        const formattedData = Object.keys(response.data).map((key) => {
-          const item = response.data[key];
+        const formattedData = Object.keys(rawData).map((key) => {
+          const item = rawData[key];
           const priceFormatted = parseInt(item.price).toLocaleString('vi-VN') + 'đ';
           return [
             key,
@@ -391,312 +395,321 @@ const AdminProduct = () => {
         <RightContainer>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#FBFCFC', paddingTop: '70px' }}>
             <HeaderComponent />
-            <div style={{ flex: '1', padding: '20px 30px' }}>
-              <div style={{ display: 'flex', justifyContent: 'end', paddingBottom: '20px' }}>
-                <ButtonComfirm onClick={showAddModal}>Thêm sản phẩm</ButtonComfirm>
-              </div>
-              <TableComponent columns={columns} data={productData} title="Danh sách sản phẩm" />
-              <Modal
-                centered
-                title="Xác nhận cập nhật"
-                visible={isConfirmUpdateModalVisible}
-                onCancel={handleConfirmUpdateCancel}
-                onOk={handleConfirmUpdateOk}
-                okText="Xác nhận"
-                cancelText="Hủy bỏ"
-                width={400}
-              >
-                <p>
-                  {`Bạn có muốn cập nhật thông tin sản phẩm không? `}
-                </p>
-
-              </Modal>
-              <Modal
-                centered
-                title="Xác nhận xoá"
-                visible={isConfirmDeleteModalVisible}
-                onCancel={handleConfirmDeleteCancel}
-                onOk={handleConfirmDeleteOk}
-                okText="Xác nhận"
-                cancelText="Hủy bỏ"
-                width={400}
-              >
-                <p>
-                  {`Bạn có muốn xoá sản phẩm không? `}
-                </p>
-
-              </Modal>
-              <Modal
-                centered
-                title="Thông tin chi tiết"
-                visible={isModalVisible}
-                onCancel={handleCancel}
-                footer={[
-                  <div>
-                    <Deletebutton onClick={showConfirmDeleteModal}>
-                      <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
-                        <DeleteOutlined /> Xoá
-                      </div>
-                    </Deletebutton>
-                    <EditButton isEditing={isEditing} onClick={showConfirmUpdateModal}>
-                      {isEditing ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
-                          <SaveOutlined /> Lưu
-                        </div> :
-                        <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
-                          <EditOutlined /> Chỉnh sửa
-                        </div>
-                      }
-                    </EditButton>
+            {loading ? (
+              <Spin
+                size="large"
+                style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
+              />
+            ) : (
+              <div>
+                <div style={{ flex: '1', padding: '20px 30px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'end', paddingBottom: '20px' }}>
+                    <ButtonComfirm onClick={showAddModal}>Thêm sản phẩm</ButtonComfirm>
                   </div>
-                ]}
-              >
-                {selectedRowData && (
-                  <div>
-                    <WrapperRow>
-                      <strong style={{ width: '125px' }}>Mã sản phẩm:</strong>
-                      <Input style={{ flex: '1' }} value={selectedRowData[0]} disabled={true} />
-                    </WrapperRow>
-                    <WrapperRow>
-                      <strong style={{ width: '125px' }}>Tên sản phẩm:</strong>
-                      <Input style={{ flex: '1' }} value={updateValueName} disabled={!isEditing} onChange={(e) => setupdateValueName(e.target.value)} />
-                    </WrapperRow>
-                    <WrapperRow>
-                      <strong style={{ width: '125px' }}>Hãng điện thoại:</strong>
-                      <Select value={updateValueBrand} style={{ flex: '1' }} onChange={(value) => setupdateValueBrand(value)} disabled={!isEditing}>
-                        {brands.map((status, index) => (
-                          <Option key={status} value={status}
-                          >
-                            {status}
-                          </Option>
-                        ))}
-                      </Select>
-                    </WrapperRow>
-                    <WrapperRow>
-                      <strong style={{ width: '125px' }}>Giá sản phẩm:</strong>
-                      <Input style={{ flex: '1' }} value={updateValuePrice} disabled={!isEditing} onChange={(e) => setupdateValuePrice(e.target.value)} />
-                    </WrapperRow>
-                    <WrapperRow>
-                      <strong style={{ width: '125px' }}>Số lượng:</strong>
-                      <div style={{ flex: '1' }}>
-                        {Object.values(rowProductData.description.color || {}).map(color => (
-                          Object.values(rowProductData.description.memorysize || {}).map(storage => (
-                            <div style={{ display: 'flex', flex: '1', gap: '10px', padding: '7px 0' }}>
-                              <Input
-                                style={{ width: '33.3%' }}
-                                value={color}
-                                disabled={true}
-                              />
-                              <Input
-                                style={{ width: '33.3%' }}
-                                value={storage}
-                                disabled={true}
-                              />
-                              <InputNumber
-                                min={0}
-                                style={{ width: '33.3%', textAlign: 'center' }}
-                                value={updateValueInventory[color][storage]}
-                                disabled={!isEditing}
-                                onChange={(newValue) => {
-                                  setupdateValueInventory((prevInventory) => ({
-                                    ...prevInventory,
-                                    [color]: {
-                                      ...prevInventory[color],
-                                      [storage]: newValue,
-                                    },
-                                  }));
-                                }}
-                              />
-                            </div>
-                          ))
-                        ))}
-                      </div>
-                    </WrapperRow>
-                    <WrapperRow>
-                      <strong style={{ width: '125px' }}>Mô tả:</strong>
-                      <TextArea style={{ flex: '1' }} value={updateValueDetail} disabled={!isEditing} onChange={(e) => setupdateValueDetail(e.target.value)} />
-                    </WrapperRow>
-                    <WrapperRow>
-                      <strong style={{ width: '125px' }}>Hình ảnh:</strong>
-                      <div style={{ display: 'flex', gap: "5px" }}>
-                        {Object.values(rowProductData.image || {}).map(img => (
-                          <div style={{
-                            width: '50px',
-                            height: '50px',
-                            border: '1px solid #d9d9d9',
-                            borderRadius: '8px',
-                            overflow: 'hidden'
-                          }}>
-                            <img
-                              src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${img}?alt=media`}
-                              alt="icon"
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
+                  <TableComponent columns={columns} data={productData} title="Danh sách sản phẩm" />
+                  <Modal
+                    centered
+                    title="Xác nhận cập nhật"
+                    visible={isConfirmUpdateModalVisible}
+                    onCancel={handleConfirmUpdateCancel}
+                    onOk={handleConfirmUpdateOk}
+                    okText="Xác nhận"
+                    cancelText="Hủy bỏ"
+                    width={400}
+                  >
+                    <p>
+                      {`Bạn có muốn cập nhật thông tin sản phẩm không? `}
+                    </p>
+
+                  </Modal>
+                  <Modal
+                    centered
+                    title="Xác nhận xoá"
+                    visible={isConfirmDeleteModalVisible}
+                    onCancel={handleConfirmDeleteCancel}
+                    onOk={handleConfirmDeleteOk}
+                    okText="Xác nhận"
+                    cancelText="Hủy bỏ"
+                    width={400}
+                  >
+                    <p>
+                      {`Bạn có muốn xoá sản phẩm không? `}
+                    </p>
+
+                  </Modal>
+                  <Modal
+                    centered
+                    title="Thông tin chi tiết"
+                    visible={isModalVisible}
+                    onCancel={handleCancel}
+                    footer={[
+                      <div>
+                        <Deletebutton onClick={showConfirmDeleteModal}>
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
+                            <DeleteOutlined /> Xoá
                           </div>
-                        ))}
-                      </div>
-                    </WrapperRow>
-                  </div>
-                )}
-              </Modal>
-              <Modal
-                title="Thêm sản phẩm"
-                visible={isAddModalVisible}
-                onCancel={handleAddCancel}
-                footer={null}
-              >
-                <Form
-                  form={form}
-                  onFinish={handleAddProduct}
-                  labelCol={{ span: 7 }}
-                  wrapperCol={{ span: 18 }}
-                  style={{ margin: '0 auto', maxWidth: '600px' }}
-                >
-                  <Form.Item
-                    name="name"
-                    label="Tên sản phẩm"
-                    rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm' }]}
-                    labelAlign="left"
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="brand"
-                    label="Hãng điện thoại"
-                    rules={[{ required: true, message: 'Vui lòng chọn hoặc thêm hãng điện thoại' }]}
-                    labelAlign="left"
-                  >
-                    <Select
-                      placeholder="Chọn hãng điện thoại"
-                      dropdownRender={(menu) => (
-                        <>
-                          {menu}
-                        </>
-                      )}
-                    >
-                      {brands.map((brand) => (
-                        <Option key={brand} value={brand}>
-                          {brand}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                  <Form.Item
-                    name="decription"
-                    label="Mô tả"
-                    rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
-                    labelAlign="left"
-                  >
-                    <TextArea minRows="3" maxRows="5" />
-                  </Form.Item>
-                  <Form.Item
-                    name="price"
-                    label="Giá tiền"
-                    rules={[
-                      { required: true, message: 'Vui lòng nhập giá sản phẩm' },
-                      {
-                        validator: (_, value) =>
-                          value >= 0 ? Promise.resolve() : Promise.reject(new Error('Giá sản phẩm phải lớn hơn hoặc bằng 0')),
-                      },
-                    ]}
-                    labelAlign="left"
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="color"
-                    label="Màu sắc"
-                    rules={[{ required: true, message: 'Vui lòng thêm màu sắc' }]}
-                    labelAlign="left"
-                  >
-                    <Input
-                      placeholder="Nhập mỗi loại cách nhau dấu phẩy"
-                      autoSize={{ minRows: 1, maxRows: 2 }}
-                      onBlur={(e) => handleColorChange(e.target.value)}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="storage"
-                    label="Dung lượng"
-                    rules={[{ required: true, message: 'Vui lòng thêm dung lượng' }]}
-                    labelAlign="left"
-                  >
-                    <Input
-                      placeholder="Nhập mỗi loại cách nhau dấu phẩy"
-                      autoSize={{ minRows: 1, maxRows: 2 }}
-                      onBlur={(e) => handleStorageChange(e.target.value)}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="images"
-                    label="Hình ảnh"
-                    labelAlign="left"
-                    rules={[{ required: true, message: 'Chọn hình ảnh' }]}
-                  >
-                    <Upload
-                      multiple
-                      listType="picture"
-                      fileList={fileList}
-                      onChange={({ fileList }) => setFileList(fileList)}
-                      beforeUpload={() => false}
-                    >
-                      <Button icon={<UploadOutlined />}>Tải lên hình ảnh</Button>
-                    </Upload>
-                  </Form.Item>
-                  <Form.List name="variants">
-                    {(fields, { add, remove }) => (
-                      <>
-                        {colors.map(color => (
-                          storages.map(storage => (
-                            <div key={`${color}-${storage}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <Form.Item
-                                name={[`${color}-${storage}`, 'color']}
-                                initialValue={color}
-                                style={{ flex: 1, marginRight: 8 }}
-                              >
-                                <Input value={color} disabled style={{ width: '151.8px' }} />
-                              </Form.Item>
-                              <Form.Item
-                                name={[`${color}-${storage}`, 'storage']}
-                                initialValue={storage}
-                                style={{ flex: 1, marginRight: 8 }}
-                              >
-                                <Input value={storage} disabled style={{ width: '151.8px' }} />
-                              </Form.Item>
-                              <Form.Item
-                                name={[`${color}-${storage}`, 'quantity']}
-                                rules={[
-                                  { required: true, message: 'Nhập số lượng' },
-                                  {
-                                    validator: (_, value) =>
-                                      value >= 0 ? Promise.resolve() : Promise.reject(new Error('Không hợp lệ')),
-                                  },
-                                ]}
-                                style={{ flex: 1, marginRight: 8 }}
-                              >
-                                <InputNumber min={0} placeholder="Số lượng" style={{ width: '151.8px' }} />
-                              </Form.Item>
+                        </Deletebutton>
+                        <EditButton isEditing={isEditing} onClick={showConfirmUpdateModal}>
+                          {isEditing ?
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
+                              <SaveOutlined /> Lưu
+                            </div> :
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
+                              <EditOutlined /> Chỉnh sửa
                             </div>
-                          ))
-                        ))}
-                      </>
+                          }
+                        </EditButton>
+                      </div>
+                    ]}
+                  >
+                    {selectedRowData && (
+                      <div>
+                        <WrapperRow>
+                          <strong style={{ width: '125px' }}>Mã sản phẩm:</strong>
+                          <Input style={{ flex: '1' }} value={selectedRowData[0]} disabled={true} />
+                        </WrapperRow>
+                        <WrapperRow>
+                          <strong style={{ width: '125px' }}>Tên sản phẩm:</strong>
+                          <Input style={{ flex: '1' }} value={updateValueName} disabled={!isEditing} onChange={(e) => setupdateValueName(e.target.value)} />
+                        </WrapperRow>
+                        <WrapperRow>
+                          <strong style={{ width: '125px' }}>Hãng điện thoại:</strong>
+                          <Select value={updateValueBrand} style={{ flex: '1' }} onChange={(value) => setupdateValueBrand(value)} disabled={!isEditing}>
+                            {brands.map((status, index) => (
+                              <Option key={status} value={status}
+                              >
+                                {status}
+                              </Option>
+                            ))}
+                          </Select>
+                        </WrapperRow>
+                        <WrapperRow>
+                          <strong style={{ width: '125px' }}>Giá sản phẩm:</strong>
+                          <Input style={{ flex: '1' }} value={updateValuePrice} disabled={!isEditing} onChange={(e) => setupdateValuePrice(e.target.value)} />
+                        </WrapperRow>
+                        <WrapperRow>
+                          <strong style={{ width: '125px' }}>Số lượng:</strong>
+                          <div style={{ flex: '1' }}>
+                            {Object.values(rowProductData.description.color || {}).map(color => (
+                              Object.values(rowProductData.description.memorysize || {}).map(storage => (
+                                <div style={{ display: 'flex', flex: '1', gap: '10px', padding: '7px 0' }}>
+                                  <Input
+                                    style={{ width: '33.3%' }}
+                                    value={color}
+                                    disabled={true}
+                                  />
+                                  <Input
+                                    style={{ width: '33.3%' }}
+                                    value={storage}
+                                    disabled={true}
+                                  />
+                                  <InputNumber
+                                    min={0}
+                                    style={{ width: '33.3%', textAlign: 'center' }}
+                                    value={updateValueInventory[color][storage]}
+                                    disabled={!isEditing}
+                                    onChange={(newValue) => {
+                                      setupdateValueInventory((prevInventory) => ({
+                                        ...prevInventory,
+                                        [color]: {
+                                          ...prevInventory[color],
+                                          [storage]: newValue,
+                                        },
+                                      }));
+                                    }}
+                                  />
+                                </div>
+                              ))
+                            ))}
+                          </div>
+                        </WrapperRow>
+                        <WrapperRow>
+                          <strong style={{ width: '125px' }}>Mô tả:</strong>
+                          <TextArea style={{ flex: '1' }} value={updateValueDetail} disabled={!isEditing} onChange={(e) => setupdateValueDetail(e.target.value)} />
+                        </WrapperRow>
+                        <WrapperRow>
+                          <strong style={{ width: '125px' }}>Hình ảnh:</strong>
+                          <div style={{ display: 'flex', gap: "5px" }}>
+                            {Object.values(rowProductData.image || {}).map(img => (
+                              <div style={{
+                                width: '50px',
+                                height: '50px',
+                                border: '1px solid #d9d9d9',
+                                borderRadius: '8px',
+                                overflow: 'hidden'
+                              }}>
+                                <img
+                                  src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${img}?alt=media`}
+                                  alt="icon"
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </WrapperRow>
+                      </div>
                     )}
-                  </Form.List>
-                  <Form.Item wrapperCol={{ span: 24 }}>
-                    <Button type="primary" loading={loadingbutton} htmlType="submit" block>
-                      Thêm
-                    </Button>
-                  </Form.Item>
-                </Form>
-              </Modal>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '10px', backgroundColor: '#FBFCFC' }}>
-              <div style={{ fontSize: '13px', fontWeight: '600', color: '#6f6f6f' }}>© 2024 BkShopMyAdmin V1.0</div>
-            </div>
+                  </Modal>
+                  <Modal
+                    title="Thêm sản phẩm"
+                    visible={isAddModalVisible}
+                    onCancel={handleAddCancel}
+                    footer={null}
+                  >
+                    <Form
+                      form={form}
+                      onFinish={handleAddProduct}
+                      labelCol={{ span: 7 }}
+                      wrapperCol={{ span: 18 }}
+                      style={{ margin: '0 auto', maxWidth: '600px' }}
+                    >
+                      <Form.Item
+                        name="name"
+                        label="Tên sản phẩm"
+                        rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm' }]}
+                        labelAlign="left"
+                      >
+                        <Input />
+                      </Form.Item>
+                      <Form.Item
+                        name="brand"
+                        label="Hãng điện thoại"
+                        rules={[{ required: true, message: 'Vui lòng chọn hoặc thêm hãng điện thoại' }]}
+                        labelAlign="left"
+                      >
+                        <Select
+                          placeholder="Chọn hãng điện thoại"
+                          dropdownRender={(menu) => (
+                            <>
+                              {menu}
+                            </>
+                          )}
+                        >
+                          {brands.map((brand) => (
+                            <Option key={brand} value={brand}>
+                              {brand}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item
+                        name="decription"
+                        label="Mô tả"
+                        rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
+                        labelAlign="left"
+                      >
+                        <TextArea minRows="3" maxRows="5" />
+                      </Form.Item>
+                      <Form.Item
+                        name="price"
+                        label="Giá tiền"
+                        rules={[
+                          { required: true, message: 'Vui lòng nhập giá sản phẩm' },
+                          {
+                            validator: (_, value) =>
+                              value >= 0 ? Promise.resolve() : Promise.reject(new Error('Giá sản phẩm phải lớn hơn hoặc bằng 0')),
+                          },
+                        ]}
+                        labelAlign="left"
+                      >
+                        <Input />
+                      </Form.Item>
+                      <Form.Item
+                        name="color"
+                        label="Màu sắc"
+                        rules={[{ required: true, message: 'Vui lòng thêm màu sắc' }]}
+                        labelAlign="left"
+                      >
+                        <Input
+                          placeholder="Nhập mỗi loại cách nhau dấu phẩy"
+                          autoSize={{ minRows: 1, maxRows: 2 }}
+                          onBlur={(e) => handleColorChange(e.target.value)}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name="storage"
+                        label="Dung lượng"
+                        rules={[{ required: true, message: 'Vui lòng thêm dung lượng' }]}
+                        labelAlign="left"
+                      >
+                        <Input
+                          placeholder="Nhập mỗi loại cách nhau dấu phẩy"
+                          autoSize={{ minRows: 1, maxRows: 2 }}
+                          onBlur={(e) => handleStorageChange(e.target.value)}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name="images"
+                        label="Hình ảnh"
+                        labelAlign="left"
+                        rules={[{ required: true, message: 'Chọn hình ảnh' }]}
+                      >
+                        <Upload
+                          multiple
+                          listType="picture"
+                          fileList={fileList}
+                          onChange={({ fileList }) => setFileList(fileList)}
+                          beforeUpload={() => false}
+                        >
+                          <Button icon={<UploadOutlined />}>Tải lên hình ảnh</Button>
+                        </Upload>
+                      </Form.Item>
+                      <Form.List name="variants">
+                        {(fields, { add, remove }) => (
+                          <>
+                            {colors.map(color => (
+                              storages.map(storage => (
+                                <div key={`${color}-${storage}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <Form.Item
+                                    name={[`${color}-${storage}`, 'color']}
+                                    initialValue={color}
+                                    style={{ flex: 1, marginRight: 8 }}
+                                  >
+                                    <Input value={color} disabled style={{ width: '151.8px' }} />
+                                  </Form.Item>
+                                  <Form.Item
+                                    name={[`${color}-${storage}`, 'storage']}
+                                    initialValue={storage}
+                                    style={{ flex: 1, marginRight: 8 }}
+                                  >
+                                    <Input value={storage} disabled style={{ width: '151.8px' }} />
+                                  </Form.Item>
+                                  <Form.Item
+                                    name={[`${color}-${storage}`, 'quantity']}
+                                    rules={[
+                                      { required: true, message: 'Nhập số lượng' },
+                                      {
+                                        validator: (_, value) =>
+                                          value >= 0 ? Promise.resolve() : Promise.reject(new Error('Không hợp lệ')),
+                                      },
+                                    ]}
+                                    style={{ flex: 1, marginRight: 8 }}
+                                  >
+                                    <InputNumber min={0} placeholder="Số lượng" style={{ width: '151.8px' }} />
+                                  </Form.Item>
+                                </div>
+                              ))
+                            ))}
+                          </>
+                        )}
+                      </Form.List>
+                      <Form.Item wrapperCol={{ span: 24 }}>
+                        <Button type="primary" loading={loadingbutton} htmlType="submit" block>
+                          Thêm
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  </Modal>
+                </div>
+              </div>
+            )}
+            < div style={{ display: 'flex', justifyContent: 'center', padding: '10px', backgroundColor: '#FBFCFC' }}>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: '#6f6f6f' }}>© 2024 BkShopMyAdmin V1.0</div>
           </div>
-        </RightContainer>
-      </Container>
-    </HelmetProvider>
+        </div>
+      </RightContainer>
+    </Container>
+    </HelmetProvider >
   );
 };
 

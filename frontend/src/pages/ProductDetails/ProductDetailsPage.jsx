@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import SwiperCore from 'swiper';
@@ -47,9 +47,13 @@ const ProductDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCapacity, setSelectedCapacity] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  const swiperRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (swiperRef.current) {
+      swiperRef.current.swiper = swiperRef.current.swiper || swiperRef.current;
+    }
     const fetchData = async () => {
       try {
         const res = await axios.get(`http://localhost:3001/product/detail?product_id=${productId}`);
@@ -93,6 +97,7 @@ const ProductDetailsPage = () => {
   };
 
   const handleColorClick = (index) => {
+    goToSlide(index);
     const color = colorList[index];
     const isAnyInStock = memorysizeList.some((capacity) => inventory[color] && inventory[color][capacity] > 0);
     if (isAnyInStock) {
@@ -134,12 +139,9 @@ const ProductDetailsPage = () => {
     };
   
     try {
-      await axios.post('http://localhost:3001/user/cart', payload);
+      const res = await axios.post('http://localhost:3001/user/cart', payload);
       message.success('Sản phẩm đã được thêm vào giỏ hàng');
-      
-
-      // ĐỢI API
-      setUserCart(prevUserCart => prevUserCart + 1);
+      setUserCart(res.data.size);
     } catch (error) {
       message.error('Vui lòng đăng nhập để mua hàng');
       setTimeout(() => {
@@ -149,6 +151,7 @@ const ProductDetailsPage = () => {
   };  
 
   const handleBuyNow = () => {
+    handleAddToCart();
     const selectedProducts = [{
       color: colorList[selectedColor],
       image: listImage[selectedColor],
@@ -162,6 +165,15 @@ const ProductDetailsPage = () => {
     window.location.href = '/cart/payment_info';
   };
 
+  const goToSlide = (index) => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      console.log('Swiper instance:', swiperRef.current.swiper);
+      swiperRef.current.swiper.slideTo(index);
+    } else {
+      console.log('Swiper instance not ready');
+    }
+  };
+  
 
   return (
     <WrapperPage>
@@ -181,7 +193,7 @@ const ProductDetailsPage = () => {
               slidesPerView={1}
               navigation
               pagination={{ clickable: true }}
-              onSlideChange={() => console.log('slide change')}
+              onSwiper={(swiper) => { swiperRef.current = swiper; }}
             >
               {listImage.map((image, index) => (
                 <SwiperSlide key={index} style={{ display: "flex", justifyContent: "center" }}>
@@ -267,11 +279,6 @@ const ProductDetailsPage = () => {
         </WrapperTitle>
         <div style={{ display: "flex", gap: "20px" }}>
           <CardInfo>
-            <div style={{ minHeight: "100px" }}>
-              <WrapperSectionText>
-                Thông số kỹ thuật
-              </WrapperSectionText>
-            </div>
             <div>
               <WrapperSectionText>
                 Mô tả sản phẩm

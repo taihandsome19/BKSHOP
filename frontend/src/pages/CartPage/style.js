@@ -110,3 +110,18 @@ export const ButtonProduct = styled.button`
     font-size: 16px;
     cursor: pointer;
 `;
+
+export const StyledInput = styled.input`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #444;
+  border: 1px solid #ccc; /* Default border */
+  outline: none;
+  text-align: center;
+  border-radius: 5px;
+  height: 28px;
+  padding: 0;
+
+ 
+`;

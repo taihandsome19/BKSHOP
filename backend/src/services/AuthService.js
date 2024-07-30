@@ -72,12 +72,12 @@ class AuthService {
                                 user_status: user.status
                             });
                         }
-                        else resolve({status: false, message: "User has been banned"})
+                        else resolve({status: false, message: "Tài khoản của bạn đã bị cấm!"})
                     } else resolve({status: false});
                 }, (error) => reject(error));
             })
             .catch((error) => {
-                resolve({status: false, message: "Wrong password or Invalid account"});
+                resolve({status: false, message: "Sai email hoặc mật khẩu!"});
             })
         })
     }
