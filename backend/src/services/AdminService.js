@@ -1,5 +1,6 @@
 const { update } = require('firebase/database');
 const { db, ref, set, child, get } = require('../models/database');
+const supportFunction = require('../services/support');
 
 class AdminService {
     createProduct = (data) => {
@@ -60,64 +61,72 @@ class AdminService {
             get(orderRef)
             .then((snapshot) => {
                 if (snapshot.exists()) {
-                    const result = [];
+                    const promises = [];
                     snapshot.forEach((orders) => {
                         const uid = orders.key;
-                        let user_name, email;
-                        const userRef = ref(db, `users/${uid}/infor`);
-                        get(userRef)
-                        .then((userSnapshot) => {
-                            if (userSnapshot.exists()) {
-                                user_name = userSnapshot.child('name').val();
-                                email = userSnapshot.child('email').val();
-                            }
-                            orders.forEach((order) => {
-                                const items = order.child('items');
-                                const products = [];
-                                items.forEach((item) => {
-                                    const product = {
-                                        productId: item.key,
-                                        name_product: item.child('name').val(),
-                                        color: item.child('color').val(),
-                                        memorySize: item.child('memorySize').val(),
-                                        price: item.child('price').val(),
-                                        quantity: item.child('quantity').val(),
-                                        image: item.child('image').val()
+                        const promise = new Promise((resolve, reject) => {
+                            const userRef = ref(db, `users/${uid}/infor`);
+                            get(userRef)
+                            .then((userSnapshot) => {
+                                let user_name, email;
+                                if (userSnapshot.exists()) {
+                                    user_name = userSnapshot.child('name').val();
+                                    email = userSnapshot.child('email').val();
+                                }
+                                const result = [];
+                                orders.forEach((order) => {
+                                    const items = order.child('items');
+                                    const products = [];
+                                    items.forEach((item) => {
+                                        const product = {
+                                            productId: item.key,
+                                            name_product: item.child('name').val(),
+                                            color: item.child('color').val(),
+                                            memorySize: item.child('memorySize').val(),
+                                            price: item.child('price').val(),
+                                            quantity: item.child('quantity').val(),
+                                            image: item.child('image').val()
+                                        };
+                                        products.push(product);
+                                    });
+                                    var paymentSnapshot = order.child('payment');
+                                    const temp = {
+                                        orderId: order.key,
+                                        userId: uid,
+                                        user_name,
+                                        email,
+                                        phonenum: order.child('phonenum').val(),
+                                        address: order.child('address').val(),
+                                        orderDate: order.child('orderdate').val(),
+                                        productList: products,
+                                        payment_method: paymentSnapshot.child('method').val(),
+                                        payment_status: paymentSnapshot.child('status').val(),
+                                        order_status: order.child('status').val(),
+                                        totalPrice: order.child('totalPrice').val()
                                     };
-                                    products.push(product);
+                                    result.push(temp);
                                 });
-                                var paymentSnapshot = order.child('payment')
-                                const temp = {
-                                    orderId: order.key,
-                                    user_name,
-                                    email,
-                                    phonenum: order.child('phonenum').val(),
-                                    address: order.child('address').val(),
-                                    orderDate: order.child('orderdate').val(),
-                                    productList: products,
-                                    payment_method: paymentSnapshot.child('method').val(),
-                                    payment_status: paymentSnapshot.child('status').val(),
-                                    order_status: order.child('status').val(),
-                                    totalPrice: order.child('totalPrice').val()
-                                };
-                                result.push(temp);
-                            });
-                        })
-                        .then(() => {
-                            result.sort((a, b) => {
-                                return parseInt(b.orderId) - parseInt(a.orderId);
+                                resolve(result);
                             })
-                            resolve({status: true, result: result});
-                        })
-                        .catch((error) => {
-                            reject(error);
+                            .catch((error) => {
+                                reject(error);
+                            });
                         });
+                        promises.push(promise);
+                    });
+                    Promise.all(promises)
+                    .then((results) => {
+                        const combinedResult = results.flat();
+                        combinedResult.sort((a, b) => {
+                            return parseInt(b.orderId) - parseInt(a.orderId);
+                        });
+                        resolve({status: true, result: combinedResult});
+                    })
+                    .catch((error) => {
+                        reject(error);
                     });
                 } 
-                else resolve({ 
-                    status: false, 
-                    message: "non-existent order"
-                });
+                else resolve({status: false, message: "non-existent order"});
             })
             .catch((error) => {
                 reject(error);
@@ -132,14 +141,10 @@ class AdminService {
             .then((snapshot) => {
                 if (snapshot.exists()) {
                     const products = snapshot.val();
-                    const Ids = Object.keys(products);
-                
-                    const productInfo = Ids.map(productId => ({
-                        [productId]: {
-                        ...products[productId]
-                        }
-                    }));
-                    resolve(productInfo.reverse());
+                    const entries = Object.entries(products);
+                    const reversedEntries = entries.reverse();
+                    const reversedObject = Object.fromEntries(reversedEntries);
+                    resolve(reversedObject)
                 } else {
                     resolve({status: false});
                 }})
@@ -231,7 +236,7 @@ class AdminService {
     }
 
     removeProduct = async(body) => {
-        const { productId }= body
+        const { productId } = body
         return new Promise((resolve, reject) => {
             const productRef = ref(db, `products/${productId}`)
             remove(productRef)
@@ -318,7 +323,7 @@ class AdminService {
                 reject(error);
             });
         });
-    };
+    }
     
     countOrder = async () => {
         const orderRef = ref(db, "orders");
@@ -359,6 +364,24 @@ class AdminService {
                 reject(error);
             });
         });
+    }
+
+    reportOrder = async () => {
+        const orderRef = ref(db, "orders")
+        return new Promise((resolve, reject) => {
+            get(orderRef)
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    const orders = snapshot.val()
+                    const result = supportFunction.summarizeOrders(orders)
+                    resolve({status: true, reportOrder: result})
+                }
+                else reject({status: false})
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        })
     }
 }
 

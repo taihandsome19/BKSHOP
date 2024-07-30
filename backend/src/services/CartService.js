@@ -32,7 +32,7 @@ class CartService {
                             result.push({ status: false, message: "Sản phẩm không tồn tại" });
                         }
                     }
-                    resolve(result);
+                    resolve(result.reverse());
                 } else {
                     resolve(null);
                 }
