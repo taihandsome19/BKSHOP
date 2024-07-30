@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
@@ -10,8 +10,45 @@ import order from '../../../assets/images/admin/order.png';
 import delivered from '../../../assets/images/admin/delivered.png';
 import ApexChart from './ApexChart';
 import Number from './Number';
+import axios from 'axios';
+import { message, Spin } from 'antd';
 
 const AdminHome = () => {
+  const [datastatistical, setdatastatistical] = useState({});
+  const [dataorder, setdataorder] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  const fetchAllData = () => {
+    setLoading(true);
+    Promise.all([
+      axios.get('http://localhost:3001/admin/report'),
+      axios.get('http://localhost:3001/admin/manage_order')
+    ])
+      .then(([reportResponse, orderResponse]) => {
+        if (reportResponse.data && reportResponse.data.status === true) {
+          setdatastatistical(reportResponse.data);
+        } else {
+          message.error('Lỗi không lấy được dữ liệu báo cáo!');
+        }
+        if (orderResponse.data && orderResponse.data.status === true) {
+          setdataorder(orderResponse.data);
+          setLoading(false);
+        } else {
+          message.error('Lỗi không lấy được dữ liệu đơn hàng!');
+        }
+      })
+      .catch(error => {
+        message.error('Lỗi không lấy được dữ liệu!');
+      });
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchAllData();
+  }, []);
+  
+
+
   return (
     <HelmetProvider>
       <Helmet>
@@ -23,30 +60,39 @@ const AdminHome = () => {
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#FBFCFC' }}>
             <HeaderComponent />
             <div style={{ flex: '1', paddingTop: '90px', paddingLeft: '30px', paddingRight: '30px' }}>
-              <div style={{ display: 'flex', gap: '20px' }}>
-                <CardInfo>
-                  <img src={member} alt='member' width="80px" />
-                  <Number title="Khách hàng" value={10} duration={1000} />
-                </CardInfo>
-                <CardInfo>
-                  <img src={coin} alt='member' width="80px" />
-                  <Number title="Doanh thu" value={90000000} duration={1000}/>
-                </CardInfo>
-                <CardInfo>
-                  <img src={order} alt='member' width="80px" />
-                  <Number title="Đơn hàng" value={20} duration={1000} />
-                </CardInfo>
-                <CardInfo>
-                  <img src={delivered} alt='member' width="80px" />
-                  <Number title="Đã giao" value={18} duration={1000} />
-                </CardInfo>
-              </div>
-              <div style={{ padding: '20px 0' }}>
-                <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '20px', color: '#2A3546', fontWeight: 'bold', paddingLeft: '20px', paddingBottom: '20px' }}>Tổng quan bán hàng</div>
-                  <ApexChart />
+              {loading ? (
+                <Spin
+                  size="large"
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
+                />
+              ) : (
+                <div>
+                  <div style={{ display: 'flex', gap: '20px' }}>
+                    <CardInfo>
+                      <img src={member} alt='member' width="80px" />
+                      <Number title="Khách hàng" value={datastatistical.result?.total_of_user} duration={1000} />
+                    </CardInfo>
+                    <CardInfo>
+                      <img src={coin} alt='member' width="80px" />
+                      <Number title="Doanh thu" value={datastatistical.result?.total_of_revenue} duration={1000} />
+                    </CardInfo>
+                    <CardInfo>
+                      <img src={order} alt='member' width="80px" />
+                      <Number title="Đơn hàng" value={datastatistical.result?.total_of_order} duration={1000} />
+                    </CardInfo>
+                    <CardInfo>
+                      <img src={delivered} alt='member' width="80px" />
+                      <Number title="Đã giao" value={datastatistical.result?.total_of_delivery} duration={1000} />
+                    </CardInfo>
+                  </div>
+                  <div style={{ padding: '20px 0' }}>
+                    <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px' }}>
+                      <div style={{ fontSize: '20px', color: '#2A3546', fontWeight: 'bold', paddingLeft: '20px', paddingBottom: '20px' }}>Tổng quan bán hàng</div>
+                      <ApexChart />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', padding: '10px', backgroundColor: '#FBFCFC' }}>
               <div style={{ fontSize: '13px', fontWeight: '600', color: "#6f6f6f" }}>© 2024 BkShopMyAdmin V1.0</div>
@@ -55,7 +101,7 @@ const AdminHome = () => {
         </RightContainer>
       </Container>
     </HelmetProvider>
-  )
-}
+  );
+};
 
 export default AdminHome;

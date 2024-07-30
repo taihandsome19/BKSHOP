@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Checkbox, message, Spin } from 'antd';
+import { Checkbox, message, Spin, InputNumber } from 'antd';
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 import {
     WrapperPage,
@@ -12,7 +12,8 @@ import {
     BuyButton,
     WrappCard,
     WrapperProduct,
-    ButtonProduct
+    ButtonProduct,
+    StyledInput
 } from "./style";
 import {
     ArrowLeftOutlined,
@@ -189,9 +190,9 @@ const CartPage = () => {
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "16px", fontWeight: "500", color: "#0688B4" }}>
                             <div>{parseInt(product.price).toLocaleString('vi-VN')}đ</div>
-                            <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+                            <div style={{ display: "flex", gap: "15px", alignItems: "center", alignContent: 'center' }}>
                                 <ButtonProduct onClick={() => handleQuantityChange(index, false)}>-</ButtonProduct>
-                                <div style={{ color: "#444" }}>{product.quantity}</div>
+                                <StyledInput style={{ display: 'flex', justifyContent: 'center',  color: "#444", width:'40px' }} defaultValue={product.quantity} />
                                 <ButtonProduct onClick={() => handleQuantityChange(index, true)}>+</ButtonProduct>
                             </div>
                         </div>

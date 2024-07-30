@@ -15,24 +15,27 @@ const AdminUser = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState(null);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
   const [btloading, setbtLoading] = useState(false);
+  const [fulldata, setfulldata] = useState({});
+  const [rowData, setrowData] = useState({});
 
   const fetchData = () => {
     axios.get('http://localhost:3001/admin/manage_user')
       .then(response => {
-        const formattedData = response.data.map((item, index) => [
+        const formattedData = response.data.userInfo.map((item, index) => [
           (index + 1).toString(),
           item.name,
           item.email,
           item.sex,
           item.date_of_birth,
-          item.phonenum,
+          item.phone,
           item.address,
-          true
+          item.status
         ]);
         setData(formattedData);
+        setfulldata(response.data.userInfo);
         setLoading(false);
       })
       .catch(error => {
@@ -49,29 +52,38 @@ const AdminUser = () => {
   const showModal = (rowData) => {
     setSelectedRowData(rowData);
     setIsModalVisible(true);
-    setSelectedValue('hihi');
+    setrowData(fulldata[rowData[0]-1])
+    setSelectedValue(fulldata[rowData[0]-1].status)
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedRowData(null);
-    setSelectedValue('');
+    setrowData({});
+    setSelectedValue(null);
   };
 
   const handleChange = (value) => {
-    setSelectedValue(value);
+    if(value === "Cấm tài khoản"){
+      setSelectedValue(false);
+    }else if(value === "Hoạt động"){
+      setSelectedValue(true);
+    }
+  
   };
 
   const showConfirmModal = () => {
-    
+    if(rowData.status === selectedValue){
+      message.error("Bạn chưa chọn trạng thái khác!");
+      return;
+    }
     setIsConfirmModalVisible(true);
   };
 
-  const handleUpdate = async (orderId) => {
-    return;
+  const handleUpdate = async () => {
     setbtLoading(true);
     try {
-      const res = await axios.post('http://localhost:3001/admin/update_order', { orderId, status: selectedValue });
+      const res = await axios.post('http://localhost:3001/admin/ban_user', { userId: rowData.userId, status: selectedValue });
       if (res.data && res.data.status === true) {
         fetchData();
         message.success("Cập nhật trạng thái thành công");
@@ -89,6 +101,7 @@ const AdminUser = () => {
   const handleConfirmOk = () => {
     handleUpdate(selectedRowData[0]);
     setIsConfirmModalVisible(false);
+    rowData.status = selectedValue;
   };
 
   const handleConfirmCancel = () => {
@@ -121,7 +134,6 @@ const AdminUser = () => {
     { name: 'sex', label: 'Giới tính' },
     { name: 'birthday', label: 'Ngày sinh' },
     { name: 'phone', label: 'Số điện thoại' },
-
     {
       name: 'action',
       label: 'Hành động',
@@ -163,10 +175,10 @@ const AdminUser = () => {
         width={400}
       >
         <p>
-          {`Bạn có muốn cập nhật trạng thái đơn hàng từ `}
-          <strong>{selectedRowData ? selectedRowData[5] : 0}</strong>
+          {`Bạn có muốn cập nhật trạng thái tài khoản từ `}
+          <strong>{rowData.status ? "Hoạt động" : "Cấm tài khoản"}</strong>
           {` thành `}
-          <strong>{selectedValue}</strong>
+          <strong>{selectedValue ? "Hoạt động" : "Cấm tài khoản"}</strong>
           {` không?`}
         </p>
 
@@ -199,16 +211,12 @@ const AdminUser = () => {
                     <p><strong>Giới tính:</strong> {selectedRowData[3]}</p>
                     <p><strong>Ngày sinh:</strong> {selectedRowData[4]}</p>
                     <p><strong>Số điện thoại:</strong> {selectedRowData[5]}</p>
-                    <p><strong>Địa chỉ:</strong> {selectedRowData[6]}</p>
+                    <p><strong>Địa chỉ:</strong> {rowData.address}</p>
                     <p>
                       <strong>Trạng thái:</strong>
-                      <Select value={selectedValue} style={{ paddingLeft: '10px', width: '180px' }} onChange={handleChange}>
+                      <Select value={selectedValue ? "Hoạt động" : "Cấm tài khoản"} style={{ paddingLeft: '10px', width: '180px' }} onChange={handleChange}>
                         {selectdata.map((status, index) => (
                           <Option key={status} value={status}
-                            disabled={
-                              (index < selectdata.indexOf(selectedRowData[5])) ||
-                              (status === "Đã huỷ" && !["Chờ xác nhận", "Đã xác nhận", "Đã huỷ"].includes(selectedRowData[5]))
-                            }
                           >
                             {status}
                           </Option>

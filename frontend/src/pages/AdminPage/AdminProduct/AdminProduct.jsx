@@ -42,9 +42,12 @@ const AdminProduct = () => {
   const fetchData = () => {
     axios.get('http://localhost:3001/admin/manage_product')
       .then(response => {
-        const rawData = response.data;
-        const formattedData = Object.keys(response.data).map((key) => {
-          const item = response.data[key];
+
+        const rawData = response.data.reduce((acc, curr) => {
+          return { ...acc, ...curr };
+        }, {});
+        const formattedData = Object.keys(rawData).map((key) => {
+          const item = rawData[key];
           const priceFormatted = parseInt(item.price).toLocaleString('vi-VN') + 'đ';
           return [
             key,

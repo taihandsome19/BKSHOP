@@ -18,21 +18,28 @@ const AdminOrder = () => {
   const [selectedValue, setSelectedValue] = useState('');
   const [btloading, setbtLoading] = useState(false);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+  const [rowdata, setrowdata] = useState({});
+  const [fulldata, setfulldata] = useState({});
 
 
   const fetchData = () => {
     axios.get('http://localhost:3001/admin/manage_order')
       .then(response => {
-        const formattedData = response.data.map((item) => [
+        const formattedData = response.data.result.map((item) => [
           item.orderId,
           item.user_name,
           item.email,
           item.productList.reduce((total, product) => total + product.quantity, 0),
           parseInt(item.totalPrice).toLocaleString('vi-VN') + 'đ',
-          item.status,
+          item.order_status,
           item.productList
         ]);
         setData(formattedData);
+        const full = response.data.result.reduce((acc, item) => {
+          acc[item.orderId] = item;
+          return acc;
+        }, {});
+        setfulldata(full);
         setLoading(false);
       })
       .catch(error => {
@@ -51,6 +58,7 @@ const AdminOrder = () => {
     setSelectedRowData(rowData);
     setSelectedValue(rowData[5]);
     setIsModalVisible(true);
+    setrowdata(fulldata[rowData[0]])
   };
 
   const handleCancel = () => {
@@ -81,6 +89,13 @@ const AdminOrder = () => {
     }
   }
 
+  const updatepay = async (orderId) => {
+    try {
+      const res = await axios.post('http://localhost:3001/admin/update_payment', { orderId, status: true });
+    } catch (error) {
+    }
+  }
+
   const showConfirmModal = () => {
     if (selectdata.indexOf(selectedValue) === selectdata.indexOf(selectedRowData[5])) {
       message.error("Bạn chưa thay đổi trạng thái khác!");
@@ -91,6 +106,11 @@ const AdminOrder = () => {
 
   const handleConfirmOk = () => {
     handleUpdate(selectedRowData[0]);
+    selectedRowData[5] = selectedValue;
+    if (selectedValue === "Đã giao hàng") {
+      updatepay(selectedRowData[0]);
+      rowdata.payment_status = true;
+    }
     setIsConfirmModalVisible(false);
   };
 
@@ -171,7 +191,7 @@ const AdminOrder = () => {
             >
               <p>
                 {`Bạn có muốn cập nhật trạng thái đơn hàng từ `}
-                <strong>{selectedRowData? selectedRowData[5]: 0}</strong>
+                <strong>{selectedRowData ? selectedRowData[5] : 0}</strong>
                 {` thành `}
                 <strong>{selectedValue}</strong>
                 {` không?`}
@@ -203,10 +223,16 @@ const AdminOrder = () => {
                     <p><strong>Tổng tiền:</strong> {selectedRowData[4]}</p>
                     <p style={{ display: 'flex', gap: '5px' }}>
                       <strong>Đã Thanh toán:</strong>
-                      <div style={{ color: '#54D62B' }}>
-                        {selectedRowData[4]}
-                      </div>
-                      <div> (BANKING)</div>
+                      {rowdata.payment_status ? (
+                        <div style={{ color: '#54D62B' }}>
+                          {selectedRowData[4]}
+                        </div>
+                      ) : (
+                        <div style={{ color: '#ff4f4e' }}>
+                          0đ
+                        </div>
+                      )}
+                      <div> ({rowdata.payment_method})</div>
                     </p>
                     <p>
                       <strong>Trạng thái:</strong>
