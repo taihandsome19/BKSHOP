@@ -261,7 +261,7 @@ const HeaderComponent = () => {
     };
 
     const notice = (
-        <Menu style={{ width: '350px', maxHeight: '300px', overflow: 'auto', position: 'relative', padding: 0, margin: 0 }}>
+        <Menu style={{ width: '360px', maxHeight: '300px', overflow: 'auto', position: 'relative', padding: 0, margin: 0 }}>
             <div style={{
                 position: 'sticky',
                 top: 0,
@@ -279,12 +279,9 @@ const HeaderComponent = () => {
             ) : (
                 Object.entries(notifications).map(([key, item]) => (
                     <Menu.Item key={key} style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '10px 15px' }}>
-                        {item.status === false && (
-                            <div style={{ position: 'absolute', top: '10px', right: '10px', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#0688B4' }} />
-                        )}
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexGrow: 1 }} onClick={() => read(key, item.status, item.notice)}>
                             <div style={{
-                                backgroundColor: '#00d67f',
+                                backgroundColor: item.status === false ? '#00d67f' : '#6f6f6f',
                                 width: '50px',
                                 height: '50px',
                                 borderRadius: '50%',
@@ -362,11 +359,14 @@ const HeaderComponent = () => {
                             <WrapperTextHeader>BKSHOP</WrapperTextHeader>
                         </Link>
                     </Col>
-                    <Col span={12}>
+                    <Col span={12} >
                         <Search
                             placeholder="Tìm kiếm..."
                             onSearch={handleSearch}
                             allowClear
+                            autoComplete="off"
+                            name="searchField"
+                            id="searchField"
                         />
                     </Col>
                     <Col span={6} style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px', cursor: 'pointer' }}>

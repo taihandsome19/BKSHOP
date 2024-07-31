@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Checkbox, message, Spin, InputNumber } from 'antd';
+import { Checkbox, message, Spin } from 'antd';
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent';
 import {
     WrapperPage,
@@ -13,7 +13,8 @@ import {
     WrappCard,
     WrapperProduct,
     ButtonProduct,
-    StyledInput
+    CenteredInputNumber,
+    Overlay
 } from "./style";
 import {
     ArrowLeftOutlined,
@@ -33,8 +34,8 @@ const CartPage = () => {
     useEffect(() => {
         axios.get('http://localhost:3001/user/cart')
             .then(response => {
-               try{
-                    if(response.data.length !== User_cart){
+                try {
+                    if (response.data.length !== User_cart) {
                         setUserCart(response.data.length);
                     }
                     const updatedProducts = response.data.map(product => ({
@@ -42,9 +43,9 @@ const CartPage = () => {
                         checked: false
                     }));
                     setProducts(updatedProducts);
-               }catch{
+                } catch {
                     console.log("Không có dữ liệu");
-               }
+                }
                 setLoading(false);
             })
             .catch(error => {
@@ -52,16 +53,21 @@ const CartPage = () => {
                 message.error("Lỗi khi lấy thông tin giỏ hàng");
                 setLoading(false);
             });
-    }, [User_cart,setUserCart]);
+    }, [User_cart, setUserCart]);
 
     const [checkedAll, setCheckedAll] = useState(false);
 
     const handleQuantityChange = (index, increment) => {
         const newQuantity = increment ? products[index].quantity + 1 : Math.max(products[index].quantity - 1, 1);
-        if(increment){
-            axios.post('http://localhost:3001/user/increase', {
+        if (increment) {
+            axios.post('http://localhost:3001/user/updateQuantity', {
                 index: index,
+                newQuantity
             }).then(response => {
+                if (response.data.status === false) {
+                    message.error(response.data.message);
+                    return;
+                }
                 setProducts(products.map((product, idx) => {
                     if (idx === index) {
                         return {
@@ -75,10 +81,15 @@ const CartPage = () => {
                 console.error('Error updating quantity:', error);
                 message.error("Lỗi khi cập nhật số lượng sản phẩm");
             });
-        } else if(products[index].quantity !== 1){
-            axios.post('http://localhost:3001/user/decrease', {
+        } else if (products[index].quantity !== 1) {
+            axios.post('http://localhost:3001/user/updateQuantity', {
                 index: index,
+                newQuantity
             }).then(response => {
+                if (response.data.status === false) {
+                    message.error(response.data.message);
+                    return;
+                }
                 setProducts(products.map((product, idx) => {
                     if (idx === index) {
                         return {
@@ -94,14 +105,13 @@ const CartPage = () => {
             });
         }
     };
-    
 
     const handleDelete = (index, flag) => {
         axios.post('http://localhost:3001/user/remove', {
             index: index,
         }).then(response => {
             setUserCart(prevUserCart => prevUserCart - 1);
-            if(flag){
+            if (flag) {
                 setProducts(products.filter((_, idx) => idx !== index));
             }
         }).catch(error => {
@@ -113,34 +123,42 @@ const CartPage = () => {
     const handleSelectAll = () => {
         const newCheckedAll = !checkedAll;
         setCheckedAll(newCheckedAll);
-        setProducts(products.map(product => ({ ...product, checked: newCheckedAll })));
+    
+        setProducts(products.map(product => {
+            const isAvailable = product.total ? parseInt(product.total[product.color][product.memorysize]) !== 0 && product.quantity <= parseInt(product.total[product.color][product.memorysize]) : false;
+            return {
+                ...product,
+                checked: newCheckedAll && isAvailable
+            };
+        }));
     };
+    
 
     const handleProductCheck = (index) => {
         const updatedProducts = products.map((product, idx) =>
             idx === index ? { ...product, checked: !product.checked } : product
         );
         setProducts(updatedProducts);
-    
+
         const allSelected = updatedProducts.every(product => product.checked);
         setCheckedAll(allSelected);
     };
 
     const handleDeleteSelected = async () => {
         setLoading(true);
-    
+
         const selectedIndexes = products
             .map((product, index) => product.checked ? index : null)
             .filter(index => index !== null);
-    
+
         if (selectedIndexes.length === 0) {
             message.info("Chưa chọn sản phẩm nào để xoá.");
             setLoading(false);
             return;
         }
-    
+
         selectedIndexes.sort((a, b) => b - a);
-    
+
         for (const index of selectedIndexes) {
             try {
                 await handleDelete(index, false);
@@ -151,16 +169,15 @@ const CartPage = () => {
                 break;
             }
         }
-    
+
         setCheckedAll(false);
         setLoading(false);
     };
-    
 
     const handleBuyNow = () => {
         const selectedProducts = products.filter(product => product.checked);
         localStorage.setItem('dataPayment', JSON.stringify(selectedProducts));
-        
+
         const selectedIndexes = products
             .map((product, index) => product.checked ? index : null)
             .filter(index => index !== null);
@@ -169,38 +186,92 @@ const CartPage = () => {
         window.location.href = '/cart/payment_info';
     };
 
-    const ProductCard = ({ product, index }) => (
-        <WrappCard>
-            <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", paddingBottom: "10px" }}>
-                <Checkbox checked={product.checked} onChange={() => handleProductCheck(index)} />
-                <WrapperProduct>
-                    <img src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${product.image}?alt=media`} alt="icon" preview={false} height={"100px"} />
-                    <div style={{ width: "100%" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px" }}>
-                            <div style={{ fontSize: "15px" }}>{product.name}</div>
-                            <DeleteOutlined style={{ fontSize: "18px" }} onClick={() => handleDelete(index, true)} />
-                        </div>
-                        <div style={{ display: "flex", gap: "5px", fontSize: "13px", color: "#9F9D9D", paddingBottom: "10px" }}>
-                            <div>Màu sắc:</div>
-                            <div>{product.color}</div>
-                        </div>
-                        <div style={{ display: "flex", gap: "5px", fontSize: "13px", color: "#9F9D9D", paddingBottom: "10px" }}>
-                            <div>Dung lượng:</div>
-                            <div>{product.memorysize}</div>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "16px", fontWeight: "500", color: "#0688B4" }}>
-                            <div>{parseInt(product.price).toLocaleString('vi-VN')}đ</div>
-                            <div style={{ display: "flex", gap: "15px", alignItems: "center", alignContent: 'center' }}>
-                                <ButtonProduct onClick={() => handleQuantityChange(index, false)}>-</ButtonProduct>
-                                <StyledInput style={{ display: 'flex', justifyContent: 'center',  color: "#444", width:'40px' }} defaultValue={product.quantity} />
-                                <ButtonProduct onClick={() => handleQuantityChange(index, true)}>+</ButtonProduct>
+    const handleInputBlur = (e, index, product) => {
+        var newQuantity = parseInt(e.target.value, 10);
+        if(newQuantity === product.quantity) return;
+        if (newQuantity > product.total[product.color][product.memorysize]) {
+            message.success("Quá số lượng trong kho, tự động chọn số lượng lớn nhất!");
+            newQuantity = product.total[product.color][product.memorysize];
+        }
+
+        axios.post('http://localhost:3001/user/updateQuantity', {
+            index: index,
+            newQuantity
+        }).then(response => {
+            if (response.data.status === false) {
+                message.error(response.data.message);
+                return;
+            }
+            setProducts(products.map((product, idx) => {
+                if (idx === index) {
+                    return {
+                        ...product,
+                        quantity: newQuantity
+                    };
+                }
+                return product;
+            }));
+        }).catch(error => {
+            console.error('Error updating quantity:', error);
+            message.error("Lỗi khi cập nhật số lượng sản phẩm");
+        });
+    };
+
+    const ProductCard = ({ product, index, handleProductCheck, handleDelete, handleQuantityChange }) => {
+        // Check if the product's quantity is less than or equal to the available stock
+        const isAvailable = product.total ? parseInt(product.total[product.color][product.memorysize]) !== 0 : false;
+
+        return (
+            <WrappCard>
+                {!isAvailable && (
+                    <Overlay>
+                        {product.status === false ? 'Sản phẩm không tồn tại' : 'Sản phẩm tạm hết hàng'}
+                    </Overlay>
+                )}
+
+                <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", paddingBottom: "10px" }}>
+                    <Checkbox checked={product.checked} onChange={() => handleProductCheck(index)} disabled={!isAvailable || product.quantity > product.total[product.color][product.memorysize]} />
+                    <WrapperProduct>
+                        <img
+                            src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${product.image}?alt=media`}
+                            alt="icon"
+                            preview={false}
+                            height={"100px"}
+                        />
+                        <div style={{ width: "100%" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px" }}>
+                                <div style={{ fontSize: "15px" }}>{product.name}</div>
+                                <DeleteOutlined style={{ fontSize: "18px", color: '#444', position: "absolute", top: 15, right: 10 }} onClick={() => handleDelete(index, true)} />
+                            </div>
+                            <div style={{ display: "flex", gap: "5px", fontSize: "13px", color: "#9F9D9D", paddingBottom: "10px" }}>
+                                <div>Màu sắc:</div>
+                                <div>{product.color}</div>
+                            </div>
+                            <div style={{ display: "flex", gap: "5px", fontSize: "13px", color: "#9F9D9D", paddingBottom: "10px" }}>
+                                <div>Dung lượng:</div>
+                                <div>{product.memorysize}</div>
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "16px", fontWeight: "500", color: "#0688B4" }}>
+                                <div>{parseInt(product.price).toLocaleString('vi-VN')}đ</div>
+                                <div style={{ display: "flex", gap: "15px", alignItems: "center", alignContent: 'center' }}>
+                                    <ButtonProduct disabled={!isAvailable || product.quantity === 1} onClick={() => handleQuantityChange(index, false)}>-</ButtonProduct>
+                                    <CenteredInputNumber
+                                        value={product.quantity}
+                                        controls={false}
+                                        min={1}
+                                        max={isAvailable ? product.total[product.color][product.memorysize] : null}
+                                        disabled={!isAvailable}
+                                        onBlur={(e) => handleInputBlur(e, index, product)}
+                                    />
+                                    <ButtonProduct disabled={!isAvailable} onClick={() => handleQuantityChange(index, true)}>+</ButtonProduct>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </WrapperProduct>
-            </div>
-        </WrappCard>
-    );
+                    </WrapperProduct>
+                </div>
+            </WrappCard>
+        );
+    };
 
     const totalSelectedProducts = products.filter(product => product.checked).length;
 
@@ -260,7 +331,15 @@ const CartPage = () => {
                         )}
                         <div style={{ paddingBottom: "40px" }}>
                             {products.map((product, index) => (
-                                <ProductCard key={index} product={product} index={index} />
+                                <ProductCard
+                                    key={index}
+                                    product={product}
+                                    index={index}
+                                    handleProductCheck={handleProductCheck}
+                                    handleDelete={handleDelete}
+                                    handleQuantityChange={handleQuantityChange}
+                                />
+
                             ))}
                         </div>
 

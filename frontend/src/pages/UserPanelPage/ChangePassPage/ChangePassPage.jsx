@@ -23,10 +23,9 @@ import {
   WrapperText,
   WrapperTextAvt,
   WrapperCardInfo,
-  WrapperTitle,
-  ButtonComfirm
+  WrapperTitle
 } from "./style"
-import {Input, message} from "antd";
+import {Button, Input, message} from "antd";
 import avt from "../../../assets/images/avt.png";
 import { Link } from 'react-router-dom';
 import { Helmet } from "react-helmet";
@@ -49,6 +48,7 @@ const ChangePassPage = () => {
   const [currentpass, setcurrentpass] = useState('');
   const [newpass, setnewpass] = useState('');
   const [confirmpass, setconfirmpass] = useState('');
+  const [btloading, setbtLoading] = useState(false);
 
   const handleSubmit = async () => {
     if(newpass === '' || currentpass === '' || confirmpass === ''){
@@ -58,9 +58,9 @@ const ChangePassPage = () => {
       message.error("Mật khẩu xác nhận không khớp với mật khẩu mới");
       return;
     }
-
+    setbtLoading(true);
     try{
-      const res = await axios.post('http://localhost:3001/auth/change_password', {currentPassword: currentpass, password: newpass});
+      const res = await axios.post('http://localhost:3001/auth/change_password', {currentPassword: currentpass, newPassword: newpass});
       if(res.data && res.data.status === true){
         message.success("Đổi mật khẩu thành công");
       }else{
@@ -69,6 +69,7 @@ const ChangePassPage = () => {
     }catch (error) {
       message.error("Sai mật khẩu hiện tại");
     }
+    setbtLoading(false);
   } 
 
   return (
@@ -156,7 +157,7 @@ const ChangePassPage = () => {
                             />
                         </div>
                         <div style={{display: "flex", justifyContent: "right"}} onClick={handleSubmit}>
-                            <ButtonComfirm>Thay đổi mật khẩu</ButtonComfirm>
+                            <Button loading={btloading} style={{height: '40px', backgroundColor: '#0688B4',  padding: "10px 20px", fontWeight: 'bold', fontSize: '14px', color: '#fff' }}>Thay đổi mật khẩu</Button>
                         </div>
                     </div>
                 </div>

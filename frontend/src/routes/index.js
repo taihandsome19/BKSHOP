@@ -19,7 +19,6 @@ import AdminProduct from '../pages/AdminPage/AdminProduct/AdminProduct'
 import AdminOrder from '../pages/AdminPage/AdminOrder/AdminOrder'
 import PaymentStatusPage from '../pages/PaymentPage/PaymentStatusPage'
 import OrderDetailPage from '../pages/UserPanelPage/OrderDetailPage/OrderDetailPage'
-import Notice from '../pages/NoticePage/Notice'
 import { Navigate } from 'react-router-dom';
 
   
@@ -91,13 +90,6 @@ export const routes = [
   {
     path: '/user/support',
     page: SupportPage,
-    isShowHeader: true,
-    isProtected: true,
-    redirectTo: '/auth/log_in',
-  },
-  {
-    path: '/user/notice',
-    page: Notice,
     isShowHeader: true,
     isProtected: true,
     redirectTo: '/auth/log_in',
