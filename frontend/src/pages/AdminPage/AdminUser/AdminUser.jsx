@@ -52,8 +52,8 @@ const AdminUser = () => {
   const showModal = (rowData) => {
     setSelectedRowData(rowData);
     setIsModalVisible(true);
-    setrowData(fulldata[rowData[0]-1])
-    setSelectedValue(fulldata[rowData[0]-1].status)
+    setrowData(fulldata[rowData[0] - 1])
+    setSelectedValue(fulldata[rowData[0] - 1].status)
   };
 
   const handleCancel = () => {
@@ -64,16 +64,16 @@ const AdminUser = () => {
   };
 
   const handleChange = (value) => {
-    if(value === "Cấm tài khoản"){
+    if (value === "Cấm tài khoản") {
       setSelectedValue(false);
-    }else if(value === "Hoạt động"){
+    } else if (value === "Hoạt động") {
       setSelectedValue(true);
     }
-  
+
   };
 
   const showConfirmModal = () => {
-    if(rowData.status === selectedValue){
+    if (rowData.status === selectedValue) {
       message.error("Bạn chưa chọn trạng thái khác!");
       return;
     }
@@ -150,15 +150,6 @@ const AdminUser = () => {
     },
   ];
 
-  if (loading) {
-    return (
-      <Spin
-        size="large"
-        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
-      />
-    );
-  }
-
   return (
     <HelmetProvider>
       <Helmet>
@@ -189,7 +180,14 @@ const AdminUser = () => {
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#FBFCFC', paddingTop: '70px' }}>
             <HeaderComponent />
             <div style={{ flex: '1', padding: '20px 30px' }}>
-              <TableComponent columns={columns} data={data} title="Danh sách khách hàng" />
+              {loading ? (
+                <Spin
+                  size="large"
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
+                />
+              ) : (
+                <TableComponent columns={columns} data={data} title="Danh sách khách hàng" />
+              )}
               <Modal
                 centered
                 title="Thông tin khách hàng"

@@ -207,7 +207,7 @@ const AdminProduct = () => {
   const handleDelete = async () => {
     try {
       const res = await axios.post('http://localhost:3001/admin/remove_product', { productId: selectedRowData[0] });
-      if (res.data && res.data === true) {
+      if (res.data && res.data.status === true) {
         message.success("Xoá sản phẩm thành công!");
         fetchData();
         handleCancel();
@@ -375,15 +375,6 @@ const AdminProduct = () => {
       },
     },
   ];
-
-  if (loading) {
-    return (
-      <Spin
-        size="large"
-        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
-      />
-    );
-  }
 
   return (
     <HelmetProvider>

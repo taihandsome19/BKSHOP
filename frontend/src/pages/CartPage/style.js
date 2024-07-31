@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { InputNumber } from "antd";
 
 export const WrapperPage = styled.div`
     display: flex;
@@ -122,6 +123,48 @@ export const StyledInput = styled.input`
   border-radius: 5px;
   height: 28px;
   padding: 0;
+`;
 
- 
+export const CenteredInputNumber = styled(InputNumber)`
+  display: flex;
+  align-items: center;
+  text-align: center;
+  width: 50px;
+  height: 30px;
+  padding: 0;
+  color: #444;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #d9d9d9;
+  box-shadow: none;
+  
+  .ant-input-number-input {
+    text-align: center;
+  }
+
+  &.ant-input-number-disabled {
+    background-color: #fff;
+    border-color: #f5f5f5; 
+  }
+
+  &.ant-input-number-disabled:hover {
+    background-color: #fff;
+  }
+`;
+
+export const Overlay = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #d0d2d5;
+    font-weight: bold;
+    border-radius: 8px;
+    pointer-events: none; /* Prevent overlay from blocking mouse events */
 `;

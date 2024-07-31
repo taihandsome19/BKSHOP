@@ -125,6 +125,10 @@ export const ButtonGroup = styled.div`
     background-color: ${props => props.active ? "#0688B4" : "#fff"};
     color: ${props => props.active ? "#fff" : "#0688B4"};
     cursor: pointer;
+
+    &:hover {
+        background-color: ${props => props.active ? "#056f8b" : "#f0f0f0"};
+    }
 `;
 
 export const CardOrder = styled.div`

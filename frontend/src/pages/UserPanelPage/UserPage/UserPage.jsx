@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import {
   HomeOutlined,
   UserOutlined,
@@ -49,6 +49,30 @@ const handleLogout = async () => {
 };
 
 const UserPage = () => {
+  const [total_order, settotal_order] = useState(0);
+  const [total_price, settotal_price] = useState(0);
+
+  const fetchDataStatic = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3001/user/order`);
+      if (res.data && res.data.orderInfo) {
+        const totalPriceShipped = Math.floor(res.data.orderInfo
+            .filter(order => order.status === "Đã giao hàng")
+            .reduce((total, order) => total + order.totalPrice, 0)/ 1000000);
+        const numberOfOrders = res.data.orderInfo.length;
+        settotal_order(numberOfOrders);
+        settotal_price(totalPriceShipped);
+      }
+    } catch (error) {
+    }
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchDataStatic();
+  }, []);
+
+
   return (
     <div style={{ backgroundColor: "#f6f6f6", minHeight: "100vh" }}>
       <Helmet>
@@ -103,15 +127,15 @@ const UserPage = () => {
             </div>
             <WrapperCardHome>
               <CardSection>
-                <h1>1</h1>
+                <h1>{total_order}</h1>
                 <WrapperText>Đơn hàng</WrapperText>
               </CardSection>
               <CardSection>
-                <h1>1M</h1>
+                <h1>{total_price}M</h1>
                 <WrapperText>Tổng tiền mua hàng</WrapperText>
               </CardSection>
               <CardSection>
-                <h1>Thành viên</h1>
+                <h1>{(localStorage.getItem('User_role') === 'admin') ? ("Quản trị viên"):("Thành viên")}</h1>
                 <WrapperText>Cấp bậc</WrapperText>
               </CardSection>
             </WrapperCardHome>
