@@ -61,6 +61,8 @@ class ProductService {
             }, (error) => reject(error))
         });
     }
+
+    
 }
 
 module.exports = new ProductService

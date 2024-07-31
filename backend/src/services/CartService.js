@@ -29,7 +29,7 @@ class CartService {
                             })
                         }
                         else {
-                            result.push({ status: false, message: "Sản phẩm không tồn tại" });
+                            result.push({ status: false, ...product });
                         }
                     }
                     resolve(result);
