@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import SwiperCore from 'swiper';
@@ -48,13 +48,12 @@ const ProductDetailsPage = () => {
   const [selectedCapacity, setSelectedCapacity] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [listreview, setlistreview] = useState({});
-  const swiperRef = useRef(null);
+  const [swiperInstance, setSwiperInstance] = useState(null);
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (swiperRef.current) {
-      swiperRef.current.swiper = swiperRef.current.swiper || swiperRef.current;
-    }
+    
     const fetchData = async () => {
       try {
         const res = await axios.get(`http://localhost:3001/product/detail?product_id=${productId}`);
@@ -99,13 +98,16 @@ const ProductDetailsPage = () => {
   };
 
   const handleColorClick = (index) => {
-    goToSlide(index);
+    if (swiperInstance) {
+      goToSlide(swiperInstance, index);
+    }
     const color = colorList[index];
     const isAnyInStock = memorysizeList.some((capacity) => inventory[color] && inventory[color][capacity] > 0);
     if (isAnyInStock) {
       setSelectedColor(index);
     }
   };
+  
 
   if (loading) {
     return (
@@ -166,12 +168,9 @@ const ProductDetailsPage = () => {
     window.location.href = '/cart/payment_info?action=buynow';
   };
 
-  const goToSlide = (index) => {
-    if (swiperRef.current && swiperRef.current.swiper) {
-      console.log('Swiper instance:', swiperRef.current.swiper);
-      swiperRef.current.swiper.slideTo(index);
-    } else {
-      console.log('Swiper instance not ready');
+  const goToSlide = (swiper, index) => {
+    if (swiper) {
+      swiper.slideTo(index);
     }
   };
   
@@ -194,7 +193,9 @@ const ProductDetailsPage = () => {
               slidesPerView={1}
               navigation
               pagination={{ clickable: true }}
-              onSwiper={(swiper) => { swiperRef.current = swiper; }}
+              onSwiper={(swiperInstance) => {
+                setSwiperInstance(swiperInstance);
+              }}
             >
               {listImage.map((image, index) => (
                 <SwiperSlide key={index} style={{ display: "flex", justifyContent: "center" }}>

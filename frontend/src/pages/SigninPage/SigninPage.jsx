@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
-import { Image, Input, Button, message } from 'antd';
+import { Image, Input, Button, message, Modal } from 'antd';
 import bg from "../../assets/images/bglogin.jpg";
 import icon from "../../assets/images/iconlogin.png";
 import {
@@ -12,13 +12,15 @@ import {
 } from './style';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet'; 
+import { Helmet } from 'react-helmet';
 
-const SigninPage = () => { 
+const SigninPage = () => {
   const [loading, setLoading] = useState(false);
-
+  const [ismodal, setismodal] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [femail, setfemail] = useState('');
+  const [loadingf, setLoadingf] = useState(false);
 
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -27,6 +29,41 @@ const SigninPage = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+
+  const openModal = () => {
+    setismodal(true);
+    setfemail('');
+  }
+
+  const closeModal = () => {
+    setismodal(false);
+    setfemail('');
+  }
+
+  const forgetmail = async () => {
+    if (femail === '') {
+      message.error('Vui lòng điền địa chỉ mail!');
+      return;
+    } else if (!validateEmail(femail)) {
+      message.error('Email không hợp lệ!');
+      return;
+    }
+    setLoadingf(true);
+    try {
+      const res = await axios.post('http://localhost:3001/auth/forgot_password', { email: femail })
+      if (res.data.status === true) {
+        message.success('Thành công, vui lòng kiểm tra hộp thư')
+        setLoadingf(false);
+        setismodal(false);
+      } else {
+        message.error('Đã xảy ra lỗi vui lòng thử lại')
+        setLoadingf(false);
+      }
+    } catch(error){
+      message.error('Đã xảy ra lỗi vui lòng thử lại')
+      setLoadingf(false);
+    }
+  }
 
   const validatePassword = (password) => {
     return password.length >= 6;
@@ -68,7 +105,7 @@ const SigninPage = () => {
           window.location.href = '/';
         }, 2000);
       } else {
-        if(response.data.message === 'Tài khoản của bạn đã bị cấm!'){
+        if (response.data.message === 'Tài khoản của bạn đã bị cấm!') {
           await axios.post('http://localhost:3001/auth/log_out');
         }
         message.error(response.data.message);
@@ -103,6 +140,29 @@ const SigninPage = () => {
         <Helmet>
           <title>Đăng nhập - BKSHOP</title>
         </Helmet>
+        <Modal
+          width={450}
+          title="Khôi phục mật khẩu"
+          visible={ismodal}
+          onCancel={closeModal}
+          footer={
+            <Button onClick={closeModal}>
+              Đóng
+            </Button>
+          }
+        >
+          <div style={{ padding: '10px 0' }}>
+            <WrapperTextSmall>Email</WrapperTextSmall>
+            <Input
+              value={femail}
+              placeholder="Vui lòng nhập email"
+              onChange={(e) => setfemail(e.target.value)}
+            />
+          </div>
+          <Button style={{ width: '100%' }} type="primary" loading={loadingf} onClick={forgetmail}>
+            Đặt lại mật khẩu
+          </Button>
+        </Modal>
         <WrapperContainerLeft>
           <div>
             <WrapperTitle>Đăng nhập vào hệ thống!</WrapperTitle>
@@ -130,11 +190,19 @@ const SigninPage = () => {
           <Button type="primary" loading={loading} onClick={handleSubmit}>
             Đăng nhập
           </Button>
-          <div style={{ flexDirection: 'row', display: 'flex', gap: '5px' }}>
-            <WrapperTextSmall>Bạn chưa có tài khoản?</WrapperTextSmall>
-            <Link to="/auth/sign_up">
-              <WrapperTextBlue>Đăng ký ngay!</WrapperTextBlue>
-            </Link>
+          <div>
+            <div style={{ flexDirection: 'row', display: 'flex', gap: '5px' }}>
+              <WrapperTextSmall>Quên mật khẩu?</WrapperTextSmall>
+              <Link to="">
+                <WrapperTextBlue onClick={openModal}>Khôi phục!</WrapperTextBlue>
+              </Link>
+            </div>
+            <div style={{ flexDirection: 'row', display: 'flex', gap: '5px' }}>
+              <WrapperTextSmall>Bạn chưa có tài khoản?</WrapperTextSmall>
+              <Link to="/auth/sign_up">
+                <WrapperTextBlue>Đăng ký ngay!</WrapperTextBlue>
+              </Link>
+            </div>
           </div>
         </WrapperContainerLeft>
         <WrapperContainerRight>

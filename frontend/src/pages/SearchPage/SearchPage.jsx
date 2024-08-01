@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { WrapperPage, WrapperBox, ButtonSort, WrapperProducts } from "./style";
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import CardComponent from '../../components/CardComponent/CardComponent';
-import { message, Spin } from 'antd';
+import { message, Spin, Pagination } from 'antd';
 import axios from 'axios';
 import { ContainerOutlined } from '@ant-design/icons';
 
@@ -14,6 +14,8 @@ const SearchPage = () => {
     const [activeSort, setActiveSort] = useState('all');
     const [savePR, setsavePR] = useState([]);
     const [or_products, setOrProducts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
 
     useEffect(() => {
         if (!key) {
@@ -51,7 +53,7 @@ const SearchPage = () => {
                 sortedProducts.sort((b, a) => parseInt(a.price) - parseInt(b.price));
             } else if (activeSort === 'lowToHigh') {
                 sortedProducts.sort((b, a) => parseInt(b.price) - parseInt(a.price));
-            }else{
+            } else {
                 sortedProducts = or_products;
             }
 
@@ -66,6 +68,15 @@ const SearchPage = () => {
     const handleSortClick = (sortType) => {
         setActiveSort(sortType);
     };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    // Calculate paginated data
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
         <HelmetProvider>
@@ -128,6 +139,25 @@ const SearchPage = () => {
                                             <div style={{ fontSize: "12px" }}>Giá Thấp - Cao</div>
                                         </ButtonSort>
                                     </div>
+                                    <WrapperProducts>
+                                        {currentItems.map(product => (
+                                            <CardComponent
+                                                key={product.productId}
+                                                productId={product.productId}
+                                                name={product.name}
+                                                price={product.price}
+                                                image={product.image}
+                                            />
+                                        ))}
+                                    </WrapperProducts>
+                                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                                        <Pagination
+                                            current={currentPage}
+                                            pageSize={itemsPerPage}
+                                            total={products.length}
+                                            onChange={handlePageChange}
+                                        />
+                                    </div>
                                 </>
                             ) : (
                                 <div style={{ minHeight: '100vh' }}>
@@ -151,18 +181,6 @@ const SearchPage = () => {
                                     </WrapperProducts>
                                 </div>
                             )}
-
-                            <WrapperProducts>
-                                {products && products.map(product => (
-                                    <CardComponent
-                                        key={product.productId}
-                                        productId={product.productId}
-                                        name={product.name}
-                                        price={product.price}
-                                        image={product.image}
-                                    />
-                                ))}
-                            </WrapperProducts>
                         </div>
                     </WrapperBox>
                 </WrapperPage>

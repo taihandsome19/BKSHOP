@@ -9,6 +9,7 @@ class ProductService {
                     const products = snapshot.val();
                     const productInfo = Object.keys(products).map(productId => ({
                         productId: productId,
+                        brand: products[productId].brand,
                         name: products[productId].name,
                         price: products[productId].price,
                         image: products[productId].image[0]
