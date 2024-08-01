@@ -1,10 +1,14 @@
 class Support {
     createOrder = async (body) => {
-        const time = new Date()
+        const date = new Date()
         const { payment, address, phonenum, status } = body
+        // var orderdate = (date.getUTCDate() < 10 ? '0' : '') + date.getUTCDate() + '/' + 
+        //          ((date.getUTCMonth() + 1) < 10 ? '0' : '') + (date.getUTCMonth() + 1) + '/' + 
+        //          date.getUTCFullYear();
+        var orderdate = date.toLocaleDateString("en-GB"); // British English uses day-month-year order
         return {
             address: address,
-            orderdate: `${time.getUTCDate()}/${time.getUTCMonth() + 1}/${time.getUTCFullYear()}`,
+            orderdate: orderdate,
             payment: {
                 method: payment,
                 status: false
@@ -20,7 +24,7 @@ class Support {
         // if (a[1].status === true && b[1].status === false) return 1;
         // if (a[1].status === false && b[1].status === true) return -1;
         return parseInt(b[0], 10) - parseInt(a[0], 10);
-    };
+    }
     
     summarizeOrders(orders) {
         const today = new Date();
@@ -59,6 +63,7 @@ class Support {
       
         return summary;
     }
+    
 };
 
 module.exports = new Support

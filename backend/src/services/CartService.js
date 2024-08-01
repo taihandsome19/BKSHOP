@@ -2,7 +2,7 @@ const { db, ref, set, get, child } = require('../models/database');
 const { auth } = require('../models/auth');
 
 class CartService {
-    cart = async () => { //Đã sửa xong sau khi update carts
+    cart = async () => {
         const uid = await auth.currentUser.uid;
         const dbRef = ref(db, `carts/${uid}`);
         return new Promise((resolve, reject) => {
