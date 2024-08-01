@@ -81,10 +81,10 @@ class AuthService {
         })
     }
 
-    forgotPassword = async () => {
+    forgotPassword = async (body) => {
+        const { email } = body;
         return new Promise ((resolve, reject) => {
-            var user = auth.currentUser;
-            sendPasswordResetEmail(auth, user.email)
+            sendPasswordResetEmail(auth, email)
             .then(() => {
                 resolve({status: true});
             })
