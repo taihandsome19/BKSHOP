@@ -1,5 +1,4 @@
 const PayOS = require('@payos/node');
-const { default: axios } = require('axios');
 const AdminService = require('./AdminService')
 
 const payos = new PayOS(
@@ -58,6 +57,7 @@ class PaymentService {
                 });
         });
     }
+
 }
 
 module.exports = new PaymentService();

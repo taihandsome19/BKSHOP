@@ -147,7 +147,7 @@ class AdminService {
                     const reversedEntries = entries.reverse();
                     const reversedObject = Object.fromEntries(reversedEntries);
                     resolve(reversedObject)
-                } else {
+                } else {;
                     resolve({status: false});
                 }})
             .catch((error) => {
@@ -385,6 +385,7 @@ class AdminService {
             });
         })
     }
+    
 }
 
 module.exports = new AdminService

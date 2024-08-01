@@ -139,6 +139,7 @@ class AdminController {
             return res.status(404).json({status: false, error: err});
         }
     }
+    
 }
 
 module.exports = new AdminController

@@ -22,17 +22,6 @@ class Products {
         }
     }
 
-    productBrand = async (req, res) => {
-        try {
-            const productBrand = await ProductService.productBrand(req.query.brand);
-            // console.log(productBrand)
-            return res.status(200).send(productBrand);
-        } catch(err) {
-            return res.status(404).json({message: err});
-        }
-    }
-
-
 }
 
 module.exports = new Products

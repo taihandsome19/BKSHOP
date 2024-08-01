@@ -40,29 +40,6 @@ class ProductService {
         });
     }
 
-    productBrand = async (brand) => {
-        const dbRef = ref(db, `products`);
-        return new Promise((resolve, reject) => {
-            onValue(dbRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const products = snapshot.val();
-                    const brandProductKeys = Object.keys(products).filter(key => products[key].brand === brand)
-                    .map(productId => ({
-                        productId: productId,
-                        name: products[productId].name,
-                        price: products[productId].price,
-                        image: products[productId].image[0]
-                    }));
-                    console.log({...brandProductKeys})
-                    resolve(brandProductKeys);
-                } else {
-                    resolve(null);
-                }
-            }, (error) => reject(error))
-        });
-    }
-
-    
 }
 
 module.exports = new ProductService
