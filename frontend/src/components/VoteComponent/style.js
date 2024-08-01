@@ -51,6 +51,7 @@ export const WrapperTitle = styled.div`
 export const WrapperText = styled.div`
     font-size: 13px;
     font-weight: 500;
+    line-height: 1.5;
 `;
 
 export const LineRate = styled.div`

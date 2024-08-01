@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { Modal, Button, Input, Form, Select, Upload, message, Spin, InputNumber } from 'antd';
-import { UploadOutlined, EditOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Modal, Button, Input, Form, Select, Upload, message, Spin, InputNumber, Rate } from 'antd';
+import { UploadOutlined, EditOutlined, SaveOutlined, DeleteOutlined, LikeOutlined, FrownOutlined } from '@ant-design/icons';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
 import TableComponent from '../../../components/TableComponent/TableComponent';
-import { ButtonComfirm, EditButton, WrapperRow, Deletebutton } from './style';
+import { ButtonComfirm, EditButton, WrapperRow, Deletebutton, WrapperAvatar } from './style';
 import axios from 'axios';
 import TextArea from 'antd/es/input/TextArea';
 
@@ -29,6 +29,7 @@ const AdminProduct = () => {
   const [loadingbutton, setLoadingButton] = useState(false);
   const [isConfirmUpdateModalVisible, setIsConfirmUpdateModalVisible] = useState(false);
   const [isConfirmDeleteModalVisible, setIsConfirmDeleteModalVisible] = useState(false);
+  const [isVoteModalVisible, setIsVoteModalVisible] = useState(false);
 
 
   // Usestate dùng cho update sản phảm
@@ -236,6 +237,17 @@ const AdminProduct = () => {
 
   //================= END EDIT PRODUCTS ===================//
 
+  //================= BEGIN SHOW VOTE ===================//
+  const showVoteModal = () => {
+    setIsVoteModalVisible(true);
+  };
+
+  const closeVoteModal = () => {
+    setIsVoteModalVisible(false);
+  };
+
+  //================= END SHOW VOTE ===================//
+
   //================= BEGIN ADD PRODUCTS ===================//
 
   const showAddModal = () => {
@@ -400,6 +412,45 @@ const AdminProduct = () => {
                   <TableComponent columns={columns} data={productData} title="Danh sách sản phẩm" />
                   <Modal
                     centered
+                    title="Đánh giá sản phẩm"
+                    visible={isVoteModalVisible}
+                    onCancel={closeVoteModal}
+                    footer={
+                      <Button onClick={closeVoteModal}>
+                        Đóng
+                      </Button>
+                    }
+                  >
+                    {Object.values(rowProductData?.review || {}).length > 0 ? (
+                      <div style={{display: 'flex', gap: '10px', flexDirection: 'column'}}>
+                      {Object.values(rowProductData.review).map((item, index) => (
+                        <div key={index} style={{ border: '1px solid #d9d9d9', borderRadius: '8px', display: 'flex', gap: '10px' }}>
+                          <div style={{ width: "70px", paddingLeft: '10px', paddingTop: '10px' }}>
+                            <WrapperAvatar  src={`https://ui-avatars.com/api/?background=random&name=${item.name ? item.name.replace(" ", "+") : "Default+Name"}`} alt="User Avatar" preview={false} />
+                          </div>
+                          <div style={{display: 'flex', fontSize: '14px', flexDirection: 'column', width: '100%', paddingRight: '10px', paddingTop: '10px'}}>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                              <b>{item.name}</b>
+                              <div>({item.email})</div>
+                            </div>
+                            <Rate disabled defaultValue={item.star} style={{fontSize: '11px', paddingTop: '2px'}} />
+                            <div style={{color: '#6f6f6f', padding: '5px 0px 10px 0px', fontSize: '12px'}}>
+                            {item.content}
+                          </div>
+                          </div>
+                        </div>
+                      ))}
+                      </div>
+                    ) : (
+                      <div style={{ color: '#6f6f6f', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                        <FrownOutlined style={{ fontSize: '30px' }} />
+                        <div>Chưa có đánh giá nào cho sản phẩm này!</div>
+                      </div>
+                    )}
+                  </Modal>
+
+                  <Modal
+                    centered
                     title="Xác nhận cập nhật"
                     visible={isConfirmUpdateModalVisible}
                     onCancel={handleConfirmUpdateCancel}
@@ -438,6 +489,11 @@ const AdminProduct = () => {
                         <Deletebutton onClick={showConfirmDeleteModal}>
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
                             <DeleteOutlined /> Xoá
+                          </div>
+                        </Deletebutton>
+                        <Deletebutton onClick={showVoteModal} style={{ backgroundColor: '#00d67f' }}>
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
+                            <LikeOutlined /> Xem đánh giá
                           </div>
                         </Deletebutton>
                         <EditButton isEditing={isEditing} onClick={showConfirmUpdateModal}>
@@ -695,11 +751,11 @@ const AdminProduct = () => {
               </div>
             )}
             < div style={{ display: 'flex', justifyContent: 'center', padding: '10px', backgroundColor: '#FBFCFC' }}>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: '#6f6f6f' }}>© 2024 BkShopMyAdmin V1.0</div>
+              <div style={{ fontSize: '13px', fontWeight: '600', color: '#6f6f6f' }}>© 2024 BkShopMyAdmin V1.0</div>
+            </div>
           </div>
-        </div>
-      </RightContainer>
-    </Container>
+        </RightContainer>
+      </Container>
     </HelmetProvider >
   );
 };

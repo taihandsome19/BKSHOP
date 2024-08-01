@@ -62,6 +62,7 @@ const HistoryOrderPage = () => {
         message.error('Lỗi khi lấy lịch sử đơn hàng');
       }
     } catch (error) {
+      console.log(error)
       message.error('Lỗi khi lấy lịch sử đơn hàng');
     }
   };

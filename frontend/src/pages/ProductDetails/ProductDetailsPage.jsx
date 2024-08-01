@@ -47,6 +47,7 @@ const ProductDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCapacity, setSelectedCapacity] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  const [listreview, setlistreview] = useState({});
   const swiperRef = useRef(null);
 
   useEffect(() => {
@@ -58,6 +59,7 @@ const ProductDetailsPage = () => {
       try {
         const res = await axios.get(`http://localhost:3001/product/detail?product_id=${productId}`);
         setInfoDetail(res.data);
+        setlistreview(res.data.review)
         setLoading(false);
       } catch (error) {
         message.error('Lỗi khi lấy thông tin sản phẩm');
@@ -150,8 +152,7 @@ const ProductDetailsPage = () => {
     }
   };  
 
-  const handleBuyNow = () => {
-    handleAddToCart();
+  const handleBuyNow = async () => {
     const selectedProducts = [{
       color: colorList[selectedColor],
       image: listImage[selectedColor],
@@ -162,7 +163,7 @@ const ProductDetailsPage = () => {
       quantity: 1
     }];
     localStorage.setItem('dataPayment', JSON.stringify(selectedProducts));
-    window.location.href = '/cart/payment_info';
+    window.location.href = '/cart/payment_info?action=buynow';
   };
 
   const goToSlide = (index) => {
@@ -313,7 +314,7 @@ const ProductDetailsPage = () => {
             </div>
           </div>
         </div>
-        <VoteComponent />
+        <VoteComponent listreview={listreview} name={infoDetail.name} />
       </WrapperBox>
     </WrapperPage>
   );

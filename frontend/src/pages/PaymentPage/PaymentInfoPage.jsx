@@ -19,6 +19,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const PaymentInfoPage = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const action = searchParams.get('action');
     const User_email = localStorage.getItem("User_email");
     const [userData, setUserData] = useState(null);
     const [products, setProducts] = useState([]);
@@ -74,7 +76,10 @@ const PaymentInfoPage = () => {
             };
             const jsonDataInfo = JSON.stringify(dataInfo);
             localStorage.setItem('dataInfo', jsonDataInfo);
-
+            if(action === 'buynow'){
+                window.location.href = '/cart/payment?action=buynow';
+                return;
+            }
             window.location.href = '/cart/payment';
         }
     };
