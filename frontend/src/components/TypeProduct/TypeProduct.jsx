@@ -1,14 +1,19 @@
 import React from "react";
-import {WrapButton} from './style';
+import { useNavigate } from "react-router-dom";
+import { WrapButton } from './style';
 
-const handleClick = (name) => {
-    window.location.href = `/product/brand?brand=${name}`;
-};
+const TypeProduct = ({ name }) => {
+    const navigate = useNavigate();
 
-const TypeProduct = ({name}) => {
-    return(
-        <WrapButton onClick={() => handleClick(name)} style={{fontWeight: "bold", color: '#444'}}>{name}</WrapButton>
-    )
+    const handleClick = () => {
+        navigate(`/product/brand?brand=${name}`);
+    };
+
+    return (
+        <WrapButton onClick={handleClick} style={{ fontWeight: "bold", color: '#444' }}>
+            {name}
+        </WrapButton>
+    );
 }
 
-export default TypeProduct
+export default TypeProduct;

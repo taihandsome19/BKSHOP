@@ -164,7 +164,7 @@ const AdminOrder = () => {
             type="primary"
             onClick={() => showModal(tableMeta.rowData)}
           >
-            Cập nhật
+            Chi tiết
           </Button>
         ),
       },
@@ -231,7 +231,7 @@ const AdminOrder = () => {
                   {selectedRowData && (
                     <div>
                       <p><strong>Mã đơn hàng</strong> {selectedRowData[0]}</p>
-                      <p><strong>Ngày đặt hàng:</strong> {selectedRowData[2]}</p>
+                      <p><strong>Ngày đặt hàng:</strong> {selectedRowData[3]}</p>
                       <p><strong>Tên người mua:</strong> {selectedRowData[1]}</p>
                       <p><strong>Địa chỉ mail:</strong>{rowdata.email}</p>
                       <p><strong>Tổng số lượng:</strong> {selectedRowData[4]}</p>

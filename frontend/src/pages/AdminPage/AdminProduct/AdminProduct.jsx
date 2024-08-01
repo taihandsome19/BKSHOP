@@ -381,7 +381,7 @@ const AdminProduct = () => {
       options: {
         customBodyRender: (value, tableMeta) => (
           <Button type="primary" onClick={() => showModal(tableMeta.rowData)}>
-            Chỉnh sửa
+            Chi tiết
           </Button>
         ),
       },
