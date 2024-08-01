@@ -171,7 +171,7 @@ export const CardInfo = styled.div`
     margin: 15px 0;
     box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .1), 0 2px 6px 2px rgba(60, 64, 67, .15);
     width: 700px;
-    min-height: 500px;
+    min-height: 30px;
 `
 
 export const WrapperSectionText = styled.div`
