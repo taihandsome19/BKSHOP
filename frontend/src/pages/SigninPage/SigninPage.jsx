@@ -52,19 +52,26 @@ const SigninPage = () => {
       if (response.data.status === true) {
         message.success('Đăng nhập thành công');
 
-        const { name, email } = response.data;
+        const { name, email, role } = response.data;
         localStorage.setItem("isLogged", true);
         localStorage.setItem("User_name", name);
         localStorage.setItem("User_email", email);
+        localStorage.setItem("User_role", role);
 
         const ress = await axios.get('http://localhost:3001/user/cart');
         localStorage.setItem('User_cart', ress.data.length);
-        
+
+        const res2 = await axios.get('http://localhost:3001/user/notice');
+        localStorage.setItem('User_notice', JSON.stringify(res2.data));
+
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
       } else {
-        message.error('Sai tài khoản hoặc mật khẩu');
+        if(response.data.message === 'Tài khoản của bạn đã bị cấm!'){
+          await axios.post('http://localhost:3001/auth/log_out');
+        }
+        message.error(response.data.message);
       }
     } catch (error) {
       message.error('Có lỗi xảy ra khi đăng nhập');

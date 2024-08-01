@@ -168,3 +168,22 @@ export const WrapperRight = styled.div`
     display: flex;
     gap: 20px;
 `;
+
+export const EditButton = styled.button`
+  background-color: ${props => (props.isEditing ? '#4CAF50' : '#1777ff')};
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px; /* Bo góc */
+  transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng khi click */
+
+  &:active {
+    transform: scale(0.95); /* Hiệu ứng khi click */
+  }
+`;

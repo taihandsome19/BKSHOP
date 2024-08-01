@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import {
   HomeOutlined,
   UserOutlined,
@@ -34,8 +34,45 @@ import bg1 from "../../../assets/images/banner4.jpg";
 import bg2 from "../../../assets/images/banner2.jpg";
 import { Link } from 'react-router-dom';
 import { Helmet } from "react-helmet";
+import axios from 'axios';
+
+const handleLogout = async () => {
+  try {
+      await axios.post('http://localhost:3001/auth/log_out');
+
+      localStorage.clear();
+
+      window.location.href = '/';
+  } catch (error) {
+      console.error('Logout failed:', error);
+  }
+};
 
 const UserPage = () => {
+  const [total_order, settotal_order] = useState(0);
+  const [total_price, settotal_price] = useState(0);
+
+  const fetchDataStatic = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3001/user/order`);
+      if (res.data && res.data.orderInfo) {
+        const totalPriceShipped = Math.floor(res.data.orderInfo
+            .filter(order => order.status === "Đã giao hàng")
+            .reduce((total, order) => total + order.totalPrice, 0)/ 1000000);
+        const numberOfOrders = res.data.orderInfo.length;
+        settotal_order(numberOfOrders);
+        settotal_price(totalPriceShipped);
+      }
+    } catch (error) {
+    }
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchDataStatic();
+  }, []);
+
+
   return (
     <div style={{ backgroundColor: "#f6f6f6", minHeight: "100vh" }}>
       <Helmet>
@@ -73,7 +110,7 @@ const UserPage = () => {
                 <WrapperTextNav>Hỗ trợ</WrapperTextNav>
               </WrapperBoxText>
             </Link>
-            <WrapperBoxText>
+            <WrapperBoxText style={{cursor: 'pointer'}} onClick={handleLogout}>
               <LogoutOutlined style={{ fontSize: "20px", color: "#6f6f6f" }} />
               <WrapperTextNav>Thoát tài khoản</WrapperTextNav>
             </WrapperBoxText>
@@ -84,21 +121,21 @@ const UserPage = () => {
                 <WrapperAvatar src={avt} alt="User Avatar" preview={false} />
               </div>
               <WrapperTextAvt >
-                <WrapperName>Trần Thành Tài</WrapperName>
-                <WrapperText>tai.tranthanh@hcmut.edu.vn</WrapperText>
+                <WrapperName>{localStorage.getItem('User_name')}</WrapperName>
+                <WrapperText>{localStorage.getItem('User_email')}</WrapperText>
               </WrapperTextAvt>
             </div>
             <WrapperCardHome>
               <CardSection>
-                <h1>1</h1>
+                <h1>{total_order}</h1>
                 <WrapperText>Đơn hàng</WrapperText>
               </CardSection>
               <CardSection>
-                <h1>1M</h1>
+                <h1>{total_price}M</h1>
                 <WrapperText>Tổng tiền mua hàng</WrapperText>
               </CardSection>
               <CardSection>
-                <h1>Thành viên</h1>
+                <h1>{(localStorage.getItem('User_role') === 'admin') ? ("Quản trị viên"):("Thành viên")}</h1>
                 <WrapperText>Cấp bậc</WrapperText>
               </CardSection>
             </WrapperCardHome>
