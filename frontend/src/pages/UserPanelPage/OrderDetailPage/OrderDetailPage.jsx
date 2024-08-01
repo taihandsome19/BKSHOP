@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     HomeOutlined,
     UserOutlined,
@@ -31,6 +31,7 @@ import 'jspdf-autotable';
 import '../../../assets/times-new-roman';
 import { Modal, Input, Rate, Spin, message, Button } from 'antd';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const handleLogout = async () => {
     try {
@@ -54,24 +55,26 @@ const OrderDetailPage = () => {
     const orderId = searchParams.get('orderId');
     const [loading, setLoading] = useState(true);
     const [datainfo, setDataInfo] = useState({});
+    const [curproductId, setcurproductId] = useState('');
+
+    const fetchData = useCallback(async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/user/order/detail?orderId=${orderId}`);
+            if (res.data && res.data.status === true) {
+                setDataInfo(res.data);
+                setLoading(false);
+            } else {
+                message.error('Lỗi khi lấy thông tin đơn hàng');
+            }
+        } catch (error) {
+            message.error('Lỗi khi lấy thông tin đơn hàng');
+        }
+    }, [orderId]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        const fetchData = async () => {
-            try {
-                const res = await axios.get(`http://localhost:3001/user/order/detail?orderId=${orderId}`);
-                if (res.data && res.data.status === true) {
-                    setDataInfo(res.data);
-                    setLoading(false);
-                } else {
-                    message.error('Lỗi khi lấy thông tin đơn hàng');
-                }
-            } catch (error) {
-                message.error('Lỗi khi lấy thông tin đơn hàng');
-            }
-        };
         fetchData();
-    }, [orderId]);
+    }, [fetchData]);
 
     const handlePrintInvoice = (datainfo, madon, totalQuantity) => {
         const doc = new jsPDF();
@@ -162,22 +165,60 @@ const OrderDetailPage = () => {
         doc.save(`BKS${orderId}.pdf`);
     };
 
-
-
-
-    const showModal = () => {
-        setIsModalVisible(true);
+    const navigate = useNavigate();
+    const handleNavigate = (id) => {
+      navigate(`/product/detail?product_id=${id}`);
     };
 
-    const handleOk = () => {
-        // Handle review submission logic here
-        console.log("Review submitted:", review);
+
+
+
+    const showModal = (productId) => {
+        setIsModalVisible(true);
+        setcurproductId(productId);
+    };
+
+    const handleOk = async () => {
+        if(rating === 0 ){
+            message.error("Vui lòng đánh giá số sao!")
+            return;
+        } else if(review === ""){
+            message.error("Vui lòng nhập nội dung đánh giá!")
+            return;
+        }else if(review.length > 175){
+            message.error(`Nội dung đánh giá không được quá 175 ký tự (${review.length}/175)`)
+            return;
+        }
+        try {
+            const payload = {
+                "star": rating,
+                "content": review,
+                "productId": parseInt(curproductId),
+                "orderId": orderId,
+                "email": localStorage.getItem('User_email'), 
+                "name": localStorage.getItem('User_name')
+            }
+            const res = await axios.post("http://localhost:3001/user/review", payload);
+            if(res.data && res.data.status === true){
+                message.success("Đánh giá sản phẩm thành công!");
+                fetchData();
+            }else{
+                message.error("Đánh giá sản phẩm thất bại!");
+                return;
+            }
+        } catch(error){
+            message.error("Đã xảy ra lỗi, vui lòng thử lại sau!")
+            return;
+        }
         setIsModalVisible(false);
-        setReview(""); // Reset review input after submission
+        setReview("");
+        setRating(0);
+        setcurproductId('');
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
+        setcurproductId('');
     };
 
 
@@ -351,7 +392,7 @@ const OrderDetailPage = () => {
                             {Object.keys(datainfo.orderDetail.items).map((itemId) => {
                                 const item = datainfo.orderDetail.items[itemId];
                                 return (
-                                    <CardOrder key={itemId}>
+                                    <CardOrder key={itemId} onClick={() => handleNavigate(itemId)} style={{cursor: 'pointer'}}>
                                         <div>
                                             <div style={{ display: 'flex' }}>
                                                 <WrapperImg src={`https://firebasestorage.googleapis.com/v0/b/co3103.appspot.com/o/${item.image}?alt=media`} />
@@ -372,8 +413,8 @@ const OrderDetailPage = () => {
                                                         <div style={{ fontSize: '15px', fontWeight: 'bold', color: '#0688B4', height: '33.5px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                                                             {Number(item.price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                                                         </div>
-                                                        {(datainfo.orderDetail.status === "Đã giao hàng") ? (
-                                                            <ButtonClose onClick={showModal}>Đánh giá</ButtonClose>
+                                                        {(datainfo.orderDetail.status === "Đã giao hàng" && item.reviewstatus !== true) ? (
+                                                            <ButtonClose onClick={(e) => { e.stopPropagation(); showModal(itemId); }}>Đánh giá</ButtonClose>
                                                         ) : null}
                                                     </div>
                                                 </div>

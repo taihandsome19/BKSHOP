@@ -18,6 +18,8 @@ import cod from '../../assets/images/cod.png';
 import { UserCartContext } from '../../components/UserCartContext/UserCartContext';
 
 const PaymentPage = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const action = searchParams.get('action');
     const [dataInfo, setDataInfo] = useState(null);
     const [dataPayment, setDataPayment] = useState(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cod');
@@ -63,25 +65,48 @@ const PaymentPage = () => {
         const address = document.getElementById('address-input').value;
 
         const savedIndexes = JSON.parse(localStorage.getItem('dataPaymentIndex'));
-        if (!Array.isArray(savedIndexes)) {
+        if (!Array.isArray(savedIndexes) && action !== 'buynow') {
             message.error("Lỗi đồng bộ dữ liệu, vui lòng về giỏ hàng đặt lại!")
             return;
         }
-
-        const payload = {
-            status: "Chờ xác nhận",
-            payment: selectedPaymentMethod.toUpperCase(),
-            address,
-            phonenum: phone,
-            indexs: savedIndexes
-        };
+        var payload = {};
+        if(action === 'buynow'){
+            const jsonData = localStorage.getItem('dataPayment');
+            if (!jsonData) {
+                message.error("Lỗi khi lấy thông tin đơn hàng!");
+                return;
+            }
+            const storedProducts = JSON.parse(jsonData)[0];
+            payload = {
+                status: "Chờ xác nhận",
+                payment: selectedPaymentMethod.toUpperCase(),
+                address,
+                phonenum: phone,
+                productId: storedProducts.productId,
+                color: storedProducts.color,
+                memorySize: storedProducts.memorysize,
+                image: storedProducts.image
+            };
+        }else{
+            payload = {
+                status: "Chờ xác nhận",
+                payment: selectedPaymentMethod.toUpperCase(),
+                address,
+                phonenum: phone,
+                indexs: savedIndexes
+            };
+        }
+        
         setLoadingButton(true);
         try {
-            const response = await axios.post('http://localhost:3001/user/order', payload);
+            const link = (action === 'buynow') ? 'http://localhost:3001/user/buy' : 'http://localhost:3001/user/order';
+            const response = await axios.post(link, payload);
             if (response.data.status === true) {
                 localStorage.removeItem('dataPayment');
                 localStorage.removeItem('dataPaymentIndex');
-                setUserCart(prevUserCart => prevUserCart - savedIndexes.length);
+                if(action !== 'buynow'){
+                    setUserCart(prevUserCart => prevUserCart - savedIndexes.length);
+                }
                 const { orderId } = response.data;
                 
                 //Check thanh toán ngân hàng

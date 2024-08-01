@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Image } from "antd";
 
 export const ButtonComfirm= styled.button`
     border: 1.5px solid #4caf50;
@@ -20,11 +21,11 @@ export const EditButton = styled.button`
   background-color: ${props => (props.isEditing ? '#4CAF50' : '#1777ff')};
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 10px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: 13px;
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 8px; /* Bo góc */
@@ -83,11 +84,11 @@ export const Deletebutton = styled.button`
   background-color: #ff4f4e;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 10px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: 13px;
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 8px; /* Bo góc */
@@ -96,4 +97,9 @@ export const Deletebutton = styled.button`
   &:active {
     transform: scale(0.95); /* Hiệu ứng khi click */
   }
+`;
+
+export const WrapperAvatar = styled(Image)`
+    border-radius: 50%;
+    object-fit: cover;
 `;
