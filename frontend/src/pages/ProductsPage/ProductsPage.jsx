@@ -20,7 +20,7 @@ const ProductPages = () => {
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10);
+    const [itemsPerPage] = useState(5);
 
     useEffect(() => {
         window.scrollTo(0, 0);

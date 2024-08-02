@@ -15,7 +15,7 @@ const SearchPage = () => {
     const [savePR, setsavePR] = useState([]);
     const [or_products, setOrProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10);
+    const [itemsPerPage] = useState(5);
 
     useEffect(() => {
         if (!key) {
@@ -31,9 +31,27 @@ const SearchPage = () => {
                 const keywords = key.toLowerCase().split(' ').filter(Boolean);
                 const filteredProducts = fetchedProducts.filter(product => {
                     const productName = product.name.toLowerCase();
-                    const matchingKeywords = keywords.filter(word => productName.includes(word));
-                    return (matchingKeywords.length / keywords.length) >= 0.5;
+                
+                    // Lọc từ khóa có số và từ khóa không có số
+                    const hasNumberKeywords = keywords.filter(word => /\d/.test(word));
+                    const noNumberKeywords = keywords.filter(word => !/\d/.test(word));
+                
+                    // Kiểm tra nếu sản phẩm chứa tất cả các từ khóa có số
+                    const containsAllNumberKeywords = hasNumberKeywords.every(keyword => {
+                        const numberInKeyword = keyword.match(/\d+/)[0]; // Lấy số trong từ khóa
+                        return productName.includes(numberInKeyword);
+                    });
+                
+                    // Kiểm tra số từ khóa không có số khớp với tên sản phẩm
+                    const matchingKeywords = noNumberKeywords.filter(word => productName.includes(word));
+                
+                    // Tính toán tỷ lệ khớp từ khóa không có số
+                    const ratio = matchingKeywords.length / noNumberKeywords.length;
+                
+                    // Đảm bảo tỷ lệ khớp >= 0.5 và sản phẩm chứa tất cả các số từ khóa
+                    return ratio >= 0.5 && containsAllNumberKeywords;
                 });
+                
 
                 setProducts(filteredProducts);
                 setOrProducts(filteredProducts);
