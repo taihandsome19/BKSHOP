@@ -58,7 +58,7 @@ const HomePage = () => {
         const shuffled = [...productsCopy].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
     };
-    const displayedProducts = showAll ? products : getRandomProducts(products, 5);
+    const displayedProducts = false ? products : getRandomProducts(products, 5);
 
     return (
         <div style={{ backgroundColor: "#f6f6f6", minHeight: "100vh" }}>
@@ -71,11 +71,11 @@ const HomePage = () => {
 
                     <div id="container">
                         <SliderComponent arrImg={[b1, b2, b3, b4, b5, b6]} />
-                        <div style={{fontSize: '18px', fontWeight: 'bold', color: '#444444', padding: '30px 0 0'}}>CHƯƠNG TRÌNH ĐẶC BIỆT</div>
+                        <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#444444', padding: '30px 0 0' }}>CHƯƠNG TRÌNH ĐẶC BIỆT</div>
                         <HighlightedContainer>
-                            <div style={{display: 'flex', padding: '20px 30px', gap: '10px'}}>
-                                <FireFilled style={{fontSize: '25px', color: '#fff'}} />
-                                <div style={{fontSize: '25px', fontWeight: 'bold', color: '#fff'}}>HOT SALE</div>
+                            <div style={{ display: 'flex', padding: '20px 30px', gap: '10px' }}>
+                                <FireFilled style={{ fontSize: '25px', color: '#fff' }} />
+                                <div style={{ fontSize: '25px', fontWeight: 'bold', color: '#fff' }}>HOT SALE</div>
                                 <AnimatedText>CUỐI TUẦN</AnimatedText>
                             </div>
                             <WrapperProductsSale>
@@ -91,9 +91,9 @@ const HomePage = () => {
                             </WrapperProductsSale>
                         </HighlightedContainer>
 
-                        <div style={{fontSize: '18px', fontWeight: 'bold', color: '#444444', padding: '30px 0 0'}}>ĐIỆN THOẠI NỔI BẬT NHẤT</div>
+                        <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#444444', padding: '30px 0 0' }}>ĐIỆN THOẠI NỔI BẬT NHẤT</div>
                         <WrapperProducts>
-                            {(showAll ? products : products.slice(0, 15)).map(product => (
+                            {(showAll ? products.slice(0, 30) : products.slice(0, 10)).map(product => (
                                 <CardComponent
                                     key={product.productId}
                                     productId={product.productId}

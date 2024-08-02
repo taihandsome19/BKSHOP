@@ -54,7 +54,7 @@ export const HighlightedContainer = styled.div`
 
 export const ButtonMore = styled.button`
     border: 1.5px solid #0688B4;
-    border-radius: 10px;
+    border-radius: 5px;
     width: 180px;
     background-color: white;
     color: #0688B4;

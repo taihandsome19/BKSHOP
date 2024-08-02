@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, RightContainer } from '../style';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { Modal, Button, Input, Form, Select, Upload, message, Spin, InputNumber, Rate } from 'antd';
+import { Modal, Button, Input, Form, Select, Upload, message, Spin, InputNumber, Rate, Checkbox } from 'antd';
 import { UploadOutlined, EditOutlined, SaveOutlined, DeleteOutlined, LikeOutlined, FrownOutlined } from '@ant-design/icons';
 import SlideBarComponent from '../../../components/AdminComponent/SlideBar/SlideBarAdmin';
 import HeaderComponent from '../../../components/AdminComponent/Header/Header';
@@ -22,6 +22,7 @@ const AdminProduct = () => {
   const [storages, setStorages] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [form] = Form.useForm();
+  const [form2] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [fullProductData, setFullProductData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
@@ -329,7 +330,7 @@ const AdminProduct = () => {
         return;
       }
       setProductData([...productData, newProduct]);
-      form.resetFields();
+      form2.resetFields();
       setFileList([]);
       setColors([]);
       setStorages([]);
@@ -388,6 +389,46 @@ const AdminProduct = () => {
     },
   ];
 
+  // Auto FILL
+  const updateQuantities = (newvalue) => {
+    const currentValues = form2.getFieldsValue();
+    const updatedVariants = Object.keys(currentValues.variants || {}).reduce((acc, key) => {
+      acc[key] = {
+        ...currentValues.variants[key],
+        quantity: newvalue
+      };
+      return acc;
+    }, {});
+
+    const updatedValues = {
+      ...currentValues,
+      variants: updatedVariants
+    };
+    form2.setFieldsValue({
+      ...currentValues,
+      ...updatedValues,
+    });
+  };
+
+  const handleAutoFill = (e) => {
+    const { checked } = e.target;
+    if (checked) {
+      const currentValues = form2.getFieldsValue();
+      var maxQuantity;
+      if (!currentValues.variants) {
+        maxQuantity = null;
+      } else {
+        maxQuantity = Object.values(currentValues.variants).reduce((max, variant) => {
+          return variant.quantity > max ? variant.quantity : max;
+        }, null);
+      }
+      updateQuantities(maxQuantity);
+    } else {
+      updateQuantities(null)
+    }
+  };
+
+
   return (
     <HelmetProvider>
       <Helmet>
@@ -423,23 +464,23 @@ const AdminProduct = () => {
                   >
                     {Object.values(rowProductData?.review || {}).length > 0 ? (
                       <div style={{display: 'flex', gap: '10px', flexDirection: 'column'}}>
-                      {Object.values(rowProductData.review).map((item, index) => (
-                        <div key={index} style={{ border: '1px solid #d9d9d9', borderRadius: '8px', display: 'flex', gap: '10px' }}>
-                          <div style={{ width: "70px", paddingLeft: '10px', paddingTop: '10px' }}>
-                            <WrapperAvatar  src={`https://ui-avatars.com/api/?background=random&name=${item.name ? item.name.replace(" ", "+") : "Default+Name"}`} alt="User Avatar" preview={false} />
-                          </div>
-                          <div style={{display: 'flex', fontSize: '14px', flexDirection: 'column', width: '100%', paddingRight: '10px', paddingTop: '10px'}}>
-                            <div style={{display: 'flex', alignItems: 'center'}}>
-                              <b>{item.name}</b>
-                              <div>({item.email})</div>
+                        {Object.values(rowProductData.review).map((item, index) => (
+                          <div key={index} style={{ border: '1px solid #d9d9d9', borderRadius: '8px', display: 'flex', gap: '10px' }}>
+                            <div style={{ width: "70px", paddingLeft: '10px', paddingTop: '10px' }}>
+                              <WrapperAvatar  src={`https://ui-avatars.com/api/?background=random&name=${item.name ? item.name.replace(" ", "+") : "Default+Name"}`} alt="User Avatar" preview={false} />
                             </div>
-                            <Rate disabled defaultValue={item.star} style={{fontSize: '11px', paddingTop: '2px'}} />
-                            <div style={{color: '#6f6f6f', padding: '5px 0px 10px 0px', fontSize: '12px'}}>
-                            {item.content}
+                            <div style={{display: 'flex', fontSize: '14px', flexDirection: 'column', width: '100%', paddingRight: '10px', paddingTop: '10px'}}>
+                              <div style={{display: 'flex', alignItems: 'center'}}>
+                                <b>{item.name}</b>
+                                <div>({item.email})</div>
+                              </div>
+                              <Rate disabled defaultValue={item.star} style={{fontSize: '11px', paddingTop: '2px'}} />
+                              <div style={{color: '#6f6f6f', padding: '5px 0px 10px 0px', fontSize: '12px'}}>
+                                {item.content}
+                              </div>
+                            </div>
                           </div>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
                       </div>
                     ) : (
                       <div style={{ color: '#6f6f6f', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
@@ -604,7 +645,7 @@ const AdminProduct = () => {
                     footer={null}
                   >
                     <Form
-                      form={form}
+                      form={form2}
                       onFinish={handleAddProduct}
                       labelCol={{ span: 7 }}
                       wrapperCol={{ span: 18 }}
@@ -701,6 +742,18 @@ const AdminProduct = () => {
                           <Button icon={<UploadOutlined />}>Tải lên hình ảnh</Button>
                         </Upload>
                       </Form.Item>
+                      {colors.length > 0 && storages.length > 0 ?(
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', paddingBottom: '20px' }}>
+                          <div style={{ display: 'flex', alignContent: 'center', alignItems: 'center', gap: '2px' }}>
+                            <div style={{ fontSize: '12px', color: '#FF4D4F' }}>*</div>
+                            <div>Số lượng</div>
+                          </div>
+                          <div style={{ display: 'flex', alignContent: 'center', alignItems: 'center', gap: '5px' }}>
+                            <div style={{ color: '#6f6f6f' }}>Tự động điền</div>
+                            <Checkbox onClick={(value) => handleAutoFill(value)} />
+                          </div>
+                        </div>
+                      ):null}
                       <Form.List name="variants">
                         {(fields, { add, remove }) => (
                           <>
