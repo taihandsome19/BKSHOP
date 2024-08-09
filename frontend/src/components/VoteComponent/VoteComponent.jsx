@@ -15,6 +15,7 @@ import {
     ButtonMore
 } from './style';
 import { StarFilled, DownOutlined, InboxOutlined } from '@ant-design/icons';
+import { Rate } from 'antd';
 
 const RatingComponent = ({ ratingNumber, percentage, numberOfReviews }) => {
     return (
@@ -98,13 +99,7 @@ const VoteComponent = ({ listreview, name }) => {
             <WrapperCardRate>
                 <RateLeft>
                     <WrapperTitle>{comments.length > 0 ? averageStars : '0.0'}/5</WrapperTitle>
-                    <div style={{ display: "flex", gap: "10px", color: "#FFBF00", fontSize: "15px", paddingBottom: "10px" }}>
-                        <StarFilled />
-                        <StarFilled />
-                        <StarFilled />
-                        <StarFilled />
-                        <StarFilled />
-                    </div>
+                    <Rate disabled allowHalf defaultValue={averageStars} />
                     <WrapperText>{comments.length} đánh giá</WrapperText>
                 </RateLeft>
                 <RateRight>

@@ -106,8 +106,8 @@ const CartPage = () => {
         }
     };
 
-    const handleDelete = (index, flag) => {
-        axios.post('http://localhost:3001/user/remove', {
+    const handleDelete = async (index, flag) => {
+        await axios.post('http://localhost:3001/user/remove', {
             index: index,
         }).then(response => {
             setUserCart(prevUserCart => prevUserCart - 1);
