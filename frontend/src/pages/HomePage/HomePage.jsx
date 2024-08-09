@@ -31,7 +31,8 @@ const HomePage = () => {
             .then(response => {
                 const updatedProducts = response.data.map(product => ({
                     ...product
-                }));
+                })).reverse();
+                console.log(updatedProducts)
                 setProducts(updatedProducts);
                 setLoading(false);
             })

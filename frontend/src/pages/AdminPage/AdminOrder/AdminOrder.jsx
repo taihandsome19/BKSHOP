@@ -57,7 +57,7 @@ const AdminOrder = () => {
 
   const showModal = (rowData) => {
     setSelectedRowData(rowData);
-    setSelectedValue(rowData[5]);
+    setSelectedValue(rowData[6]);
     setIsModalVisible(true);
     setrowdata(fulldata[rowData[0]])
   };
