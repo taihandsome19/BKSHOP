@@ -16,7 +16,7 @@ class ApexChart extends React.Component {
         },
         {
           name: 'Doanh thu (M)',
-          data: props.revenue || [], // Default to empty array if not provided
+          data: (props.revenue || []).map(value => Math.round(value * 100) / 100),
         }
       ],
       options: {
