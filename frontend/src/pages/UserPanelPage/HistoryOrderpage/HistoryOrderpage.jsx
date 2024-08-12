@@ -173,6 +173,12 @@ const HistoryOrderPage = () => {
                     Chờ xác nhận
                   </ButtonGroup>
                   <ButtonGroup
+                    active={selectedStatus === "Đã xác nhận"}
+                    onClick={() => setSelectedStatus("Đã xác nhận")}
+                  >
+                    Đã xác nhận
+                  </ButtonGroup>
+                  <ButtonGroup
                     active={selectedStatus === "Đang vận chuyển"}
                     onClick={() => setSelectedStatus("Đang vận chuyển")}
                   >
