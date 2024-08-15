@@ -18,8 +18,19 @@ const AdminHome = () => {
   const [dataorder, setdataorder] = useState({});
   const [loading, setLoading] = useState(true);
 
-  const fetchAllData = () => {
+  const fetchAllData = async () => {
     setLoading(true);
+
+    // Check quyền admin
+    try {
+      const res = await axios.get('http://localhost:3001/user/info')
+      if(res.data && res.data.role !== 'admin'){
+        window.location.href = '/404';
+      }
+    }catch(error){
+      window.location.href = '/404';
+    }
+
     Promise.all([
       axios.get('http://localhost:3001/admin/report'),
       axios.get('http://localhost:3001/admin/report_order')
