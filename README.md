@@ -14,5 +14,5 @@
 |:---:|:-----:|-----------------------------|-----------|
 | 1   | User  | tai.tranthanh@hcmut.edu.vn  | 123456    |
 | 2   | User  | thinh.nguyen04@hcmut.edu.vn | 123456    |
-| 3   | Admin | emailaa@gmail.com           | 123456    |
-
+| 3   | User  | emailaa@gmail.com           | 123456    |
+| 4   | Admin | admin@gmail.com           | 123456    |
