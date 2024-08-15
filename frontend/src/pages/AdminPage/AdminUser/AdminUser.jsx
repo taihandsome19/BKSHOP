@@ -45,6 +45,23 @@ const AdminUser = () => {
   }
 
   useEffect(() => {
+    const checkpermision = async () => {
+      try {
+        const res = await axios.get('http://localhost:3001/user/info')
+        if(res.data && res.data.role !== 'admin'){
+          window.location.href = '/404';
+        }else{
+          return true;
+        }
+      }catch(error){
+        window.location.href = '/404';
+      }
+      return false;
+    }
+    if(!checkpermision()){
+      return;
+    };
+
     window.scrollTo(0, 0);
     fetchData();
   }, []);
